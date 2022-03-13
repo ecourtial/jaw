@@ -4,10 +4,7 @@
  * @licence MIT
  */
 
-$host = 'localhost';
-$base = '';
-$login = '';
-$password = '';
+require_once('.local.env.php');
 
 $connection = new \PDO("mysql:host=$host;dbname=$base", $login, $password);
 $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

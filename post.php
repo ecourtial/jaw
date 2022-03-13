@@ -40,9 +40,8 @@ $query->execute();
 $result = $query->fetchAll();
 $query->closeCursor();
 
-if ([] === $result) {
+if (false === is_array($result) || [] === $result) {
     header("HTTP/1.1 404 Not Found");
-    exit;
 } else {
     $result = $result[0];
     header('Content-Type: application/json; charset=utf-8');
@@ -61,6 +60,6 @@ if ([] === $result) {
         'indexed' => true,
         'content' => $result['content']
     ]);
-
-    exit;
 }
+
+exit;

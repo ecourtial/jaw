@@ -3,7 +3,7 @@
  * @author Eric COURTIAL <e.courtial30@gmail.com>
  * @licence MIT
  */
-require_once 'globals.php';
+require_once 'src/globals.php';
 
 $fields = [
     'categories.ID as categId',
@@ -22,9 +22,9 @@ $results = [];
 while ($result = $query->fetch()) {
     $results[] = [
         'id' => $result['categId'],
-        'name' => $result['categName'],
+        'name' => cleanAccents($result['categName']),
         'url' => $result['categURL'],
-        'description' => $result['categDescription'],
+        'description' => cleanAccents($result['categDescription']),
     ];
 }
 

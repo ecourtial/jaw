@@ -3,7 +3,7 @@
  * @author Eric COURTIAL <e.courtial30@gmail.com>
  * @licence MIT
  */
-require_once 'globals.php';
+require_once 'src/globals.php';
 
 header('Content-Type: application/json; charset=utf-8');
 

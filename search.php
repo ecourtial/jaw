@@ -3,7 +3,7 @@
  * @author Eric COURTIAL <e.courtial30@gmail.com>
  * @licence MIT
  */
-require_once 'globals.php';
+require_once 'src/globals.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("HTTP/1.1 400 Bad request");
@@ -53,10 +53,10 @@ while ($post = $query->fetch()) {
         $posts[] = [
             'id'          => $post['postId'],
             'published' => $post['postDate'],
-            'title'       => $post['postTitle'],
-            'categoryLabel' => $post['categName'],
+            'title'       => cleanAccents($post['postTitle']),
+            'categoryLabel' => cleanAccents($post['categName']),
             'url'         => $post['categURL'] . '/' . $post['postURL'],
-            'description' => $post['postDescription'],
+            'description' => cleanAccents($post['postDescription']),
             'highlighted' => (bool)$post['isHighlighted'],
             'obsolete'    => (bool)$post['isObsolete'],
             'indexed'     => true,

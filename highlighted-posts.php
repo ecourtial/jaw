@@ -3,7 +3,7 @@
  * @author Eric COURTIAL <e.courtial30@gmail.com>
  * @licence MIT
  */
-require_once 'globals.php';
+require_once 'src/globals.php';
 
 $fields = [
     'categories.ID as categId',
@@ -36,9 +36,9 @@ while ($post = $query->fetch()) {
         $posts[] = [
             'id'          => $post['postId'],
             'published' => $post['postDate'],
-            'title'       => $post['postTitle'],
+            'title'       => cleanAccents($post['postTitle']),
             'url'         => $post['categURL'] . '/' . $post['postURL'],
-            'description' => $post['postDescription'],
+            'description' => cleanAccents($post['postDescription']),
             'highlighted' => (bool)$post['isHighlighted'],
             'obsolete'    => (bool)$post['isObsolete'],
             'indexed'     => true,

@@ -3,7 +3,7 @@
  * @author Eric COURTIAL <e.courtial30@gmail.com>
  * @licence MIT
  */
-require_once 'globals.php';
+require_once 'src/globals.php';
 
 $category = $_GET['category'] ?? null;
 
@@ -44,15 +44,15 @@ $categDescription = '';
 
 while ($post = $query->fetch()) {
     $categId = $post['categId'];
-    $categName = $post['categName'];
-    $categDescription = $post['categDescription'];
+    $categName = cleanAccents($post['categName']);
+    $categDescription = cleanAccents($post['categDescription']);
 
     if (true === (bool)$post['isOnline']) {
         $posts[] = [
             'id'          => $post['postId'],
-            'title'       => $post['postTitle'],
+            'title'       => cleanAccents($post['postTitle']),
             'url'         => $post['categURL'] . '/' . $post['postURL'],
-            'description' => $post['postDescription'],
+            'description' => cleanAccents($post['postDescription']),
             'highlighted' => (bool)$post['isHighlighted'],
             'obsolete'    => (bool)$post['isObsolete'],
             'indexed'     => true,

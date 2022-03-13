@@ -3,7 +3,7 @@
  * @author Eric COURTIAL <e.courtial30@gmail.com>
  * @licence MIT
  */
-require_once 'globals.php';
+require_once 'src/globals.php';
 
 $category = $_GET['category'] ?? null;
 $slug = $_GET['slug'] ?? null;
@@ -48,8 +48,8 @@ if (false === is_array($result) || [] === $result) {
 
     echo json_encode([
         'id' => $result['postId'],
-        'title' => $result['postTitle'],
-        'description' => $result['postDescription'],
+        'title' => cleanAccents($result['postTitle']),
+        'description' => cleanAccents($result['postDescription']),
         'published' => $result['postDate'],
         'categoryId' => $result['categId'],
         'categoryLabel' => $result['categName'],

@@ -5,13 +5,6 @@
  */
 require_once 'globals.php';
 
-$category = $_GET['category'] ?? null;
-
-if (null === $category) {
-    header("HTTP/1.1 400 Invalid request");
-    exit;
-}
-
 $fields = [
     'categories.ID as categId',
     'categories.NAME as categName',
@@ -30,23 +23,15 @@ $fields = [
 
 $sqlRequest = 'SELECT ' . \implode(', ', $fields)
     . ' FROM categories, articles'
-    . ' WHERE categories.URL = :categSlug'
-    . ' AND articles.CATEG = categories.ID';
+    . ' WHERE articles.CATEG = categories.ID'
+    . ' AND articles.HOME = 1 ORDER BY postId DESC LIMIT 10';
 
 $query = $connection->prepare($sqlRequest);
-$query->bindParam('categSlug', $category);
 $query->execute();
 
 $posts = [];
-$categId = 0;
-$categName = '';
-$categDescription = '';
 
 while ($post = $query->fetch()) {
-    $categId = $post['categId'];
-    $categName = $post['categName'];
-    $categDescription = $post['categDescription'];
-
     if (true === (bool)$post['isOnline']) {
         $posts[] = [
             'id'          => $post['postId'],
@@ -56,24 +41,14 @@ while ($post = $query->fetch()) {
             'highlighted' => (bool)$post['isHighlighted'],
             'obsolete'    => (bool)$post['isObsolete'],
             'indexed'     => true,
+            'categoryId' => $post['categId'],
+            'categoryName' => $post['categName'],
+            'categoryUrl' => $post['categURL'],
         ];
     }
 }
 
-if (0 === $categId) {
-    header("HTTP/1.1 404 Not Found");
-    exit;
-}
-
-$results = [
-    'id' => $categId,
-    'name' => $categName,
-    'url' => $category,
-    'description' => $categDescription,
-    'posts' => $posts
-];
-
 $query->closeCursor();
 header('Content-Type: application/json; charset=utf-8');
-echo json_encode($results);
+echo json_encode($posts);
 exit;

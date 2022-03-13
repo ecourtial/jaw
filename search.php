@@ -5,6 +5,18 @@
  */
 require_once 'globals.php';
 
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header("HTTP/1.1 400 Bad request");
+    exit;
+}
+
+$request = $_POST['request'] ?? '';
+
+if ($request === '') {
+    header("HTTP/1.1 400 Bad request: keywords for the search request are missing!");
+    exit;
+}
+
 $fields = [
     'categories.ID as categId',
     'categories.NAME as categName',
@@ -23,10 +35,15 @@ $fields = [
 
 $sqlRequest = 'SELECT ' . \implode(', ', $fields)
     . ' FROM categories, articles'
-    . ' WHERE articles.CATEG = categories.ID'
-    . ' AND articles.HOME = 1 ORDER BY articles.DATE DESC LIMIT 10';
+    . ' WHERE articles.TITLE LIKE :request'
+    . ' OR articles.CONTENT LIKE :request'
+    . ' AND articles.CATEG = categories.ID'
+    . ' ORDER BY articles.DATE DESC';
+
 
 $query = $connection->prepare($sqlRequest);
+$bindedRequest = "%$request%";
+$query->bindParam('request', $bindedRequest);
 $query->execute();
 
 $posts = [];
@@ -37,19 +54,23 @@ while ($post = $query->fetch()) {
             'id'          => $post['postId'],
             'published' => $post['postDate'],
             'title'       => $post['postTitle'],
+            'categoryLabel' => $post['categName'],
             'url'         => $post['categURL'] . '/' . $post['postURL'],
             'description' => $post['postDescription'],
             'highlighted' => (bool)$post['isHighlighted'],
             'obsolete'    => (bool)$post['isObsolete'],
             'indexed'     => true,
-            'categoryId' => $post['categId'],
-            'categoryName' => $post['categName'],
-            'categoryUrl' => $post['categURL'],
         ];
     }
 }
 
+$results = [
+    'request' => $request,
+    'resultCount' => \count($posts),
+    'posts' => $posts
+];
+
 $query->closeCursor();
 header('Content-Type: application/json; charset=utf-8');
-echo json_encode($posts);
+echo json_encode($results);
 exit;

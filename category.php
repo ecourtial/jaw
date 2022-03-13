@@ -56,6 +56,7 @@ while ($post = $query->fetch()) {
             'highlighted' => (bool)$post['isHighlighted'],
             'obsolete'    => (bool)$post['isObsolete'],
             'indexed'     => true,
+            'published' => $post['postDate'],
         ];
     }
 }

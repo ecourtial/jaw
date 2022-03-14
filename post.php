@@ -48,8 +48,8 @@ if (false === is_array($result) || [] === $result) {
 
     echo json_encode([
         'id' => $result['postId'],
-        'title' => cleanAccents($result['postTitle']),
-        'description' => cleanAccents($result['postDescription']),
+        'title' => $result['postTitle'],
+        'description' => $result['postDescription'],
         'published' => $result['postDate'],
         'categoryId' => $result['categId'],
         'categoryLabel' => $result['categName'],

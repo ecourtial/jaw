@@ -44,15 +44,15 @@ $categDescription = '';
 
 while ($post = $query->fetch()) {
     $categId = $post['categId'];
-    $categName = cleanAccents($post['categName']);
-    $categDescription = cleanAccents($post['categDescription']);
+    $categName = $post['categName'];
+    $categDescription = $post['categDescription'];
 
     if (true === (bool)$post['isOnline']) {
         $posts[] = [
             'id'          => $post['postId'],
-            'title'       => cleanAccents($post['postTitle']),
+            'title'       => $post['postTitle'],
             'url'         => $post['categURL'] . '/' . $post['postURL'],
-            'description' => cleanAccents($post['postDescription']),
+            'description' => $post['postDescription'],
             'highlighted' => (bool)$post['isHighlighted'],
             'obsolete'    => (bool)$post['isObsolete'],
             'indexed'     => true,

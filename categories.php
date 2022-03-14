@@ -22,9 +22,9 @@ $results = [];
 while ($result = $query->fetch()) {
     $results[] = [
         'id' => $result['categId'],
-        'name' => cleanAccents($result['categName']),
+        'name' => $result['categName'],
         'url' => $result['categURL'],
-        'description' => cleanAccents($result['categDescription']),
+        'description' => $result['categDescription'],
     ];
 }
 

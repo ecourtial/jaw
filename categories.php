@@ -13,7 +13,7 @@ $fields = [
 ];
 
 $sqlRequest = 'SELECT ' . \implode(', ', $fields)
-    . ' FROM categories';
+    . ' FROM categories ORDER BY NAME ASC';
 
 $query = $connection->prepare($sqlRequest);
 $query->execute();
@@ -22,9 +22,9 @@ $results = [];
 while ($result = $query->fetch()) {
     $results[] = [
         'id' => $result['categId'],
-        'name' => $result['categName'],
+        'name' => cleanAccents($result['categName']),
         'url' => $result['categURL'],
-        'description' => $result['categDescription'],
+        'description' => cleanAccents($result['categDescription']),
     ];
 }
 

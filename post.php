@@ -48,11 +48,12 @@ if (false === is_array($result) || [] === $result) {
 
     echo json_encode([
         'id' => $result['postId'],
-        'title' => $result['postTitle'],
-        'description' => $result['postDescription'],
+        'title' => cleanAccents($result['postTitle']),
+        'description' => cleanAccents($result['postDescription']),
         'published' => $result['postDate'],
         'categoryId' => $result['categId'],
-        'categoryLabel' => $result['categName'],
+        'categoryUrl' => $result['categURL'],
+        'categoryLabel' => cleanAccents($result['categName']),
         'url' => $result['categURL'] . '/' . $result['postURL'],
         'online' => (bool)$result['isOnline'],
         'highlighted' => (bool)$result['isHighlighted'],

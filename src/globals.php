@@ -9,9 +9,6 @@ require_once(__DIR__ . '/../config/.local.env.php');
 $connection = new \PDO("mysql:host=$host;dbname=$base", $login, $password, [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
 $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-
-$frontUrl = 'https://www.dynamic-mess.com/';
-
 // Accents
 
 $charMap = array_flip([

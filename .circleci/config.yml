@@ -1,0 +1,80 @@
+version: '2.1'
+executors:
+  php:
+    docker:
+      - image: php:8.1-alpine
+    working_directory: ~/repo
+
+jobs:
+  composer:
+    executor: php
+    steps:
+      - run:
+          name: Install alpine requirements for checkout
+          command: apk add git openssh-client curl make
+      - checkout
+      - restore_cache:
+          key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
+      - run:
+          name: composer
+          command: |
+            if [[ ! -f vendor/autoload.php ]]; then
+                curl https://getcomposer.org/composer-stable.phar --location --silent  --output /usr/bin/composer; \
+                chmod +x /usr/bin/composer; \
+                composer install --no-progress --no-interaction; \
+            fi
+      - save_cache:
+          key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
+          paths:
+            - ./vendor
+      - persist_to_workspace:
+          root: .
+          paths:
+            - vendor
+
+  phpcs:
+    executor: php
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: phpcs
+          command: |
+            cd tool/php-cs-fixer && composer install \
+            && vendor/bin/php-cs-fixer fix src --dry-run
+
+  phpstan:
+    executor: php
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: phpstan
+          command: make phpstan
+
+  phpunit:
+    executor: php
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: phpunit
+          command: make phpunit
+
+workflows:
+  version: '2'
+  Code quality:
+    jobs:
+      - composer
+      - phpcs:
+          requires:
+            - composer
+      - phpstan:
+          requires:
+            - composer
+      - phpunit:
+          requires:
+            - composer

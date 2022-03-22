@@ -35,8 +35,8 @@ $fields = [
 
 $sqlRequest = 'SELECT ' . \implode(', ', $fields)
     . ' FROM categories, articles'
-    . ' WHERE articles.TITLE LIKE :request'
-    . ' OR articles.CONTENT LIKE :request'
+    . ' WHERE (articles.TITLE LIKE :request'
+    . ' OR articles.CONTENT LIKE :request)'
     . ' AND articles.CATEG = categories.ID'
     . ' ORDER BY articles.DATE DESC';
 

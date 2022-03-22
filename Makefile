@@ -1,6 +1,7 @@
 start:
 	@cd docker \
 	&& docker-compose up -d \
+	&& cd .. \
 	&& symfony server:start
 
 mysql:

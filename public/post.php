@@ -3,7 +3,7 @@
  * @author Eric COURTIAL <e.courtial30@gmail.com>
  * @licence MIT
  */
-require_once 'src/globals.php';
+require_once '../config/globals.php';
 
 $category = $_GET['category'] ?? null;
 $slug = $_GET['slug'] ?? null;

@@ -3,7 +3,7 @@
  * @author Eric COURTIAL <e.courtial30@gmail.com>
  * @licence MIT
  */
-require_once 'src/globals.php';
+require_once '../config/globals.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("HTTP/1.1 400 Bad request");

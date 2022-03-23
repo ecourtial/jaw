@@ -17,8 +17,8 @@ var/
 .env.local
 
 # Docker
-docker/.env
-docker/docker/
+docker/dev/.env
+docker/dev/docker/
 
 ###> phpunit/phpunit ###
 /phpunit.xml

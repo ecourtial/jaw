@@ -64,7 +64,7 @@ jobs:
           at: .
       - run:
           name: phpstan
-          command: make phpstan
+          command: make phpstan-command
 
   phpunit:
     executor: php
@@ -74,7 +74,7 @@ jobs:
           at: .
       - run:
           name: phpunit
-          command: make phpunit
+          command: make phpunit-command
 
 workflows:
   version: '2'

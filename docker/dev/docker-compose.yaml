@@ -13,3 +13,34 @@ services:
       - MYSQL_DATABASE=${DATABASE_NAME:-jaw}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_USER_PASSWORD=${MYSQL_USER_PASSWORD}
+
+  nginx:
+    container_name: nginx_jaw
+    build:
+      context: nginx
+    ports:
+      - ${PORT_HTTP:-80}:80
+    environment:
+      PHP_FPM_UPSTREAM: php:9000
+      DNS_RESOLVER: 127.0.0.11
+    volumes:
+      - ./../../public:/var/www/html/public:ro
+
+  php:
+    hostname: php_jaw
+    container_name: php-jaw
+    build:
+      context: php
+      args:
+        TIMEZONE: ${TIMEZONE}
+        PHP_IDE_CONFIG: serverName=jaw-docker-server
+        COMPOSER_MEMORY_LIMIT: -1
+        COMPOSER_AUTH: '{"github-oauth":{"github.com":"${GITHUB_SECRET_TOKEN}"}}'
+        DEBUG_LEVEL: debug
+        GITHUB_SECRET_TOKEN: ${GITHUB_SECRET_TOKEN}
+    environment:
+      COMPOSER_MEMORY_LIMIT: -1
+      DEBUG_LEVEL: debug
+    dns: 8.8.8.8
+    volumes:
+      - ./../..:/var/www/html

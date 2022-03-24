@@ -47,8 +47,8 @@ RUN set -xe; \
 RUN cd /usr/local/etc/php/conf.d/ && \
   echo 'memory_limit = 512M' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini
 
-ARG GITHUB_TOKEN
-ENV COMPOSER_AUTH='{"github-oauth":{"github.com":"'${GITHUB_TOKEN}'"}}'
+ARG GITHUB_SECRET_TOKEN
+ENV COMPOSER_AUTH='{"github-oauth":{"github.com":"'${GITHUB_SECRET_TOKEN}'"}}'
 
 # php-fpm config
 ENV PHP_FPM_PM_LOG_LEVEL=warning \

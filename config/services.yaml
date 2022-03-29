@@ -17,6 +17,7 @@ services:
         bind:
             $appVersion: '%app_version%'
             $appName: '%env(APP_NAME)%'
+            $recaptchaPublicKey: '%env(GOOGLE_RECAPTCHA_V2_PUBLIC_KEY)%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name

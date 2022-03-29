@@ -11,8 +11,10 @@
             <link href="{{ asset('assets/css/bootstrap/bootstrap.min.css') }}" rel="stylesheet" />
             <link href="{{ asset('assets/css/bootstrap/bootstrap-reboot.min.css') }}" rel="stylesheet" />
         {% endblock %}
-        <script src="{{ asset('assets/js/bootstrap/bootstrap.bundle.min.js') }}"></script>
-        <script src="{{ asset('assets/js/bootstrap/bootstrap.min.js') }}"></script>
+        {% block javascripts %}
+            <script src="{{ asset('assets/js/bootstrap/bootstrap.bundle.min.js') }}"></script>
+            <script src="{{ asset('assets/js/bootstrap/bootstrap.min.js') }}"></script>
+        {% endblock %}
     </head>
     <body>
         {{ include('admin/general/menu.html.twig') }}

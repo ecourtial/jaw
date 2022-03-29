@@ -15,13 +15,16 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class SecurityController extends AbstractAdminController
 {
     private AuthenticationUtils $authenticationUtils;
+    private string $recaptchaPublicKey;
 
     public function __construct(
         string $appVersion,
         string $appName,
+        string $recaptchaPublicKey,
         AuthenticationUtils $authenticationUtils
     ) {
         parent::__construct($appVersion, $appName);
+        $this->recaptchaPublicKey = $recaptchaPublicKey;
         $this->authenticationUtils = $authenticationUtils;
     }
 
@@ -39,6 +42,7 @@ class SecurityController extends AbstractAdminController
             $title,
             $title,
             [
+                'recaptcha_key' => $this->recaptchaPublicKey,
                 'last_username' => $this->authenticationUtils->getLastUsername(),
                 'error' => $this->authenticationUtils->getLastAuthenticationError()
             ]

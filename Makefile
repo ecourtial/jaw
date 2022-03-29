@@ -1,7 +1,6 @@
 start:
 	@cd docker/dev \
-	&& docker-compose up -d \
-	&& docker-compose exec php bash -c 'chown -R 1000:1000 /var/www'
+	&& docker-compose up -d
 
 stop:
 	@cd docker/dev \

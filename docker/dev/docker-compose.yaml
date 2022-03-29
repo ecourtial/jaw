@@ -27,6 +27,7 @@ services:
       - ./../../public:/var/www/html/public:ro
 
   php:
+    user: "${UID}:${GID}"
     hostname: php_jaw
     container_name: php-jaw
     build:

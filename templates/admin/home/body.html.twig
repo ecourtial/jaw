@@ -1,0 +1,12 @@
+{% extends 'admin/base.html.twig' %}
+{% block body %}
+    This is the homepage of your CMS. You can:
+    <ul>
+        <li>create and edit categories ;</li>
+        <li>create and edit posts ;</li>
+        <li>edit your profile ;</li>
+        {% if is_granted('ROLE_ADMIN') %}
+            <li>configure the application ;</li>
+        {% endif %}
+    </ul>
+{% endblock %}

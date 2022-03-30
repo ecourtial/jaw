@@ -15,8 +15,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity
- * @ORM\Table(name="posts")
+ * s@ORM\Entity
+ * s@ORM\Table(name="posts")
  */
 class Post
 {

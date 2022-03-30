@@ -9,9 +9,59 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
-class UserLoginSubscriber
+use App\Exception\Security\InvalidCaptchaException;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Http\Event\CheckPassportEvent;
+
+class UserLoginSubscriber  implements EventSubscriberInterface
 {
-    // Here before auth check the google captcha
-    // If captcha invalid, or any other error, fill properly the message in to the session
-    // so it will be displayed in the login form.
+    private Request $request;
+    private HttpClientInterface $httpClient;
+    private string $recaptchaPrivateKey;
+
+    public function __construct(
+        RequestStack $request,
+        HttpClientInterface $httpClient,
+        string $recaptchaPrivateKey,
+    ) {
+        $this->request = $request->getCurrentRequest();
+        $this->httpClient = $httpClient;
+        $this->recaptchaPrivateKey = $recaptchaPrivateKey;
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [CheckPassportEvent::class => 'handleCaptcha'];
+    }
+
+    public function handleCaptcha(): void
+    {
+        $googleResponse = $this->httpClient->request(
+            'POST',
+            'https://www.google.com/recaptcha/api/siteverify',
+            [
+                'body' => [
+                    'secret' => $this->recaptchaPrivateKey,
+                    'response' => $this->request->get('g-recaptcha-response', ''),
+                    'remoteip' => $this->request->getClientIp()
+                ],
+            ],
+        );
+
+        $statusCode = $googleResponse->getStatusCode();
+
+        if ($statusCode !== 200) {
+            throw new \RuntimeException(
+                'Erreur when contacting Google for Captcha validation. HTTP Status code was: ' . $statusCode
+            );
+        }
+
+        $response = \json_decode($googleResponse->getContent(), true);
+        if ($response['success'] === false) {
+            throw new InvalidCaptchaException(InvalidCaptchaException::ERROR_MSG);
+        }
+    }
 }

@@ -35,12 +35,10 @@ class SecurityController extends AbstractAdminController
             return $this->redirectToRoute('admin_home');
         }
 
-        $title = "{$this->appName} - Connection";
-
         return $this->generateView(
             'admin/user/login_form.html.twig',
-            $title,
-            $title,
+            "{$this->appName} - Connection",
+            'Connection',
             [
                 'recaptcha_key' => $this->recaptchaPublicKey,
                 'last_username' => $this->authenticationUtils->getLastUsername(),

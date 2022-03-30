@@ -3,7 +3,7 @@
 {% block body %}
     {% for message in app.flashes('success') %}
         <div class="alert alert-success">
-            {{ message }}
+            {{ message|trans }}
         </div>
     {% endfor %}
 

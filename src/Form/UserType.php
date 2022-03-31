@@ -14,9 +14,14 @@ namespace App\Form;
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Defines the form used to edit an user.
@@ -41,18 +46,29 @@ class UserType extends AbstractType
 
         $builder
             ->add('username', TextType::class, [
-                'label' => 'Username',
+                'label' => 'user.label.username',
                 'disabled' => true,
                 'attr' => ['class' => 'form-control']
 
             ])
             ->add('fullName', TextType::class, [
-                'label' => 'Full name',
+                'label' => 'user.label.full_name',
                 'attr' => ['class' => 'form-control']
             ])
             ->add('email', EmailType::class, [
-                'label' => 'Email',
+                'label' => 'user.label.email',
                 'attr' => ['class' => 'form-control']
+            ])
+            ->add('currentPassword', PasswordType::class, [
+                'constraints' => [
+                    new UserPassword(),
+                ],
+                'label' => 'user.label.current_password',
+                'mapped' => false, // Otherwise error 'cause this field doesn't exist in the Entity
+                'attr' => [
+                    'autocomplete' => 'off',
+                    'class' => 'form-control',
+                ],
             ])
         ;
     }

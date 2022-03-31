@@ -1,1 +1,8 @@
+# User profile form
+user.label.username: Username
+user.label.full_name: Full name
+user.label.email: Email
+user.label.current_password: Current password
+user.label.new_password: New password
+user.label.new_password_confirm: Confirm new password
 user.updated_successfully: User has been successfully udpated.

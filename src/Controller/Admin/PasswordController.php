@@ -8,52 +8,53 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Form\UserType;
+use App\Form\ChangePasswordType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ProfileController extends AbstractAdminController
+class PasswordController extends AbstractAdminController
 {
     private Request $request;
     private EntityManagerInterface $entityManager;
+    private UserPasswordHasherInterface $passwordHasher;
 
     public function __construct(
         string $appVersion,
         string $appName,
         RequestStack $requestStack,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        UserPasswordHasherInterface $passwordHasher,
     ) {
         parent::__construct($appVersion, $appName);
         $this->request = $requestStack->getCurrentRequest();
         $this->entityManager = $entityManager;
+        $this->passwordHasher = $passwordHasher;
     }
 
-    #[Route('/admin/profile', methods: ['GET', 'POST'], name: 'profile')]
+    #[Route('/admin/password', methods: ['GET', 'POST'], name: 'password_change')]
     public function __invoke(): Response
     {
         $user = $this->getUser();
 
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(ChangePasswordType::class);
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $user->setPassword($this->passwordHasher->hashPassword($user, $form->get('newPassword')->getData()));
             $this->entityManager->flush();
 
-            $this->addFlash('success', 'user.updated_successfully');
-
-            return $this->redirectToRoute('profile');
+            return $this->redirectToRoute('admin_home');
         }
 
-
         return $this->generateView(
-            'admin/user/profile.html.twig',
-            'My profile',
-            "My profile",
+            'admin/user/change_password.html.twig',
+            'Change my password',
+            "Change my password",
             [
-                'user' => $user,
                 'form' => $form->createView(),
             ]
         );

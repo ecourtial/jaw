@@ -84,6 +84,12 @@ jobs:
       - attach_workspace:
           at: .
       - run:
+          name: Run migration
+          command: make migrate
+      - run:
+          name: Validate schema
+          command: make schema_validate
+      - run:
           name: phpunit
           command: make phpunit-command
 

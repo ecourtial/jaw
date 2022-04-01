@@ -88,10 +88,15 @@ class AddUserCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        /** @var string $username */
         $username = $input->getArgument('username');
+        /** @var string $plainPassword */
         $plainPassword = $input->getArgument('password');
+        /** @var string $email */
         $email = $input->getArgument('email');
+        /** @var string $fullName */
         $fullName = $input->getArgument('full-name');
+        /** @var bool $isAdmin */
         $isAdmin = $input->getOption('admin');
 
         // make sure to validate the user data is correct
@@ -117,7 +122,7 @@ class AddUserCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function validateUserData($username, $plainPassword, $email, $fullName): void
+    private function validateUserData(string $username, string $plainPassword, string $email, string $fullName): void
     {
         // first check if a user with the same username already exists.
         $existingUser = $this->users->findOneBy(['username' => $username]);

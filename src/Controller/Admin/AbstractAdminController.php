@@ -23,6 +23,7 @@ abstract class AbstractAdminController extends AbstractController
         $this->appName = $appName;
     }
 
+    /** @param mixed[] $parameters */
     protected function generateView(
         string $view,
         string $screenTitle,

@@ -27,7 +27,7 @@ class ProfileController extends AbstractAdminController
         EntityManagerInterface $entityManager
     ) {
         parent::__construct($appVersion, $appName);
-        $this->request = $requestStack->getCurrentRequest();
+        $this->request = $requestStack->getCurrentRequest() ?? throw new \RuntimeException('Main request cannot be null');
         $this->entityManager = $entityManager;
     }
 

@@ -16,18 +16,18 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Http\Event\CheckPassportEvent;
 
-class UserLoginSubscriber  implements EventSubscriberInterface
+class UserLoginSubscriber implements EventSubscriberInterface
 {
     private Request $request;
     private HttpClientInterface $httpClient;
     private string $recaptchaPrivateKey;
 
     public function __construct(
-        RequestStack $request,
+        RequestStack $requestStack,
         HttpClientInterface $httpClient,
         string $recaptchaPrivateKey,
     ) {
-        $this->request = $request->getCurrentRequest();
+        $this->request = $requestStack->getCurrentRequest() ?? throw new \RuntimeException('Main request cannot be null');
         $this->httpClient = $httpClient;
         $this->recaptchaPrivateKey = $recaptchaPrivateKey;
     }
@@ -60,6 +60,8 @@ class UserLoginSubscriber  implements EventSubscriberInterface
         }
 
         $response = \json_decode($googleResponse->getContent(), true);
+
+        /** @var array{'success': bool} $response */
         if ($response['success'] === false) {
             throw new InvalidCaptchaException(InvalidCaptchaException::ERROR_MSG);
         }

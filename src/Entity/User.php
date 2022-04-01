@@ -60,11 +60,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="json", nullable=false)
+     * @var string[]
      */
     private array $roles = [];
 
     public function getId(): ?int
     {
+        if (null === $this->id) {
+            throw new \LogicException('User has not bee initialized yet!');
+        }
+
         return $this->id;
     }
 
@@ -80,6 +85,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getUserIdentifier(): string
     {
+        if (null === $this->username) {
+            throw new \LogicException('User has not bee initialized yet!');
+        }
+
         return $this->username;
     }
 
@@ -138,6 +147,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
+    /** @param string[] $roles */
     public function setRoles(array $roles): void
     {
         $this->roles = $roles;
@@ -168,12 +178,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
+    /** @return array{int|null, string|null, string|null} */
     public function __serialize(): array
     {
         // add $this->salt too if you don't use Bcrypt or Argon2i
         return [$this->id, $this->username, $this->password];
     }
 
+    /** @param array{int, string, string} $data */
     public function __unserialize(array $data): void
     {
         // add $this->salt too if you don't use Bcrypt or Argon2i

@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
 class PasswordController extends AbstractAdminController
 {
@@ -30,7 +31,7 @@ class PasswordController extends AbstractAdminController
         UserPasswordHasherInterface $passwordHasher,
     ) {
         parent::__construct($appVersion, $appName);
-        $this->request = $requestStack->getCurrentRequest();
+        $this->request = $requestStack->getCurrentRequest() ?? throw new \RuntimeException('Main request cannot be null');
         $this->entityManager = $entityManager;
         $this->passwordHasher = $passwordHasher;
     }
@@ -38,13 +39,16 @@ class PasswordController extends AbstractAdminController
     #[Route('/admin/password', methods: ['GET', 'POST'], name: 'password_change')]
     public function __invoke(): Response
     {
-        $user = $this->getUser();
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser() ?? throw new AuthenticationException('User not found');
 
         $form = $this->createForm(ChangePasswordType::class);
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user->setPassword($this->passwordHasher->hashPassword($user, $form->get('newPassword')->getData()));
+            $newPassword = $form->get('newPassword')->getData();
+            /** @var string $newPassword */
+            $user->setPassword($this->passwordHasher->hashPassword($user, $newPassword));
             $this->entityManager->flush();
 
             return $this->redirectToRoute('admin_home');

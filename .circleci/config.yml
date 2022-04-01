@@ -23,7 +23,14 @@ commands:
       - run:
           name: "Install requirements for checkout"
           command: |
-            apk add --update git openssh-client curl make php8.1-pdo
+            apk add --update git openssh-client curl make
+      - run:
+          name: "Install required PHP extensions"
+          command: |
+            docker-php-ext-install -j$(nproc) \
+                    opcache \
+                    pdo_mysql \
+                ;
       - checkout
 
 jobs:
@@ -88,7 +95,7 @@ jobs:
           command: make migrate_command
       - run:
           name: Validate schema
-          command: make schema_validate
+          command: make schema_validate_command
       - run:
           name: phpunit
           command: make phpunit_command

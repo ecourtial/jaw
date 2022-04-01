@@ -3,7 +3,18 @@ executors:
   php:
     docker:
       - image: php:8.1-alpine
+        name: php
+        environment:
+          DATABASE_URL: mysql://jaw:jaw@mysql:3306/jaw?serverVersion=8.0&charset=utf8
+      - image: mysql:8.0
+        name: mysql
+        environment:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: jaw
+          MYSQL_USER: jaw
+          MYSQL_PASSWORD: jaw
     working_directory: ~/repo
+    resource_class: medium
 
 commands:
   alpine_checkout:
@@ -76,11 +87,26 @@ jobs:
           name: phpunit
           command: make phpunit-command
 
+  security:
+    executor: php
+    working_directory: ~/repo
+    steps:
+      - alpine_checkout
+      - run:
+          name: Install SensioLabs Security Checker
+          command: |
+            curl -Ls https://github.com/fabpot/local-php-security-checker/releases/download/v1.0.0/local-php-security-checker_1.0.0_linux_amd64 -o /usr/local/bin/local-php-security-checker; \
+            chmod +x /usr/local/bin/local-php-security-checker;
+      - run:
+          name: Checks dependencies security vulnerabilities
+          command: make -f makefile.tests security
+
 workflows:
   version: '2'
   Code quality:
     jobs:
       - composer
+      - security
       - phpcs:
           requires:
             - composer

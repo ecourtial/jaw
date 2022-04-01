@@ -95,11 +95,11 @@ jobs:
       - run:
           name: Install SensioLabs Security Checker
           command: |
-            curl -Ls https://github.com/fabpot/local-php-security-checker/releases/download/v1.0.0/local-php-security-checker_1.0.0_linux_amd64 -o /usr/local/bin/local-php-security-checker; \
+            curl -Ls https://github.com/fabpot/local-php-security-checker/releases/download/v1.2.0/local-php-security-checker_1.2.0_linux_amd64 -o /usr/local/bin/local-php-security-checker; \
             chmod +x /usr/local/bin/local-php-security-checker;
       - run:
           name: Checks dependencies security vulnerabilities
-          command: make -f makefile.tests security
+          command: local-php-security-checker
 
 workflows:
   version: '2'

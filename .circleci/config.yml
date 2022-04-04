@@ -97,6 +97,12 @@ jobs:
           name: Validate schema
           command: make schema_validate_command
       - run:
+          name: Create new admin user
+          command: bin/console app:add-user someUsernameAdmin somePassword foo@bar.com "Foo BAR" --admin
+      - run:
+          name: Create new regular user
+          command: bin/console app:add-user someUsernameNotAdmin somePassword foofoo@barbar.com "Foofoo BARBAR"
+      - run:
           name: phpunit
           command: make phpunit_command
 

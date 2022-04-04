@@ -58,7 +58,7 @@ jobs:
           paths:
             - vendor
 
-  phpcs:
+  static-analysis:
     executor: php
     steps:
       - alpine_checkout
@@ -73,35 +73,28 @@ jobs:
             composer install --no-progress --no-interaction; \
             cd .. \
             vendor/bin/php-cs-fixer fix src --dry-run;
-
-  phpstan:
-    executor: php
-    steps:
-      - alpine_checkout
-      - attach_workspace:
-          at: .
       - run:
           name: phpstan
           command: make phpstan_command
 
-  phpunit:
+  tests:
     executor: php
     steps:
       - alpine_checkout
       - attach_workspace:
           at: .
       - run:
-          name: Run migration
+          name: Run migrations
           command: make migrate_command
       - run:
-          name: Validate schema
+          name: Validate DB schema
           command: make schema_validate_command
       - run:
           name: Create new admin user
-          command: bin/console app:add-user someUsernameAdmin somePassword foo@bar.com "Foo BAR" --admin
+          command: bin/console app:add-user some_username_admin somePassword foo@bar.com "Foo BAR" --admin
       - run:
           name: Create new regular user
-          command: bin/console app:add-user someUsernameNotAdmin somePassword foofoo@barbar.com "Foofoo BARBAR"
+          command: bin/console app:add-user some_username_not_admin somePassword foofoo@barbar.com "Foofoo BARBAR"
       - run:
           name: phpunit
           command: make phpunit_command
@@ -126,12 +119,9 @@ workflows:
     jobs:
       - composer
       - security
-      - phpcs:
+      - static-analysis:
           requires:
             - composer
-      - phpstan:
-          requires:
-            - composer
-      - phpunit:
+      - tests:
           requires:
             - composer

@@ -3,7 +3,7 @@
  * Factorize the code that could be used by other tests
  *
  * SCENARIO REGULAR:
- * - Creates a user with the command (in the CI).
+ * - Creates a user with the command (done in the CI).
  * - Connects to the admin with the credentials given to the command.
  * - Changes email and username.
  * - Read the token.

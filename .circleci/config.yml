@@ -5,14 +5,14 @@ executors:
       - image: php:8.1-alpine
         name: php
         environment:
-          DATABASE_URL: mysql://jaw:jaw@mysql:3306/jaw?serverVersion=8.0&charset=utf8
+          DATABASE_URL: mysql://root:root@mysql:3306/jaw?serverVersion=8.0&charset=utf8
       - image: mysql:8.0
         name: mysql
         environment:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: jaw
-          MYSQL_USER: jaw
-          MYSQL_PASSWORD: jaw
+#          MYSQL_DATABASE: jaw
+#          MYSQL_USER: jaw
+#          MYSQL_PASSWORD: jaw
     working_directory: ~/repo
     resource_class: medium
 
@@ -23,7 +23,7 @@ commands:
       - run:
           name: "Install requirements for checkout"
           command: |
-            apk add --update git openssh-client curl make libzip-dev
+            apk add --update git openssh-client curl make nano libzip-dev
       - run:
           name: "Install required PHP extensions"
           command: |
@@ -92,7 +92,7 @@ jobs:
           command: make schema_validate_command
       - run:
           name: Create test database
-          command: create_test_db_command
+          command: make create_test_db_command
       - run:
           name: phpunit
           command: make phpunit_command

@@ -23,7 +23,7 @@ commands:
       - run:
           name: "Install requirements for checkout"
           command: |
-            apk add --update git openssh-client curl make zlib1g-dev libzip-dev
+            apk add --update git openssh-client curl make libzip-dev
       - run:
           name: "Install required PHP extensions"
           command: |

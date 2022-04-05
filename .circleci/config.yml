@@ -23,13 +23,14 @@ commands:
       - run:
           name: "Install requirements for checkout"
           command: |
-            apk add --update git openssh-client curl make
+            apk add --update git openssh-client curl make zlib1g-dev libzip-dev
       - run:
           name: "Install required PHP extensions"
           command: |
             docker-php-ext-install -j$(nproc) \
                     opcache \
                     pdo_mysql \
+                    zip \
                 ;
       - checkout
 
@@ -90,11 +91,8 @@ jobs:
           name: Validate DB schema
           command: make schema_validate_command
       - run:
-          name: Create new admin user
-          command: bin/console app:add-user some_username_admin somePassword foo@bar.com "Foo BAR" --admin
-      - run:
-          name: Create new regular user
-          command: bin/console app:add-user some_username_not_admin somePassword foofoo@barbar.com "Foofoo BARBAR"
+          name: Create test database
+          command: create_test_db_command
       - run:
           name: phpunit
           command: make phpunit_command

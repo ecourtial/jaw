@@ -34,11 +34,16 @@ phpstan:
 
 phpunit:
 	@cd docker/dev \
+	&& docker-compose exec php bash -c 'make create_test_db_command' \
 	&& docker-compose exec php bash -c 'make phpunit_command'
 
 phpcs:
 	@cd docker/dev \
 	&& docker-compose exec php bash -c 'make phpcs_command'
+
+security:
+	@cd docker/dev \
+    && docker-compose exec php bash -c '/usr/local/bin/local-php-security-checker'
 
 schema_validate:
 	@cd docker/dev \
@@ -58,7 +63,7 @@ phpstan_command:
 phpunit_command:
 	APP_ENV=test bin/console cache:warmup && vendor/bin/phpunit --testdox
 
-phpcs-command:
+phpcs_command:
 	tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src
 
 schema_validate_command:
@@ -67,3 +72,10 @@ schema_validate_command:
 
 migrate_command:
 	APP_ENV=prod bin/console doctrine:migrations:migrate
+
+create_test_db_command:
+	bin/console doctrine:database:drop --force --env=test || true \
+	&& bin/console doctrine:database:create --env=test \
+	&& bin/console doctrine:migrations:migrate -n --env=test \
+	&& bin/console app:add-user some_username_admin somePassword foo@bar.com "Foo BAR" --admin --env=test \
+	&& bin/console app:add-user some_username_not_admin somePassword foofoo@barbar.com "Foofoo BARBAR" --env=test

@@ -15,6 +15,8 @@ RUN set -xe; \
         unzip \
         wget \
         nano \
+        zlib1g-dev \
+        libzip-dev \
     ;
 
 WORKDIR /var/www/html
@@ -29,23 +31,11 @@ RUN set -xe; \
     docker-php-ext-install -j$(nproc) \
         opcache \
         pdo_mysql \
-    ; \
-    pecl install -o xdebug; \
-    docker-php-ext-enable xdebug;
-
-ARG XDEBUG_CLIENT_HOST=172.17.0.1
-ARG XDEBUG_CLIENT_PORT=9003
-
-# xdebug settings
-RUN set -xe; \
-    echo "xdebug.start_with_request=yes" >> ${PHP_INI_DIR}/conf.d/docker-php-ext-xdebug.ini; \
-    echo "xdebug.discover_client_host=true" >> ${PHP_INI_DIR}/conf.d/docker-php-ext-xdebug.ini; \
-    echo "xdebug.client_host="${XDEBUG_CLIENT_HOST} >> ${PHP_INI_DIR}/conf.d/docker-php-ext-xdebug.ini; \
-    echo "xdebug.client_port="${XDEBUG_CLIENT_PORT} >> ${PHP_INI_DIR}/conf.d/docker-php-ext-xdebug.ini; \
-    echo "xdebug.mode=coverage,develop,debug" >> ${PHP_INI_DIR}/conf.d/docker-php-ext-xdebug.ini;
+        zip \
+    ;
 
 RUN cd /usr/local/etc/php/conf.d/ && \
-  echo 'memory_limit = 512M' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini
+  echo 'memory_limit = 1G' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini
 
 ARG GITHUB_SECRET_TOKEN
 ENV COMPOSER_AUTH='{"github-oauth":{"github.com":"'${GITHUB_SECRET_TOKEN}'"}}'

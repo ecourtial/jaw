@@ -67,8 +67,8 @@ phpcs_command:
 	tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src
 
 schema_validate_command:
-	bin/console doctrine:schema:validate
-	APP_ENV=prod bin/console doctrine:ensure-production-settings
+	APP_ENV=test bin/console doctrine:schema:validate
+	APP_ENV=test bin/console doctrine:ensure-production-settings
 
 migrate_command:
 	APP_ENV=prod bin/console doctrine:migrations:migrate

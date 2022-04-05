@@ -10,9 +10,6 @@ executors:
         name: mysql
         environment:
           MYSQL_ROOT_PASSWORD: root
-#          MYSQL_DATABASE: jaw
-#          MYSQL_USER: jaw
-#          MYSQL_PASSWORD: jaw
     working_directory: ~/repo
     resource_class: medium
 
@@ -84,12 +81,6 @@ jobs:
       - alpine_checkout
       - attach_workspace:
           at: .
-      - run:
-          name: Run migrations
-          command: make migrate_command
-      - run:
-          name: Validate DB schema
-          command: make schema_validate_command
       - run:
           name: Create test database
           command: make create_test_db_command

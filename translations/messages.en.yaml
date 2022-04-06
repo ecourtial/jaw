@@ -28,4 +28,4 @@ user.updated_successfully: Your profile has been successfully updated.
 
 # User update password form
 
-info.change_password: Be careful before changing your password!
+user.password_updated_successfully: Your password has been successfully updated.

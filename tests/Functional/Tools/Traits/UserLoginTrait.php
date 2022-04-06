@@ -14,7 +14,7 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 Trait UserLoginTrait
 {
-    private static $adminUrl = 'http://localhost/admin';
+    private static string $adminUrl = 'http://localhost/admin';
 
     private function loginWithSuccess(KernelBrowser $client, string $username, string $password): void
     {
@@ -42,7 +42,7 @@ Trait UserLoginTrait
         $client->followRedirects(false);
     }
 
-    public function loginFailureBecauseOfBadCredentials(KernelBrowser $client): void
+    private function loginFailureBecauseOfBadCredentials(KernelBrowser $client, string $username, string $password): void
     {
         $client->request('GET', self::$adminUrl);
         static::assertEquals(302, $client->getResponse()->getStatusCode());
@@ -53,8 +53,8 @@ Trait UserLoginTrait
         $this->assertPageTitleContains('MyBlog Admin - Connection - JAW v1.0');
 
         $form = $crawler->selectButton('loginSubmitButton')->form([
-            '_username' => 'wow',
-            '_password' => 'great',
+            '_username' => $username,
+            '_password' => $password,
         ]);
 
         $client->submit($form);
@@ -65,7 +65,7 @@ Trait UserLoginTrait
         $client->followRedirects(false);
     }
 
-    public function loginFailureBecauseOfBadCaptchaAnswer(KernelBrowser $client, string $username, string $password): void
+    private function loginFailureBecauseOfBadCaptchaAnswer(KernelBrowser $client, string $username, string $password): void
     {
         $client->request('GET', self::$adminUrl);
         static::assertEquals(302, $client->getResponse()->getStatusCode());
@@ -89,6 +89,19 @@ Trait UserLoginTrait
         static::assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertPageTitleContains('MyBlog Admin - Connection - JAW v1.0');
         static::assertTrue($client->getContainer()->get(CaptchaChecker::class)->hasBeenCalled());
+
+        $client->followRedirects(false);
+    }
+
+    private function logout(KernelBrowser $client): void
+    {
+        $client->followRedirects();
+        $crawler = $client->request('GET', self::$adminUrl);
+        $link = $crawler->selectLink('Logout')->link();
+        $client->click($link);
+
+        $this->assertPageTitleContains('MyBlog Admin - Connection - JAW v1.0');
+        static::assertEquals(200, $client->getResponse()->getStatusCode());
 
         $client->followRedirects(false);
     }

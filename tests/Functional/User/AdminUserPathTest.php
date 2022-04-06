@@ -1,11 +1,5 @@
 <?php
 /**
- * - Changes email and username.
- * - Read the token.
- * - Change password
- * - Logout.
- * - Connects again with the new credentials.
- * - Check that the token has not changed.
  * - Try to access configuration panel: change all the values
  * - Logout.
  * - Connect again.
@@ -15,11 +9,13 @@
 namespace App\Tests\Functional\User;
 
 use App\Tests\Functional\Tools\Traits\UserLoginTrait;
+use App\Tests\Functional\Tools\Traits\UserProfileTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AdminUserPathTest extends WebTestCase
 {
     use UserLoginTrait;
+    use UserProfileTrait;
 
     public function testAdminUserPath(): void
     {
@@ -28,8 +24,30 @@ class AdminUserPathTest extends WebTestCase
         $username = 'some_username_admin';
         $userPassword = 'somePassword';
 
-        $this->loginFailureBecauseOfBadCredentials($client);
+        // Test login sequences
+        $this->loginFailureBecauseOfBadCredentials($client, 'wrong_username', $userPassword);
+        $this->loginFailureBecauseOfBadCredentials($client, $username, 'wrong_password');
         $this->loginFailureBecauseOfBadCaptchaAnswer($client, $username, $userPassword);
         $this->loginWithSuccess($client, $username, $userPassword);
+
+        // Test change user data in profile
+        $token = $this->getToken($client);
+        $newEmail = 'foo@stuff.com';
+        $newFullName = 'Pepe the Pew';
+        $newPassword = 'OhLookAtThat!';
+
+        $this->gotoProfileAndCheckUserFullNameAndEmail($client, 'Foo BAR', 'foo@bar.com');
+        $this->changeFullNameAndEmail($client, $newFullName, $newEmail, $userPassword);
+        $this->logout($client);
+        $this->loginWithSuccess($client, $username, $userPassword);
+        $this->gotoProfileAndCheckUserFullNameAndEmail($client, $newFullName, $newEmail);
+        static::assertEquals($token, $this->getToken($client));
+
+        // Test change user password
+        $this->changePassword($client, $userPassword, $newPassword);
+        $this->logout($client);
+        $this->loginFailureBecauseOfBadCredentials($client, $username, $userPassword);
+        $this->loginWithSuccess($client, $username, $newPassword);
+        static::assertEquals($token, $this->getToken($client));
     }
 }

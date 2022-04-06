@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}{{ appName }} Admin - {{ screenTabName}} - JAW v{{ appVersion }}{% endblock %}</title>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/img/favicon.png') }}">
+        {% block stylesheets %}
+            <link href="{{ asset('assets/css/bootstrap/bootstrap.min.css') }}" rel="stylesheet" />
+        {% endblock %}
+        {% block javascripts %}
+            <script src="{{ asset('assets/js/bootstrap/bootstrap.bundle.min.js') }}"></script>
+        {% endblock %}
+    </head>
+    <body>
+        {{ include('admin/general/menu.html.twig') }}
+        <div id="content" class="container">
+            <h1>{{ screenTitle }}</h1>
+            {% block body %}{% endblock %}
+        </div>
+    </body>
+</html>

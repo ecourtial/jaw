@@ -3,7 +3,15 @@ executors:
   php:
     docker:
       - image: php:8.1-alpine
+        name: php
+        environment:
+          DATABASE_URL: mysql://root:root@mysql:3306/jaw?serverVersion=8.0&charset=utf8
+      - image: mysql:8.0
+        name: mysql
+        environment:
+          MYSQL_ROOT_PASSWORD: root
     working_directory: ~/repo
+    resource_class: medium
 
 commands:
   alpine_checkout:
@@ -12,7 +20,15 @@ commands:
       - run:
           name: "Install requirements for checkout"
           command: |
-            apk add --update git openssh-client curl make
+            apk add --update git openssh-client curl make nano libzip-dev
+      - run:
+          name: "Install required PHP extensions"
+          command: |
+            docker-php-ext-install -j$(nproc) \
+                    opcache \
+                    pdo_mysql \
+                    zip \
+                ;
       - checkout
 
 jobs:
@@ -40,7 +56,7 @@ jobs:
           paths:
             - vendor
 
-  phpcs:
+  static-analysis:
     executor: php
     steps:
       - alpine_checkout
@@ -55,38 +71,46 @@ jobs:
             composer install --no-progress --no-interaction; \
             cd .. \
             vendor/bin/php-cs-fixer fix src --dry-run;
-
-  phpstan:
-    executor: php
-    steps:
-      - alpine_checkout
-      - attach_workspace:
-          at: .
       - run:
           name: phpstan
-          command: make phpstan-command
+          command: make phpstan_command
 
-  phpunit:
+  tests:
     executor: php
     steps:
       - alpine_checkout
       - attach_workspace:
           at: .
       - run:
+          name: Create test database
+          command: make create_test_db_command
+      - run:
           name: phpunit
-          command: make phpunit-command
+          command: make phpunit_command
+
+  security:
+    executor: php
+    working_directory: ~/repo
+    steps:
+      - alpine_checkout
+      - run:
+          name: Install SensioLabs Security Checker
+          command: |
+            curl -Ls https://github.com/fabpot/local-php-security-checker/releases/download/v1.2.0/local-php-security-checker_1.2.0_linux_amd64 -o /usr/local/bin/local-php-security-checker; \
+            chmod +x /usr/local/bin/local-php-security-checker;
+      - run:
+          name: Checks dependencies security vulnerabilities
+          command: local-php-security-checker
 
 workflows:
   version: '2'
   Code quality:
     jobs:
       - composer
-      - phpcs:
+      - security
+      - static-analysis:
           requires:
             - composer
-      - phpstan:
-          requires:
-            - composer
-      - phpunit:
+      - tests:
           requires:
             - composer

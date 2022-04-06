@@ -1,0 +1,8 @@
+services:
+  _defaults:
+    public: true
+
+  App\Google\CaptchaChecker:
+    class: App\Tests\Functional\Tools\FakeCaptchaChecker
+    arguments:
+      $env: '%kernel.environment%'

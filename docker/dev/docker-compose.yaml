@@ -27,16 +27,12 @@ services:
       - ./../../public:/var/www/html/public:ro
 
   php:
+    user: "${UID}:${GID}"
     hostname: php_jaw
     container_name: php-jaw
     build:
       context: php
       args:
-        TIMEZONE: ${TIMEZONE}
-        PHP_IDE_CONFIG: serverName=jaw-docker-server
-        COMPOSER_MEMORY_LIMIT: -1
-        COMPOSER_AUTH: '{"github-oauth":{"github.com":"${GITHUB_SECRET_TOKEN}"}}'
-        DEBUG_LEVEL: debug
         GITHUB_SECRET_TOKEN: ${GITHUB_SECRET_TOKEN}
     environment:
       COMPOSER_MEMORY_LIMIT: -1

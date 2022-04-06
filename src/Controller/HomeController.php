@@ -15,9 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
 {
-    /**
-     * @Route("/", name="homepage")
-     */
+    #[Route('/', methods: ['GET'], name: 'homepage')]
     public function __invoke(): JsonResponse
     {
         return new JsonResponse([ 'message' => 'Hello!']);

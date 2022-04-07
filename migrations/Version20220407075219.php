@@ -14,7 +14,7 @@ final class Version20220407075219 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Creates the configuration table';
     }
 
     public function up(Schema $schema): void

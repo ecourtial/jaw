@@ -48,15 +48,11 @@ class Configuration extends AbstractAdminController
             return $this->redirectToRoute('configuration');
         }
 
-
         return $this->generateView(
             'admin/configuration/configuration.html.twig',
             'Edit configuration',
             "Edit configuration",
-            [
-                'user' => $configuration,
-                'form' => $form->createView(),
-            ]
+            ['form' => $form->createView()]
         );
     }
 }

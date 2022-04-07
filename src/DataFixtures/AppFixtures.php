@@ -25,7 +25,8 @@ class AppFixtures extends Fixture
         $configuration->setBlogDescription('My awesome blog.');
         $configuration->setCopyrightMessage('Do not copy my stuff.');
         $configuration->setCopyrightExtraMessage('Or I will unleash my poodle.');
-        $configuration->setGithubUsername('githubpseudo');
+        $configuration->setLinkedinUsername('LinkedinPseudo');
+        $configuration->setGithubUsername('GithubPseudo');
         $configuration->setGoogleAnalyticsId('1234A');
 
         $manager->persist($configuration);

@@ -8,6 +8,7 @@
 
 namespace App\Tests\Functional\User;
 
+use App\Tests\Functional\Tools\Traits\ConfigurationScreenTrait;
 use App\Tests\Functional\Tools\Traits\UserLoginTrait;
 use App\Tests\Functional\Tools\Traits\UserProfileTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -16,6 +17,7 @@ class AdminUserPathTest extends WebTestCase
 {
     use UserLoginTrait;
     use UserProfileTrait;
+    use ConfigurationScreenTrait;
 
     public function testAdminUserPath(): void
     {
@@ -49,5 +51,48 @@ class AdminUserPathTest extends WebTestCase
         $this->loginFailureBecauseOfBadCredentials($client, $username, $userPassword);
         $this->loginWithSuccess($client, $username, $newPassword);
         static::assertEquals($token, $this->getToken($client));
+
+        // Test change blog configuration
+        $this->gotoConfigurationScreenAndCheckData(
+            $client,
+            'MyBlog',
+            'My awesome blog.',
+            'Do not copy my stuff.',
+            'Or I will unleash my poodle.',
+            'LinkedinPseudo',
+            'GithubPseudo',
+            '1234A'
+        );
+
+        $newBlogTitle = 'NewBlogTitle';
+        $newBlogDescription = 'NewBlogDescription';
+        $newBlogCopyrightMessage = 'NewBlogCopyrightMessage';
+        $newBlogCopyrightExtraMessage = 'NewBlogCopyrightExtraMessage';
+        $newLinkedinUsername = 'newLinkedinUsername';
+        $newGithubUsername = 'newGithubUsername';
+        $newGoogleAnalyticsId = 'newGoogleAnalyticsId';
+
+        $this->gotoConfigurationScreenAndUpdateData(
+            $client,
+            $newPassword,
+            $newBlogTitle,
+            $newBlogDescription,
+            $newBlogCopyrightMessage,
+            $newBlogCopyrightExtraMessage,
+            $newLinkedinUsername,
+            $newGithubUsername,
+            $newGoogleAnalyticsId
+        );
+
+        $this->gotoConfigurationScreenAndCheckData(
+            $client,
+            $newBlogTitle,
+            $newBlogDescription,
+            $newBlogCopyrightMessage,
+            $newBlogCopyrightExtraMessage,
+            $newLinkedinUsername,
+            $newGithubUsername,
+            $newGoogleAnalyticsId
+        );
     }
 }

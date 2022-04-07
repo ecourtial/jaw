@@ -81,6 +81,7 @@ create_test_db_command:
 	bin/console doctrine:database:drop --force --env=test || true \
 	&& bin/console doctrine:database:create --env=test \
 	&& bin/console doctrine:migrations:migrate -n --env=test \
+	&& bin/console doctrine:fixtures:load -n --env=test \
 	&& bin/console app:add-user some_username_admin somePassword foo@bar.com "Foo BAR" --admin --env=test \
 	&& bin/console app:add-user some_username_not_admin somePassword foofoo@barbar.com "Foofoo BARBAR" --env=test
 

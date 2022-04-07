@@ -27,5 +27,14 @@ user.label.submit: Submit
 user.updated_successfully: Your profile has been successfully updated.
 
 # User update password form
-
 user.password_updated_successfully: Your password has been successfully updated.
+
+# Configuration panel
+configuration.blog_title: Your blog's title.
+configuration.blog_description: The blog description.
+configuration.copyright_message: The copyright message.
+configuration.copyright_extra_message: Optional extra copyright message.
+configuration.linkedin_username: Your username on Linkedin.
+configuration.github_username: Your username on Github.
+configuration.google_analytics_id: Your Google Analytics Id.
+configuration.updated_successfully: The configuration has been successfully updated.

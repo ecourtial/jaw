@@ -14,3 +14,10 @@ Passer en revue toutes les var d'env.
 bin/console app:add-user pseudo2 monmodepasse erico2ba@enrico.com "Eric COURTIAL" --admin
 
 Do not hesitate to contribute (see the ticket tab to select a task)
+
+
+APP_NAME != Blog title
+back != front
+
+John
+somePassword123456

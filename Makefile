@@ -53,6 +53,10 @@ migrate:
 	@cd docker/dev \
 	&& docker-compose exec php bash -c 'make migrate_command'
 
+fixtures:
+	@cd docker/dev \
+	&& docker-compose exec php bash -c 'make load_fixtures_command'
+
 #### Internal (inside the container)
 
 phpstan_command:
@@ -77,5 +81,9 @@ create_test_db_command:
 	bin/console doctrine:database:drop --force --env=test || true \
 	&& bin/console doctrine:database:create --env=test \
 	&& bin/console doctrine:migrations:migrate -n --env=test \
+	&& bin/console doctrine:fixtures:load -n --env=test \
 	&& bin/console app:add-user some_username_admin somePassword foo@bar.com "Foo BAR" --admin --env=test \
 	&& bin/console app:add-user some_username_not_admin somePassword foofoo@barbar.com "Foofoo BARBAR" --env=test
+
+load_fixtures_command:
+	bin/console doctrine:fixtures:load

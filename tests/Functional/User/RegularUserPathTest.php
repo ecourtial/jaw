@@ -7,17 +7,17 @@ use App\Tests\Functional\Tools\Traits\UserLoginTrait;
 use App\Tests\Functional\Tools\Traits\UserProfileTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class AdminUserPathTest extends WebTestCase
+class RegularUserPathTest extends WebTestCase
 {
     use UserLoginTrait;
     use UserProfileTrait;
     use ConfigurationScreenTrait;
 
-    public function testAdminUserPath(): void
+    public function testRegularUserPath(): void
     {
         $client = static::createClient();
 
-        $username = 'some_username_admin';
+        $username = 'some_username_not_admin';
         $userPassword = 'somePassword';
 
         // Test login sequences
@@ -28,11 +28,11 @@ class AdminUserPathTest extends WebTestCase
 
         // Test change user data in profile
         $token = $this->getToken($client);
-        $newEmail = 'foo@stuff.com';
+        $newEmail = 'fooRegular@stuff.com';
         $newFullName = 'Pepe the Pew';
         $newPassword = 'OhLookAtThat!';
 
-        $this->gotoProfileAndCheckUserFullNameAndEmail($client, 'Foo BAR', 'foo@bar.com');
+        $this->gotoProfileAndCheckUserFullNameAndEmail($client, 'Foofoo BARBAR', 'foofoo@barbar.com');
         $this->changeFullNameAndEmail($client, $newFullName, $newEmail, $userPassword);
         $this->logout($client);
         $this->loginWithSuccess($client, $username, $userPassword);
@@ -47,46 +47,6 @@ class AdminUserPathTest extends WebTestCase
         static::assertEquals($token, $this->getToken($client));
 
         // Test change blog configuration
-        $this->gotoConfigurationScreenAndCheckData(
-            $client,
-            'MyBlog',
-            'My awesome blog.',
-            'Do not copy my stuff.',
-            'Or I will unleash my poodle.',
-            'LinkedinPseudo',
-            'GithubPseudo',
-            '1234A'
-        );
-
-        $newBlogTitle = 'NewBlogTitle';
-        $newBlogDescription = 'NewBlogDescription';
-        $newBlogCopyrightMessage = 'NewBlogCopyrightMessage';
-        $newBlogCopyrightExtraMessage = 'NewBlogCopyrightExtraMessage';
-        $newLinkedinUsername = 'newLinkedinUsername';
-        $newGithubUsername = 'newGithubUsername';
-        $newGoogleAnalyticsId = 'newGoogleAnalyticsId';
-
-        $this->gotoConfigurationScreenAndUpdateData(
-            $client,
-            $newPassword,
-            $newBlogTitle,
-            $newBlogDescription,
-            $newBlogCopyrightMessage,
-            $newBlogCopyrightExtraMessage,
-            $newLinkedinUsername,
-            $newGithubUsername,
-            $newGoogleAnalyticsId
-        );
-
-        $this->gotoConfigurationScreenAndCheckData(
-            $client,
-            $newBlogTitle,
-            $newBlogDescription,
-            $newBlogCopyrightMessage,
-            $newBlogCopyrightExtraMessage,
-            $newLinkedinUsername,
-            $newGithubUsername,
-            $newGoogleAnalyticsId
-        );
+        $this->assertCannotAccessConfigurationPanel($client);
     }
 }

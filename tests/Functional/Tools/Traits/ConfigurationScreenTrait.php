@@ -74,4 +74,10 @@ Trait ConfigurationScreenTrait
 
         $client->followRedirects(false);
     }
+
+    private function assertCannotAccessConfigurationPanel(KernelBrowser $client): void
+    {
+        $client->request('GET', self::$configurationScreenUrl);
+        static::assertEquals(403, $client->getResponse()->getStatusCode());
+    }
 }

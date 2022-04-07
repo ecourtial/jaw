@@ -30,7 +30,7 @@ class Configuration
     /**
      * @ORM\Column(type="string", nullable=false)
      */
-    #[Assert\NotBlank, Assert\Length(min: 10, max: 50)]
+    #[Assert\NotBlank, Assert\Length(min: 5, max: 50)]
     private ?string $blogTitle;
 
     /**
@@ -54,19 +54,19 @@ class Configuration
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-    #[Assert\Length(min: 10, max: 50)]
+    #[Assert\Length(min: 5, max: 50)]
     private ?string $linkedinUsername;
 
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-    #[Assert\Length(min: 10, max: 50)]
+    #[Assert\Length(min: 5, max: 50)]
     private ?string $githubUsername;
 
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-    #[Assert\Length(min: 10, max: 50)]
+    #[Assert\Length(min: 5, max: 50)]
     private ?string $googleAnalyticsId;
 
     public function getId(): ?int

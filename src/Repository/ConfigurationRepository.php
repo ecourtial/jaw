@@ -9,7 +9,6 @@ namespace App\Repository;
 
 use App\Entity\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 
 /**
  * This repository only allows to load all the configuration at once.
@@ -17,18 +16,20 @@ use Doctrine\ORM\EntityRepository;
  */
 class ConfigurationRepository
 {
-    private EntityRepository $repository;
     private EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
-        $this->repository = $entityManager->getRepository(Configuration::class);
         $this->entityManager = $entityManager;
     }
 
     public function get(): Configuration
     {
-        return $this->repository->find(1);
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb->select('m');
+        $qb->from(Configuration::class, 'm');
+
+        return $qb->getQuery()->getSingleResult();
     }
 
     public function save(Configuration $configuration): void

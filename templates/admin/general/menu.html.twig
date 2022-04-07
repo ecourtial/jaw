@@ -12,7 +12,7 @@
                 {% if is_granted('ROLE_USER') %}
                         {% if is_granted('ROLE_ADMIN') %}
                             <li class="nav-item">
-                                <a class="nav-link" href="#">{{ 'menu.configuration'|trans }}</a>
+                                <a class="nav-link" href="{{ url('configuration') }}">{{ 'menu.configuration'|trans }}</a>
                             </li>
                         {% endif %}
                         <li class="nav-item">

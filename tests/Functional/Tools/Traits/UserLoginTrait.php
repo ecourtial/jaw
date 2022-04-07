@@ -14,9 +14,9 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 Trait UserLoginTrait
 {
-    private static string $adminUrl = 'http://localhost/admin';
+    protected static string $adminUrl = 'http://localhost/admin';
 
-    private function loginWithSuccess(KernelBrowser $client, string $username, string $password): void
+    protected function loginWithSuccess(KernelBrowser $client, string $username, string $password): void
     {
         $client->request('GET', self::$adminUrl);
         static::assertEquals(302, $client->getResponse()->getStatusCode());
@@ -42,7 +42,7 @@ Trait UserLoginTrait
         $client->followRedirects(false);
     }
 
-    private function loginFailureBecauseOfBadCredentials(KernelBrowser $client, string $username, string $password): void
+    protected function loginFailureBecauseOfBadCredentials(KernelBrowser $client, string $username, string $password): void
     {
         $client->request('GET', self::$adminUrl);
         static::assertEquals(302, $client->getResponse()->getStatusCode());
@@ -65,7 +65,7 @@ Trait UserLoginTrait
         $client->followRedirects(false);
     }
 
-    private function loginFailureBecauseOfBadCaptchaAnswer(KernelBrowser $client, string $username, string $password): void
+    protected function loginFailureBecauseOfBadCaptchaAnswer(KernelBrowser $client, string $username, string $password): void
     {
         $client->request('GET', self::$adminUrl);
         static::assertEquals(302, $client->getResponse()->getStatusCode());
@@ -93,7 +93,7 @@ Trait UserLoginTrait
         $client->followRedirects(false);
     }
 
-    private function logout(KernelBrowser $client): void
+    protected function logout(KernelBrowser $client): void
     {
         $client->followRedirects();
         $crawler = $client->request('GET', self::$adminUrl);

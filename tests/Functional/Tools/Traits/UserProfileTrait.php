@@ -13,10 +13,10 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 Trait UserProfileTrait
 {
-    private static string $profileUrl = 'http://localhost/admin/profile';
-    private static string $changePasswordUrl = 'http://localhost/admin/password';
+    protected static string $profileUrl = 'http://localhost/admin/profile';
+    protected static string $changePasswordUrl = 'http://localhost/admin/password';
 
-    private function getToken(KernelBrowser $client): string
+    protected function getToken(KernelBrowser $client): string
     {
         $crawler = $client->request('GET', self::$profileUrl);
         $divContent = $crawler->filter('#userToken')->text();
@@ -24,7 +24,7 @@ Trait UserProfileTrait
         return trim(explode(': ', $divContent)[1]);
     }
 
-    private function gotoProfileAndCheckUserFullNameAndEmail(
+    protected function gotoProfileAndCheckUserFullNameAndEmail(
         KernelBrowser $client,
         string $expectedUserFullName,
         string $expectedUserEmail
@@ -39,7 +39,7 @@ Trait UserProfileTrait
         static::assertEquals($expectedUserEmail, $values['user[email]']);
     }
 
-    private function changeFullNameAndEmail(KernelBrowser $client, string $newFullName, string $newEmail, string $password): void
+    protected function changeFullNameAndEmail(KernelBrowser $client, string $newFullName, string $newEmail, string $password): void
     {
         $client->followRedirects();
         $crawler = $client->request('GET', self::$profileUrl);
@@ -59,7 +59,7 @@ Trait UserProfileTrait
         $client->followRedirects(false);
     }
 
-    private function changePassword(KernelBrowser $client, string $currentPassword, string $newPassword): void
+    protected function changePassword(KernelBrowser $client, string $currentPassword, string $newPassword): void
     {
         $client->followRedirects();
         $crawler = $client->request('GET', self::$changePasswordUrl);

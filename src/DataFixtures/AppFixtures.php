@@ -31,15 +31,27 @@ class AppFixtures extends Fixture
 
         $manager->persist($configuration);
 
-        // Create a sample user admin
+        // Create a sample admin user
         $user = new User();
         $user->setEmail('someEmail@foo.com');
         $user->setToken('someToken123456');
         $password = $this->passwordHasher->hashPassword($user, 'somePassword123456');
         $user->setPassword($password);
         $user->setUsername('John');
-        $user->setFullName('John you neighbor');
+        $user->setFullName('John your neighbor');
         $user->setRoles(['ROLE_ADMIN']);
+
+        $manager->persist($user);
+
+        // Create a sample regular user
+        $user = new User();
+        $user->setEmail('someEmailRegular@foo.com');
+        $user->setToken('someToken123456aa');
+        $password = $this->passwordHasher->hashPassword($user, 'somePassword123456aa');
+        $user->setPassword($password);
+        $user->setUsername('JohntheRegular');
+        $user->setFullName('John your regular neighbor');
+        $user->setRoles(['ROLE_USER']);
 
         $manager->persist($user);
 

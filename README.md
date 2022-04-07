@@ -19,5 +19,11 @@ Do not hesitate to contribute (see the ticket tab to select a task)
 APP_NAME != Blog title
 back != front
 
+Admin fixture:
+
 John
 somePassword123456
+
+
+JohntheRegular
+somePassword123456aa

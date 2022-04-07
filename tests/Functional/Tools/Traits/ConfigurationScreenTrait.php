@@ -13,9 +13,9 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 Trait ConfigurationScreenTrait
 {
-    private static string $configurationScreenUrl = 'http://localhost/admin/configuration';
+    protected static string $configurationScreenUrl = 'http://localhost/admin/configuration';
 
-    private function gotoConfigurationScreenAndCheckData(
+    protected function gotoConfigurationScreenAndCheckData(
         KernelBrowser $client,
         string $expectedBlogTitle,
         string $expectedBlogDescription,
@@ -40,7 +40,7 @@ Trait ConfigurationScreenTrait
         static::assertEquals($expectedGoogleAnalyticsId, $values['configuration[googleAnalyticsId]']);
     }
 
-    private function gotoConfigurationScreenAndUpdateData(
+    protected function gotoConfigurationScreenAndUpdateData(
         KernelBrowser $client,
         string $userPassword,
         string $newBlogTitle,
@@ -73,5 +73,11 @@ Trait ConfigurationScreenTrait
         $this->assertPageTitleContains('MyBlog Admin - Edit configuration - JAW v1.0');
 
         $client->followRedirects(false);
+    }
+
+    protected function assertCannotAccessConfigurationPanel(KernelBrowser $client): void
+    {
+        $client->request('GET', self::$configurationScreenUrl);
+        static::assertEquals(403, $client->getResponse()->getStatusCode());
     }
 }

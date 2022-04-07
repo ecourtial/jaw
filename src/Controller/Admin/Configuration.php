@@ -10,6 +10,7 @@ namespace App\Controller\Admin;
 
 use App\Form\ConfigurationType;
 use App\Repository\ConfigurationRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,6 +34,7 @@ class Configuration extends AbstractAdminController
     }
 
     #[Route('/admin/configuration', methods: ['GET', 'POST'], name: 'configuration')]
+    #[IsGranted('ROLE_ADMIN')]
     public function __invoke(): Response
     {
         $configuration = $this->configurationRepository->get();

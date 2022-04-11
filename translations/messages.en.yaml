@@ -38,3 +38,9 @@ configuration.linkedin_username: Your username on Linkedin.
 configuration.github_username: Your username on Github.
 configuration.google_analytics_id: Your Google Analytics Id.
 configuration.updated_successfully: The configuration has been successfully updated.
+
+# Categories
+category.slug_must_be_unique: The category slug must be unique. Please choose another one.
+
+# Posts
+post.slug_must_be_unique: The combination of the post slug and category must be unique. Please choose another one.

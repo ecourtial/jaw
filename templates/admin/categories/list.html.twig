@@ -2,7 +2,7 @@
 {% block body %}
     <ul>
         {% for category in categories %}
-            <li><a href="">{{ category.title }}</a> - <a href="">{{ 'categories.edit'|trans }}</a></li>
+            <li><a href="">{{ category.title }}</a> - <a href="{{ path('category_edit', {id: category.id}) }}">{{ 'categories.edit'|trans }}</a></li>
         {% endfor %}
     </ul>
 {% endblock %}

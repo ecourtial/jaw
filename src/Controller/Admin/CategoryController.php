@@ -17,9 +17,10 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/admin/category')]
 class CategoryController extends AbstractAdminController
 {
-    #[Route('/admin/category/list', name: 'category_list')]
+    #[Route('/list', name: 'category_list')]
     public function getList(CategoryRepository $categoryRepository): Response
     {
         return $this->generateView(
@@ -30,7 +31,7 @@ class CategoryController extends AbstractAdminController
         );
     }
 
-    #[Route('/admin/category/add', methods: ['GET', 'POST'], name: 'category_add')]
+    #[Route('/add', methods: ['GET', 'POST'], name: 'category_add')]
     public function create(EntityManagerInterface $entityManager): Response
     {
         $category = new Category();
@@ -61,6 +62,29 @@ class CategoryController extends AbstractAdminController
             $this->translator->trans('category.creation_form_title'),
             $this->translator->trans('category.creation_form_title'),
             ['form' => $form->createView()]
+        );
+    }
+
+    #[Route('/{id<\d+>}/edit', methods: ['GET', 'POST'], name: 'category_edit')]
+    public function edit(Category $category, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(CategoryType::class, $category);
+        $form->handleRequest($this->request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+            $this->addFlash('success', 'category.successfully_updated');
+
+            return $this->redirectToRoute('category_edit', ['id' => $category->getId()]);
+        }
+
+        $pageTitle = $this->translator->trans('category.edition_form_title') . ': ' . $category->getTitle();
+
+        return $this->generateView(
+            'admin/categories/form.html.twig',
+            $pageTitle,
+            $pageTitle,
+            ['category' => $category, 'form' => $form->createView()]
         );
     }
 }

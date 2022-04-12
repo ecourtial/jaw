@@ -4,6 +4,7 @@
  * @author      Eric COURTIAL <e.courtial30@gmail.com.com>
  * @license     MIT
  */
+
 declare(strict_types=1);
 
 namespace App\Controller\Admin;
@@ -14,22 +15,8 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractAdminController
 {
-    private AuthenticationUtils $authenticationUtils;
-    private string $recaptchaPublicKey;
-
-    public function __construct(
-        string $appVersion,
-        string $appName,
-        string $recaptchaPublicKey,
-        AuthenticationUtils $authenticationUtils
-    ) {
-        parent::__construct($appVersion, $appName);
-        $this->recaptchaPublicKey = $recaptchaPublicKey;
-        $this->authenticationUtils = $authenticationUtils;
-    }
-
     #[Route('/login', name: 'security_login')]
-    public function login(): Response
+    public function login(string $recaptchaPublicKey, AuthenticationUtils $authenticationUtils): Response
     {
         if ($this->getUser()) {
             return $this->redirectToRoute('admin_home');
@@ -37,12 +24,12 @@ class SecurityController extends AbstractAdminController
 
         return $this->generateView(
             'admin/user/login_form.html.twig',
-            "{$this->appName} - Connection",
-            'Connection',
+            $this->appName . ' - ' . $this->translator->trans('user.login.title'),
+            $this->translator->trans('user.login.title'),
             [
-                'recaptcha_key' => $this->recaptchaPublicKey,
-                'last_username' => $this->authenticationUtils->getLastUsername(),
-                'error' => $this->authenticationUtils->getLastAuthenticationError()
+                'recaptcha_key' => $recaptchaPublicKey,
+                'last_username' => $authenticationUtils->getLastUsername(),
+                'error' => $authenticationUtils->getLastAuthenticationError()
             ]
         );
     }

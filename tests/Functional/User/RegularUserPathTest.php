@@ -21,5 +21,8 @@ class RegularUserPathTest extends AbstractUserPathCase
 
         // Test change blog configuration
         $this->assertCannotAccessConfigurationPanel($client);
+
+        // Keep that in last position
+        $this->logout($client);
     }
 }

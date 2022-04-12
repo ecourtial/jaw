@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Category;
 use App\Entity\Configuration;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -20,6 +21,25 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         // Create sample configuration
+        $manager->persist($this->initBlogConfiguration());
+
+        // Create a sample admin user
+        $manager->persist($this->createAdminUser());
+
+        // Create a sample regular user
+        $manager->persist($this->createRegularUser());
+
+        // Create some categories
+        $category1 = $this->createCategory('My first category', 'my-first-category', 'The first one!');
+        $manager->persist($category1);
+        $category2 = $this->createCategory('Another category', 'another-category', 'Another one!');
+        $manager->persist($category2);
+
+        $manager->flush();
+    }
+
+    private function initBlogConfiguration(): Configuration
+    {
         $configuration = new Configuration();
         $configuration->setBlogTitle('MyBlog');
         $configuration->setBlogDescription('My awesome blog.');
@@ -29,9 +49,11 @@ class AppFixtures extends Fixture
         $configuration->setGithubUsername('GithubPseudo');
         $configuration->setGoogleAnalyticsId('1234A');
 
-        $manager->persist($configuration);
+        return $configuration;
+    }
 
-        // Create a sample admin user
+    private function createAdminUser(): User
+    {
         $user = new User();
         $user->setEmail('someEmail@foo.com');
         $user->setToken('someToken123456');
@@ -41,9 +63,11 @@ class AppFixtures extends Fixture
         $user->setFullName('John your neighbor');
         $user->setRoles(['ROLE_ADMIN']);
 
-        $manager->persist($user);
+        return $user;
+    }
 
-        // Create a sample regular user
+    private function createRegularUser(): User
+    {
         $user = new User();
         $user->setEmail('someEmailRegular@foo.com');
         $user->setToken('someToken123456aa');
@@ -53,8 +77,16 @@ class AppFixtures extends Fixture
         $user->setFullName('John your regular neighbor');
         $user->setRoles(['ROLE_USER']);
 
-        $manager->persist($user);
+        return $user;
+    }
 
-        $manager->flush();
+    private function createCategory(string $title, string $slug, string $summary): Category
+    {
+        $category = new Category();
+        $category->setTitle($title);
+        $category->setSlug($slug);
+        $category->setSummary($summary);
+
+        return $category;
     }
 }

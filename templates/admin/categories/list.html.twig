@@ -1,0 +1,8 @@
+{% extends 'admin/base.html.twig' %}
+{% block body %}
+    <ul>
+        {% for category in categories %}
+            <li><a href="">{{ category.title }}</a> - <a href="">{{ 'categories.edit'|trans }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

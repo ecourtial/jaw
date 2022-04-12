@@ -15,8 +15,14 @@
                                 <a class="nav-link" href="{{ url('configuration') }}">{{ 'menu.configuration'|trans }}</a>
                             </li>
                         {% endif %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">{{ 'menu.categories'|trans }}</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ 'menu.categories'|trans }}
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="{{ url('category_list') }}">{{ 'menu.categories.index'|trans }}</a></li>
+                                <li><a class="dropdown-item" href="{{ url('category_add') }}">{{ 'menu.categories.add'|trans }}</a></li>
+                            </ul>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#">{{ 'menu.posts'|trans }}</a>

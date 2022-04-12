@@ -63,5 +63,8 @@ class AdminUserPathTest extends AbstractUserPathCase
             $newGithubUsername,
             $newGoogleAnalyticsId
         );
+
+        // Keep that in last position
+        $this->logout($client);
     }
 }

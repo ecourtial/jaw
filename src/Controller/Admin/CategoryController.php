@@ -92,10 +92,14 @@ class CategoryController extends AbstractAdminController
     public function delete(Category $category, EntityManagerInterface $entityManager): Response
     {
         if (true === $this->isCsrfTokenValid('delete', $this->request->request->get('token'))) {
-            $entityManager->remove($category);
-            $entityManager->flush();
+            if ($category->getPosts()->isEmpty()) {
+                $entityManager->remove($category);
+                $entityManager->flush();
 
-            $this->addFlash('success', 'category.deleted_successfully');
+                $this->addFlash('success', 'category.deleted_successfully');
+            } else {
+                $this->addFlash('alert', 'category.deletion_error_has_posts');
+            }
         }
 
         return $this->redirectToRoute('category_list');

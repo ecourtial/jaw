@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Category;
 use App\Entity\Configuration;
+use App\Entity\Post;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -27,13 +28,42 @@ class AppFixtures extends Fixture
         $manager->persist($this->createAdminUser());
 
         // Create a sample regular user
-        $manager->persist($this->createRegularUser());
+        $regularUser = $this->createRegularUser();
+        $manager->persist($regularUser);
 
         // Create some categories
         $category1 = $this->createCategory('My first category', 'my-first-category', 'The first one!');
         $manager->persist($category1);
         $category2 = $this->createCategory('Another category', 'another-category', 'Another one!');
         $manager->persist($category2);
+
+        // Create some posts
+        $manager->persist($this->createPost(
+            'My first post',
+            'my_first_post',
+            $category1,
+            'The summary',
+            'Then content',
+            $regularUser
+        ));
+
+        $manager->persist($this->createPost(
+            'My second post',
+            'my_second_post',
+            $category2,
+            'The summary',
+            'Then content',
+            $regularUser
+        ));
+
+        $manager->persist($this->createPost(
+            'My third post',
+            'my_third_post',
+            $category2,
+            'The summary',
+            'Then content',
+            $regularUser
+        ));
 
         $manager->flush();
     }
@@ -88,5 +118,20 @@ class AppFixtures extends Fixture
         $category->setSummary($summary);
 
         return $category;
+    }
+
+    private function createPost(string $title, string $slug, Category $category, string $summary, string $content, User $author): Post
+    {
+        $post = new Post();
+        $post->setTitle($title);
+        $post->setSlug($slug);
+        $post->setCategory($category);
+        $post->setSummary($summary);
+        $post->setContent($content);
+        $post->setAuthor($author);
+        $post->setLanguage('en');
+        $post->setPublishedAt(new \DateTime());
+
+        return $post;
     }
 }

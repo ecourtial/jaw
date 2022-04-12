@@ -1,5 +1,12 @@
 {% extends 'admin/base.html.twig' %}
 {% block body %}
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message|trans }}
+        </div>
+    {% endfor %}
+
     <ul>
         {% for category in categories %}
             <li><a href="">{{ category.title }}</a> - <a href="{{ path('category_edit', {id: category.id}) }}">{{ 'categories.edit'|trans }}</a></li>

@@ -66,9 +66,13 @@ category.slug: Slug
 category.summary: Summary
 category.successfully_created: The category has been successfully created.
 category.successfully_updated: The category has been successfully updated.
+category.deleted_successfully: The category has been successfully deleted.
 
 # Posts
 post.slug_must_be_unique: The combination of the post slug and category must be unique. Please choose another one.
 
 # Various
 button.save_and_create_new: Save and create new
+button.delete: Delete
+delete_modal.category: Delete the category?
+button.cancel: Cancel

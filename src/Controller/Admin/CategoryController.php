@@ -84,7 +84,20 @@ class CategoryController extends AbstractAdminController
             'admin/categories/form.html.twig',
             $pageTitle,
             $pageTitle,
-            ['category' => $category, 'form' => $form->createView()]
+            ['category' => $category, 'form' => $form->createView(), 'showDeleteForm' => true]
         );
+    }
+
+    #[Route('/{id<\d+>}/delete', methods: ['POST'], name: 'category_delete')]
+    public function delete(Category $category, EntityManagerInterface $entityManager): Response
+    {
+        if (true === $this->isCsrfTokenValid('delete', $this->request->request->get('token'))) {
+            $entityManager->remove($category);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'category.deleted_successfully');
+        }
+
+        return $this->redirectToRoute('category_list');
     }
 }

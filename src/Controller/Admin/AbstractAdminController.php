@@ -23,7 +23,8 @@ abstract class AbstractAdminController extends AbstractController
     protected Request $request;
 
     public function __construct(
-        string $appVersion, string $appName,
+        string $appVersion,
+        string $appName,
         TranslatorInterface $translator,
         RequestStack $requestStack
     ) {

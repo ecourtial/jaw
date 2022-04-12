@@ -48,7 +48,10 @@ class CategoryController extends AbstractAdminController
             $entityManager->persist($category);
             $entityManager->flush();
 
-            if ($form->get('saveAndCreateNew')->isClicked()) {
+            /** @var \Symfony\Component\Form\SubmitButton $saveAndCreateNewButton */
+            $saveAndCreateNewButton = $form->get('saveAndCreateNew');
+
+            if ($saveAndCreateNewButton->isClicked()) {
                 $this->addFlash('success', 'category.successfully_created');
 
                 return $this->redirectToRoute('category_add');
@@ -78,12 +81,10 @@ class CategoryController extends AbstractAdminController
             return $this->redirectToRoute('category_edit', ['id' => $category->getId()]);
         }
 
-        $pageTitle = $this->translator->trans('category.edition_form_title') . ': ' . $category->getTitle();
-
         return $this->generateView(
             'admin/categories/form.html.twig',
-            $pageTitle,
-            $pageTitle,
+            $this->translator->trans('category.edition_form_title'),
+            $this->translator->trans('category.edition_form_title') . ': ' . $category->getTitle(),
             ['category' => $category, 'form' => $form->createView(), 'showDeleteForm' => true]
         );
     }
@@ -91,6 +92,7 @@ class CategoryController extends AbstractAdminController
     #[Route('/{id<\d+>}/delete', methods: ['POST'], name: 'category_delete')]
     public function delete(Category $category, EntityManagerInterface $entityManager): Response
     {
+        // @phpstan-ignore-next-line
         if (true === $this->isCsrfTokenValid('delete', $this->request->request->get('token'))) {
             if ($category->getPosts()->isEmpty()) {
                 $entityManager->remove($category);
@@ -103,5 +105,16 @@ class CategoryController extends AbstractAdminController
         }
 
         return $this->redirectToRoute('category_list');
+    }
+
+    #[Route('/{id<\d+>}', methods: ['GET'], name: 'category_get')]
+    public function details(Category $category): Response
+    {
+        return $this->generateView(
+            'admin/categories/details.html.twig',
+            $this->translator->trans('category.label'),
+            $this->translator->trans('category.label') . ': ' . $category->getTitle(),
+            ['category' => $category]
+        );
     }
 }

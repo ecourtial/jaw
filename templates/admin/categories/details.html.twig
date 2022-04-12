@@ -1,0 +1,20 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block screenTitle %}
+    <h1>
+        {{ screenTitle }}
+        {% if category is defined %}
+            : <span><i>{{ category.title }}</i></span>
+        {% endif %}
+    </h1>
+{% endblock %}
+
+{% block body %}
+    <p><strong>{{ 'category.summary'|trans}}</strong>: <span><i>{{ category.summary }}</i></span></p>
+    <p><strong>Posts:</strong></p>
+    <ul>
+        {% for post in category.posts %}
+            <li>{{ post.title }} - <a href="">{{ 'post.edit'|trans }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

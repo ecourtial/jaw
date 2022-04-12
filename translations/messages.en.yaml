@@ -55,8 +55,9 @@ configuration.google_analytics_id: Your Google Analytics Id.
 configuration.updated_successfully: The configuration has been successfully updated.
 
 # Categories
+category.label: Category
+category.edit: Edit
 categories.label: Categories
-categories.edit: Edit
 categories.list: Categories index
 category.slug_must_be_unique: The category slug must be unique. Please choose another one.
 category.creation_form_title: Create a category
@@ -71,9 +72,11 @@ category.deletion_error_has_posts: The category has not been deleted because it 
 
 # Posts
 post.slug_must_be_unique: The combination of the post slug and category must be unique. Please choose another one.
+post.edit: Edit
 
 # Various
 button.save_and_create_new: Save and create new
 button.delete: Delete
 delete_modal.category: Delete the category?
 button.cancel: Cancel
+label.details: Details

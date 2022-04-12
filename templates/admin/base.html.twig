@@ -17,7 +17,7 @@
     <body>
         {{ include('admin/general/menu.html.twig') }}
         <div id="content" class="container">
-            <h1>{{ screenTitle }}</h1>
+            {% block screenTitle %}<h1>{{ screenTitle }}</h1>{% endblock %}
             {% block body %}{% endblock %}
         </div>
     </body>

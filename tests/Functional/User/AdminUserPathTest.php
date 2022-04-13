@@ -28,7 +28,7 @@ class AdminUserPathTest extends WebTestCase
         );
 
         // Test change blog configuration
-        //$this->checkConfigurationMenuItem($client);
+        $this->checkConfigurationMenuItem($client);
 
         $this->gotoConfigurationScreenAndCheckData(
             $client,

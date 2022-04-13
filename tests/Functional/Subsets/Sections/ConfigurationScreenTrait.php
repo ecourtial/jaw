@@ -14,13 +14,13 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 Trait ConfigurationScreenTrait
 {
-//    protected function checkConfigurationMenuItem(KernelBrowser $client): void
-//    {
-//        $crawler = $client->request('GET', UserLoginTrait::$adminUrl);
-//        $link = $crawler->selectLink('Configuration')->link();
-//        $client->click($link);
-//        $this->assertPageTitleContains('MyBlog Admin - Edit configuration - JAW v1.0');
-//    }
+    protected function checkConfigurationMenuItem(KernelBrowser $client): void
+    {
+        $crawler = $client->request('GET', UrlInterface::ADMIN_URL);
+        $link = $crawler->selectLink('Configuration')->link();
+        $client->click($link);
+        $this->assertPageTitleContains('MyBlog Admin - Edit configuration - JAW v1.0');
+    }
 
     protected function gotoConfigurationScreenAndCheckData(
         KernelBrowser $client,

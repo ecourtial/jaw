@@ -31,8 +31,8 @@ Trait UserPathCaseTrait
         $this->loginWithSuccess($client, $username, $userPassword);
 
         // Test change user data in profile
+        $this->checkEditProfileMenuItem($client);
         $token = $this->getToken($client);
-
         $this->gotoProfileAndCheckUserFullNameAndEmail($client, $userFullName, $userEmail);
         $this->changeFullNameAndEmail($client, $newFullName, $newEmail, $userPassword);
         $this->logout($client);
@@ -41,6 +41,7 @@ Trait UserPathCaseTrait
         static::assertEquals($token, $this->getToken($client));
 
         // Test change user password
+        $this->checkChangePasswordMenuItem($client);
         $this->changePassword($client, $userPassword, $newPassword);
         $this->logout($client);
         $this->loginFailureBecauseOfBadCredentials($client, $username, $userPassword);

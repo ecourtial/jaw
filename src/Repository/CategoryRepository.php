@@ -12,23 +12,30 @@
 namespace App\Repository;
 
 use App\Entity\Category;
+use App\Exception\Category\CategoryNotEmptyException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * This custom Doctrine repository is empty because so far we don't need any custom
- * method to query for application user information. But it's always a good practice
- * to define a custom repository that will be used when the application grows.
- *
- * See https://symfony.com/doc/current/doctrine.html#querying-for-objects-the-repository
- *
- * @author Ryan Weaver <weaverryan@gmail.com>
- * @author Javier Eguiluz <javier.eguiluz@gmail.com>
- */
 class CategoryRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Category::class);
+    }
+
+    public function save(Category $category): void
+    {
+        $this->getEntityManager()->persist($category);
+        $this->getEntityManager()->flush();
+    }
+
+    public function delete(Category $category): void
+    {
+        if ($category->getPosts()->isEmpty()) {
+            $this->getEntityManager()->remove($category);
+            $this->getEntityManager()->flush();
+        } else {
+            throw new CategoryNotEmptyException();
+        }
     }
 }

@@ -69,6 +69,7 @@ category.successfully_created: The category has been successfully created.
 category.successfully_updated: The category has been successfully updated.
 category.deleted_successfully: The category has been successfully deleted.
 category.deletion_error_has_posts: The category has not been deleted because it contains some posts.
+category.has_no_post: There is no post in this category.
 
 # Posts
 post.slug_must_be_unique: The combination of the post slug and category must be unique. Please choose another one.

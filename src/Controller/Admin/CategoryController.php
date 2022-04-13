@@ -10,9 +10,9 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Category;
+use App\Exception\Category\CategoryNotEmptyException;
 use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -32,7 +32,7 @@ class CategoryController extends AbstractAdminController
     }
 
     #[Route('/add', methods: ['GET', 'POST'], name: 'category_add')]
-    public function create(EntityManagerInterface $entityManager): Response
+    public function create(CategoryRepository $categoryRepository): Response
     {
         $category = new Category();
 
@@ -45,8 +45,7 @@ class CategoryController extends AbstractAdminController
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($category);
-            $entityManager->flush();
+            $categoryRepository->save($category);
 
             /** @var \Symfony\Component\Form\SubmitButton $saveAndCreateNewButton */
             $saveAndCreateNewButton = $form->get('saveAndCreateNew');
@@ -69,13 +68,13 @@ class CategoryController extends AbstractAdminController
     }
 
     #[Route('/{id<\d+>}/edit', methods: ['GET', 'POST'], name: 'category_edit')]
-    public function edit(Category $category, EntityManagerInterface $entityManager): Response
+    public function edit(Category $category, CategoryRepository $categoryRepository): Response
     {
         $form = $this->createForm(CategoryType::class, $category);
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            $categoryRepository->save($category);
             $this->addFlash('success', 'category.successfully_updated');
 
             return $this->redirectToRoute('category_edit', ['id' => $category->getId()]);
@@ -90,16 +89,14 @@ class CategoryController extends AbstractAdminController
     }
 
     #[Route('/{id<\d+>}/delete', methods: ['POST'], name: 'category_delete')]
-    public function delete(Category $category, EntityManagerInterface $entityManager): Response
+    public function delete(Category $category, CategoryRepository $categoryRepository): Response
     {
         // @phpstan-ignore-next-line
         if (true === $this->isCsrfTokenValid('delete', $this->request->request->get('token'))) {
-            if ($category->getPosts()->isEmpty()) {
-                $entityManager->remove($category);
-                $entityManager->flush();
-
+            try {
+                $categoryRepository->delete($category);
                 $this->addFlash('success', 'category.deleted_successfully');
-            } else {
+            } catch (CategoryNotEmptyException $exception) {
                 $this->addFlash('alert', 'category.deletion_error_has_posts');
             }
         }

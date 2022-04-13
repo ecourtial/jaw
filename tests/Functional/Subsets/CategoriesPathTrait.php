@@ -16,8 +16,9 @@ Trait CategoriesPathTrait
 {
     use CategoriesTrait;
 
-    public function checkCategoriesPath(KernelBrowser $browser): void
+    public function checkCategoriesPath(KernelBrowser $client): void
     {
-
+        $this->checkCategoryMenuItem($client);
+        $this->checkCategoriesList($client, 2);
     }
 }

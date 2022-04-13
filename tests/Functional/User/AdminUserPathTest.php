@@ -2,15 +2,21 @@
 
 namespace App\Tests\Functional\User;
 
-class AdminUserPathTest extends AbstractUserPathCase
+use App\Tests\Functional\Subsets\UserPathCaseTrait;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+
+class AdminUserPathTest extends WebTestCase
 {
+    use UserPathCaseTrait;
+
     public function testAdminUserPath(): void
     {
         $client = static::createClient();
 
         $newPassword = 'someNewPassword';
 
-        $this->testStandardInteractions(
+        // Security basics
+        $this->checkStandardSecurity(
             $client,
             'some_username_admin',
             'Foo BAR',
@@ -22,6 +28,8 @@ class AdminUserPathTest extends AbstractUserPathCase
         );
 
         // Test change blog configuration
+        //$this->checkConfigurationMenuItem($client);
+
         $this->gotoConfigurationScreenAndCheckData(
             $client,
             'MyBlog',

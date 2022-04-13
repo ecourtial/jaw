@@ -2,13 +2,21 @@
 
 namespace App\Tests\Functional\User;
 
-class RegularUserPathTest extends AbstractUserPathCase
+use App\Tests\Functional\Subsets\CategoriesPathTrait;
+use App\Tests\Functional\Subsets\UserPathCaseTrait;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+
+class RegularUserPathTest extends WebTestCase
 {
+    use UserPathCaseTrait;
+    use CategoriesPathTrait;
+
     public function testRegularUserPath(): void
     {
         $client = static::createClient();
 
-        $this->testStandardInteractions(
+        // Security basics
+        $this->checkStandardSecurity(
             $client,
             'some_username_not_admin',
             'Foofoo BARBAR',
@@ -21,6 +29,9 @@ class RegularUserPathTest extends AbstractUserPathCase
 
         // Test change blog configuration
         $this->assertCannotAccessConfigurationPanel($client);
+
+        // Categories
+        $this->checkCategoriesPath($client);
 
         // Keep that in last position
         $this->logout($client);

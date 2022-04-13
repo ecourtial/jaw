@@ -1,21 +1,20 @@
 <?php
 
-namespace App\Tests\Functional\User;
+namespace App\Tests\Functional\Subsets;
 
-use App\Tests\Functional\Tools\Traits\ConfigurationScreenTrait;
-use App\Tests\Functional\Tools\Traits\UserLoginTrait;
-use App\Tests\Functional\Tools\Traits\UserProfileTrait;
+use App\Tests\Functional\Subsets\Sections\ConfigurationScreenTrait;
+use App\Tests\Functional\Subsets\Sections\UserLoginTrait;
+use App\Tests\Functional\Subsets\Sections\UserProfileTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-abstract class AbstractUserPathCase extends WebTestCase
+Trait UserPathCaseTrait
 {
     use UserLoginTrait;
     use UserProfileTrait;
     use ConfigurationScreenTrait;
 
-    /** REMINDER: At the end the user is connected */
-    protected function testStandardInteractions(
+    /** REMINDER: At the end the user IS connected */
+    protected function checkStandardSecurity(
         KernelBrowser $client,
         string $username,
         string $userFullName,

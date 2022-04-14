@@ -2,15 +2,23 @@
 
 namespace App\Tests\Functional\User;
 
-class AdminUserPathTest extends AbstractUserPathCase
+use App\Tests\Functional\Subsets\CategoriesPathTrait;
+use App\Tests\Functional\Subsets\UserPathCaseTrait;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+
+class AdminUserPathTest extends WebTestCase
 {
+    use UserPathCaseTrait;
+    use CategoriesPathTrait;
+
     public function testAdminUserPath(): void
     {
         $client = static::createClient();
 
         $newPassword = 'someNewPassword';
 
-        $this->testStandardInteractions(
+        // Security basics
+        $this->checkStandardSecurity(
             $client,
             'some_username_admin',
             'Foo BAR',
@@ -22,6 +30,8 @@ class AdminUserPathTest extends AbstractUserPathCase
         );
 
         // Test change blog configuration
+        $this->checkConfigurationMenuItem($client);
+
         $this->gotoConfigurationScreenAndCheckData(
             $client,
             'MyBlog',
@@ -63,5 +73,11 @@ class AdminUserPathTest extends AbstractUserPathCase
             $newGithubUsername,
             $newGoogleAnalyticsId
         );
+
+        // Categories
+        $this->checkCategoriesPath($client);
+
+        // Keep that in last position
+        $this->logout($client);
     }
 }

@@ -7,18 +7,32 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Tools\Traits;
+namespace App\Tests\Functional\Subsets\Sections;
 
+use App\Tests\Functional\Tools\UrlInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 Trait UserProfileTrait
 {
-    protected static string $profileUrl = 'http://localhost/admin/profile';
-    protected static string $changePasswordUrl = 'http://localhost/admin/password';
+    protected function checkEditProfileMenuItem(KernelBrowser $client): void
+    {
+        $crawler = $client->request('GET', UrlInterface::ADMIN_URL);
+        $link = $crawler->selectLink('Edit my profile')->link();
+        $client->click($link);
+        $this->assertPageTitleContains('MyBlog Admin - My profile - JAW v1.0');
+    }
+
+    protected function checkChangePasswordMenuItem(KernelBrowser $client): void
+    {
+        $crawler = $client->request('GET', UrlInterface::ADMIN_URL);
+        $link = $crawler->selectLink('Change my password')->link();
+        $client->click($link);
+        $this->assertPageTitleContains('MyBlog Admin - Change my password - JAW v1.0');
+    }
 
     protected function getToken(KernelBrowser $client): string
     {
-        $crawler = $client->request('GET', self::$profileUrl);
+        $crawler = $client->request('GET', UrlInterface::PROFILE_SCREEN_URL);
         $divContent = $crawler->filter('#userToken')->text();
 
         return trim(explode(': ', $divContent)[1]);
@@ -29,7 +43,7 @@ Trait UserProfileTrait
         string $expectedUserFullName,
         string $expectedUserEmail
     ): void {
-        $crawler = $client->request('GET', self::$profileUrl);
+        $crawler = $client->request('GET', UrlInterface::PROFILE_SCREEN_URL);
         $this->assertPageTitleContains('MyBlog Admin - My profile - JAW v1.0');
 
         $form = $crawler->selectButton('updateProfileSubmitButton')->form();
@@ -42,7 +56,7 @@ Trait UserProfileTrait
     protected function changeFullNameAndEmail(KernelBrowser $client, string $newFullName, string $newEmail, string $password): void
     {
         $client->followRedirects();
-        $crawler = $client->request('GET', self::$profileUrl);
+        $crawler = $client->request('GET', UrlInterface::PROFILE_SCREEN_URL);
         $this->assertPageTitleContains('MyBlog Admin - My profile - JAW v1.0');
 
         $form = $crawler->selectButton('updateProfileSubmitButton')->form([
@@ -62,7 +76,7 @@ Trait UserProfileTrait
     protected function changePassword(KernelBrowser $client, string $currentPassword, string $newPassword): void
     {
         $client->followRedirects();
-        $crawler = $client->request('GET', self::$changePasswordUrl);
+        $crawler = $client->request('GET', UrlInterface::CHANGE_PASSWORD_SCREEN_URL);
         $this->assertPageTitleContains('MyBlog Admin - Change my password - JAW v1.0');
 
         $form = $crawler->selectButton('updatePasswordSubmitButton')->form([

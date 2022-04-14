@@ -11,12 +11,13 @@
         {% endblock %}
         {% block javascripts %}
             <script src="{{ asset('assets/js/bootstrap/bootstrap.bundle.min.js') }}"></script>
+            <script src="{{ asset('assets/js/jaw/functions.js') }}"></script>
         {% endblock %}
     </head>
     <body>
         {{ include('admin/general/menu.html.twig') }}
         <div id="content" class="container">
-            <h1>{{ screenTitle }}</h1>
+            {% block screenTitle %}<h1>{{ screenTitle }}</h1>{% endblock %}
             {% block body %}{% endblock %}
         </div>
     </body>

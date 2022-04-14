@@ -2,7 +2,9 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Category;
 use App\Entity\Configuration;
+use App\Entity\Post;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -19,7 +21,73 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
+        // BE CAREFUL IF CHANGING SOMETHING EXISTING HERE, AS DATA ARE USED FOR UNIT TESTS.
+
         // Create sample configuration
+        $manager->persist($this->initBlogConfiguration());
+
+        // Create a sample admin user
+        $manager->persist($this->createAdminUser());
+
+        // Create a sample regular user (keep in this order, as the user id is used for some tests)
+        $regularUser = $this->createRegularUser();
+        $manager->persist($regularUser);
+
+        // Create some categories containing a few posts
+        $categories = static::getFixturesCategories($regularUser);
+        $manager->persist($categories[0]);
+        $manager->persist($categories[1]);
+
+        $manager->flush();
+    }
+
+    /** @return Category[] */
+    public static function getFixturesCategories(?User $regularUser = null): array
+    {
+        $regularUser = $regularUser ?? (new User())->setId(2);
+
+        return [
+            (new Category())
+                ->setTitle('My first category')
+                ->setSlug('my-first-category')
+                ->setSummary('The first one!')
+                ->addPost(
+                    (new Post())
+                    ->setTitle('My first post')
+                    ->setSlug('my_first_post')
+                    ->setSummary('The summary 1')
+                    ->setContent('Then content 1')
+                    ->setAuthor($regularUser)
+                    ->setLanguage('en')
+                )
+            ,
+            (new Category())
+                ->setTitle('Another category')
+                ->setSlug('another-category')
+                ->setSummary('Another one!')
+                ->addPost(
+                    (new Post())
+                        ->setTitle('My second post')
+                        ->setSlug('my_second_post')
+                        ->setSummary('The summary 2')
+                        ->setContent('Then content 2')
+                        ->setAuthor($regularUser)
+                        ->setLanguage('en')
+                )
+                ->addPost(
+                    (new Post())
+                        ->setTitle('My third post')
+                        ->setSlug('my_third_post')
+                        ->setSummary('The summary 3')
+                        ->setContent('Then content 3')
+                        ->setAuthor($regularUser)
+                        ->setLanguage('en')
+                )
+        ];
+    }
+
+    private function initBlogConfiguration(): Configuration
+    {
         $configuration = new Configuration();
         $configuration->setBlogTitle('MyBlog');
         $configuration->setBlogDescription('My awesome blog.');
@@ -29,9 +97,11 @@ class AppFixtures extends Fixture
         $configuration->setGithubUsername('GithubPseudo');
         $configuration->setGoogleAnalyticsId('1234A');
 
-        $manager->persist($configuration);
+        return $configuration;
+    }
 
-        // Create a sample admin user
+    private function createAdminUser(): User
+    {
         $user = new User();
         $user->setEmail('someEmail@foo.com');
         $user->setToken('someToken123456');
@@ -41,9 +111,11 @@ class AppFixtures extends Fixture
         $user->setFullName('John your neighbor');
         $user->setRoles(['ROLE_ADMIN']);
 
-        $manager->persist($user);
+        return $user;
+    }
 
-        // Create a sample regular user
+    private function createRegularUser(): User
+    {
         $user = new User();
         $user->setEmail('someEmailRegular@foo.com');
         $user->setToken('someToken123456aa');
@@ -53,8 +125,6 @@ class AppFixtures extends Fixture
         $user->setFullName('John your regular neighbor');
         $user->setRoles(['ROLE_USER']);
 
-        $manager->persist($user);
-
-        $manager->flush();
+        return $user;
     }
 }

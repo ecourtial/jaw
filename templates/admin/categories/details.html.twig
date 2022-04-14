@@ -1,0 +1,22 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block screenTitle %}
+    <h1>{{ screenTitle }}: <span><i>{{ category.title }}</i></span></h1>
+{% endblock %}
+
+{% block body %}
+    <p id="summary"><strong>{{ 'category.summary'|trans}}</strong>: <span><i>{{ category.summary }}</i></span></p>
+    <p id="slug"><strong>{{ 'category.slug'|trans}}</strong>: <span><i>{{ category.slug }}</i></span></p>
+    <p id="categId"><strong>Id: {{ category.id }}</strong></p>
+
+    {% if category.posts|length != 0 %}
+        <p><strong>Posts:</strong></p>
+        <ul>
+            {% for post in category.posts %}
+                <li id="post_{{ post.id }}">{{ post.title }} - <a href="">{{ 'post.edit'|trans }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        {{ 'category.has_no_post'|trans }}
+    {% endif %}
+{% endblock %}

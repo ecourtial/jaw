@@ -1,21 +1,20 @@
 <?php
 
-namespace App\Tests\Functional\User;
+namespace App\Tests\Functional\Subsets;
 
-use App\Tests\Functional\Tools\Traits\ConfigurationScreenTrait;
-use App\Tests\Functional\Tools\Traits\UserLoginTrait;
-use App\Tests\Functional\Tools\Traits\UserProfileTrait;
+use App\Tests\Functional\Subsets\Sections\ConfigurationScreenTrait;
+use App\Tests\Functional\Subsets\Sections\UserLoginTrait;
+use App\Tests\Functional\Subsets\Sections\UserProfileTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-abstract class AbstractUserPathCase extends WebTestCase
+Trait UserPathCaseTrait
 {
     use UserLoginTrait;
     use UserProfileTrait;
     use ConfigurationScreenTrait;
 
-    /** REMINDER: At the end the user is connected */
-    protected function testStandardInteractions(
+    /** REMINDER: At the end the user IS connected */
+    protected function checkStandardSecurity(
         KernelBrowser $client,
         string $username,
         string $userFullName,
@@ -32,8 +31,8 @@ abstract class AbstractUserPathCase extends WebTestCase
         $this->loginWithSuccess($client, $username, $userPassword);
 
         // Test change user data in profile
+        $this->checkEditProfileMenuItem($client);
         $token = $this->getToken($client);
-
         $this->gotoProfileAndCheckUserFullNameAndEmail($client, $userFullName, $userEmail);
         $this->changeFullNameAndEmail($client, $newFullName, $newEmail, $userPassword);
         $this->logout($client);
@@ -42,6 +41,7 @@ abstract class AbstractUserPathCase extends WebTestCase
         static::assertEquals($token, $this->getToken($client));
 
         // Test change user password
+        $this->checkChangePasswordMenuItem($client);
         $this->changePassword($client, $userPassword, $newPassword);
         $this->logout($client);
         $this->loginFailureBecauseOfBadCredentials($client, $username, $userPassword);

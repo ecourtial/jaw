@@ -49,6 +49,14 @@ schema_validate:
 	@cd docker/dev \
 	&& docker-compose exec php bash -c 'make schema_validate_command'
 
+schema_update:
+	@cd docker/dev \
+	&& docker-compose exec php bash -c 'make update_db_schema_command'
+
+schema_drop:
+	@cd docker/dev \
+	&& docker-compose exec php bash -c 'make drop_db_schema_command'
+
 migrate:
 	@cd docker/dev \
 	&& docker-compose exec php bash -c 'make migrate_command'
@@ -71,11 +79,16 @@ phpcs_command:
 	tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src
 
 schema_validate_command:
-	APP_ENV=test bin/console doctrine:schema:validate
-	APP_ENV=test bin/console doctrine:ensure-production-settings
+	APP_ENV=dev bin/console doctrine:schema:validate
+
+update_db_schema_command:
+	APP_ENV=dev bin/console doctrine:schema:update --force
+
+drop_db_schema_command:
+	APP_ENV=dev bin/console doctrine:schema:drop --force
 
 migrate_command:
-	APP_ENV=prod bin/console doctrine:migrations:migrate
+	APP_ENV=dev bin/console doctrine:migrations:migrate
 
 create_test_db_command:
 	bin/console doctrine:database:drop --force --env=test || true \
@@ -86,4 +99,4 @@ create_test_db_command:
 	&& bin/console app:add-user some_username_not_admin somePassword foofoo@barbar.com "Foofoo BARBAR" --env=test
 
 load_fixtures_command:
-	bin/console doctrine:fixtures:load
+	APP_ENV=dev bin/console doctrine:fixtures:load

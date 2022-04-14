@@ -7,7 +7,7 @@
         </div>
     {% endfor %}
 
-    <p id="userToken">{{ 'user.label.token'|trans }}: {{ user.token }}</p>
+    <p id="userToken"><strong>{{ 'user.label.token'|trans }}:</strong> {{ user.token }}</p>
 
     {{ form_start(form) }}
     {{ form_widget(form) }}

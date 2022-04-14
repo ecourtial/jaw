@@ -1,7 +1,18 @@
+# Home
+home.tab: Home
+home.title: Welcome to your blog's administration panel!
+home.welcome: This is the homepage of your CMS. You can
+home.categories: create and edit categories
+home.posts: create and edit posts
+home.profile: edit your profile
+home.configure: configure the application
+
 # Menu
 menu.home: Home
 menu.configuration: Configuration
 menu.categories: Categories
+menu.categories.index: List
+menu.categories.add: Add
 menu.posts: Posts
 menu.profile: Profile
 menu.logout: Logout
@@ -11,11 +22,13 @@ menu.search.button: Search
 menu.search.request: Enter your request
 
 # User login form
+user.login.title: Login
 user.label.password: Password
 user.label.form.label: Login form
 user.label.authenticate: Authenticate
 
 # User profile form
+user.profile.title: My profile
 user.label.token: Your token
 user.label.username: Username
 user.label.full_name: Full name
@@ -27,9 +40,11 @@ user.label.submit: Submit
 user.updated_successfully: Your profile has been successfully updated.
 
 # User update password form
+user.password_title: Change my password
 user.password_updated_successfully: Your password has been successfully updated.
 
 # Configuration panel
+configuration.title: Edit configuration
 configuration.blog_title: Your blog's title.
 configuration.blog_description: The blog description.
 configuration.copyright_message: The copyright message.
@@ -38,3 +53,31 @@ configuration.linkedin_username: Your username on Linkedin.
 configuration.github_username: Your username on Github.
 configuration.google_analytics_id: Your Google Analytics Id.
 configuration.updated_successfully: The configuration has been successfully updated.
+
+# Categories
+category.label: Category
+category.edit: Edit
+categories.label: Categories
+categories.list: Categories index
+category.slug_must_be_unique: The category slug must be unique. Please choose another one.
+category.creation_form_title: Create a category
+category.edition_form_title: Edit the category
+category.title: Title
+category.slug: Slug
+category.summary: Summary
+category.successfully_created: The category has been successfully created.
+category.successfully_updated: The category has been successfully updated.
+category.deleted_successfully: The category has been successfully deleted.
+category.deletion_error_has_posts: The category has not been deleted because it contains some posts.
+category.has_no_post: There is no post in this category.
+
+# Posts
+post.slug_must_be_unique: The combination of the post slug and category must be unique. Please choose another one.
+post.edit: Edit
+
+# Various
+button.save_and_create_new: Save and create new
+button.delete: Delete
+delete_modal.category: Delete the category?
+button.cancel: Cancel
+label.details: Details

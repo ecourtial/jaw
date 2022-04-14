@@ -7,13 +7,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Tools\Traits;
+namespace App\Tests\Functional\Subsets\Sections;
 
+use App\Tests\Functional\Tools\UrlInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 Trait ConfigurationScreenTrait
 {
-    protected static string $configurationScreenUrl = 'http://localhost/admin/configuration';
+    protected function checkConfigurationMenuItem(KernelBrowser $client): void
+    {
+        $crawler = $client->request('GET', UrlInterface::ADMIN_URL);
+        $link = $crawler->selectLink('Configuration')->link();
+        $client->click($link);
+        $this->assertPageTitleContains('MyBlog Admin - Edit configuration - JAW v1.0');
+    }
 
     protected function gotoConfigurationScreenAndCheckData(
         KernelBrowser $client,
@@ -25,7 +32,7 @@ Trait ConfigurationScreenTrait
         string $expectedGithubUserName,
         string $expectedGoogleAnalyticsId,
     ): void {
-        $crawler = $client->request('GET', self::$configurationScreenUrl);
+        $crawler = $client->request('GET', UrlInterface::CONFIGURATION_SCREEN_URL);
         $this->assertPageTitleContains('MyBlog Admin - Edit configuration - JAW v1.0');
 
         $form = $crawler->selectButton('updateConfigurationSubmitButton')->form();
@@ -53,7 +60,7 @@ Trait ConfigurationScreenTrait
     ): void {
         $client->followRedirects();
 
-        $crawler = $client->request('GET', self::$configurationScreenUrl);
+        $crawler = $client->request('GET', UrlInterface::CONFIGURATION_SCREEN_URL);
         $this->assertPageTitleContains('MyBlog Admin - Edit configuration - JAW v1.0');
 
         $form = $crawler->selectButton('updateConfigurationSubmitButton')->form([
@@ -77,7 +84,7 @@ Trait ConfigurationScreenTrait
 
     protected function assertCannotAccessConfigurationPanel(KernelBrowser $client): void
     {
-        $client->request('GET', self::$configurationScreenUrl);
+        $client->request('GET', UrlInterface::CONFIGURATION_SCREEN_URL);
         static::assertEquals(403, $client->getResponse()->getStatusCode());
     }
 }

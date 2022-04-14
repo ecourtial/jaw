@@ -1,0 +1,21 @@
+{% extends 'admin/base.html.twig' %}
+{% block body %}
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message|trans }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('alert') %}
+        <div class="alert alert-danger">
+            {{ message|trans }}
+        </div>
+    {% endfor %}
+
+    <ul>
+        {% for category in categories %}
+            <li id="categ_{{ category.id }}">{{ category.title }} - <a id="details_categ_{{ category.id }}" href="{{ path('category_get', {id: category.id}) }}">{{ 'label.details'|trans }}</a> - <a id="edit_categ_{{ category.id }}" href="{{ path('category_edit', {id: category.id}) }}">{{ 'category.edit'|trans }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

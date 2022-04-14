@@ -19,8 +19,8 @@ class IndexController extends AbstractAdminController
     {
         return $this->generateView(
             'admin/home/body.html.twig',
-            "Welcome to your blog's administration panel!",
-            'Home'
+            $this->translator->trans('home.title'),
+            $this->translator->trans('home.tab')
         );
     }
 }

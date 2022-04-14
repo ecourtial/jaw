@@ -9,12 +9,15 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Subsets\Sections;
 
+use App\Entity\Category;
 use App\Tests\Functional\Tools\UrlInterface;
 use App\DataFixtures\AppFixtures;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 Trait CategoriesTrait
 {
+    private ?Category $newCategory = null;
+
     protected function checkCategoryMenuItem(KernelBrowser $client): void
     {
         $crawler = $client->request('GET', UrlInterface::ADMIN_URL);
@@ -24,7 +27,7 @@ Trait CategoriesTrait
     }
 
     /** Check the categories listing screen */
-    protected function checkCategoriesListBeforeAddingAnotherOne(KernelBrowser $client): void
+    protected function checkCategoriesList(KernelBrowser $client): void
     {
         $crawler = $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL);
         $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.0');
@@ -44,7 +47,7 @@ Trait CategoriesTrait
     }
 
     /** Check the category details screen */
-    protected function checktDetailsOfCategories(KernelBrowser $client): void
+    protected function checkDetailsOfCategories(KernelBrowser $client): void
     {
         foreach ($this->getFixturesCategories() as $category) {
             $crawler = $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL . '/' . $category->getId());
@@ -60,6 +63,50 @@ Trait CategoriesTrait
         }
     }
 
+    /** Add a new category */
+    protected function checkAddCategory(KernelBrowser $client): void
+    {
+        $client->followRedirects();
+
+        // 1- Add the category
+        $this->newCategory = (new Category())->setTitle('NewCateg')->setSlug('new-categ')->setSummary('A new categ');
+
+        $crawler = $client->request('GET', UrlInterface::ADMIN_URL);
+        $link = $crawler->selectLink('Add')->link();
+        $crawler = $client->click($link);
+
+        $this->assertPageTitleContains('MyBlog Admin - Create a category - JAW v1.0');
+        static::assertEquals('Create a category', $crawler->filter('h1')->text());
+
+        $form = $crawler->selectButton('saveCategorySubmitButton')->form([
+            'category[title]' => $this->newCategory->getTitle(),
+            'category[slug]' => $this->newCategory->getSlug(),
+            'category[summary]' => $this->newCategory->getSummary(),
+        ]);
+
+        $client->submit($form);
+        $crawler = $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL);
+        static::assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.0');
+
+        // 2- Get the id of the last created category (supposed to be ours), so we can do the previous checks again.
+        $links = $crawler->selectLink('Details');
+        $result = [];
+        $links->each(function ($node, $i) use (&$result) {
+            /** @var \Symfony\Component\DomCrawler\Crawler $node */
+            $entry = [
+                'url' => $node->link()->getUri(),
+                'lineText' => $node->ancestors()->text(),
+            ];
+
+            $result[] = $entry;
+        });
+        $lastEntry = array_pop($result);
+        $this->newCategory->setId((int)substr($lastEntry['url'], -1));
+
+        $client->followRedirects(false);
+    }
+
     private function getFixturesCategories(): array
     {
         $postIndex = 1;
@@ -73,6 +120,10 @@ Trait CategoriesTrait
                 $post->setId($postIndex);
                 $postIndex++;
             }
+        }
+
+        if (null !== $this->newCategory) {
+            $categories[] = $this->newCategory;
         }
 
         return $categories;

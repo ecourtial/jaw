@@ -33,5 +33,9 @@ Trait CategoriesPathTrait
         $this->checkDeleteCategory($client);
         $this->checkCategoriesList($client);
         $this->checkDetailsOfCategories($client);
+
+        $this->checkCannotDeleteCategoryWithPosts($client);
+        $this->checkCategoriesList($client);
+        $this->checkDetailsOfCategories($client);
     }
 }

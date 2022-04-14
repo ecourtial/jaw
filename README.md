@@ -27,3 +27,9 @@ somePassword123456
 
 JohntheRegular
 somePassword123456aa
+
+
+
+Todo new version: change the app version in the conf file
+
+CHANGELOG

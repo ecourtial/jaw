@@ -159,6 +159,27 @@ Trait CategoriesTrait
         $client->followRedirects(false);
     }
 
+    /** Test the safety against deleting a category which has posts */
+    protected function checkCannotDeleteCategoryWithPosts(KernelBrowser $client): void
+    {
+        $client->followRedirects();
+
+        $crawler = $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL . '/' . 1 . '/edit');
+
+        $title = 'Edit the category: ' . $this->getFixturesCategories()[0]->getTitle();
+        $this->assertPageTitleContains('MyBlog Admin - ' . $title . ' - JAW v1.0');
+        static::assertEquals($title, $crawler->filter('h1')->text());
+
+        $form = $crawler->selectButton('deleteCategorySubmitButton')->form();
+
+        $client->submit($form);
+        static::assertEquals(200, $client->getResponse()->getStatusCode());
+        $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL);
+        $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.0');
+
+        $client->followRedirects(false);
+    }
+
     private function getFixturesCategories(): array
     {
         $postIndex = 1;

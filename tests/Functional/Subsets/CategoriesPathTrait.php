@@ -19,6 +19,7 @@ Trait CategoriesPathTrait
     public function checkCategoriesPath(KernelBrowser $client): void
     {
         $this->checkCategoryMenuItem($client);
-        $this->checkCategoriesList($client, 2);
+        $this->checkCategoriesListBeforeAddingAnotherOne($client);
+        $this->checktDetailsOfCategories($client);
     }
 }

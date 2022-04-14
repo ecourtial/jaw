@@ -70,14 +70,23 @@ class Category
         return $this->id;
     }
 
+    public function setId(?int $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
     public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    public function setTitle(?string $title): void
+    public function setTitle(?string $title): self
     {
         $this->title = $title;
+
+        return $this;
     }
 
     public function getSlug(): ?string
@@ -85,9 +94,11 @@ class Category
         return $this->slug;
     }
 
-    public function setSlug(string $slug): void
+    public function setSlug(string $slug): self
     {
         $this->slug = $slug;
+
+        return $this;
     }
 
     public function getPosts(): Collection
@@ -95,17 +106,21 @@ class Category
         return $this->posts;
     }
 
-    public function addPost(Post $post): void
+    public function addPost(Post $post): self
     {
         $post->setCategory($this);
         if (!$this->posts->contains($post)) {
             $this->posts->add($post);
         }
+
+        return $this;
     }
 
-    public function removePost(Post $post): void
+    public function removePost(Post $post): self
     {
         $this->posts->removeElement($post);
+
+        return $this;
     }
 
     public function getSummary(): ?string
@@ -113,8 +128,10 @@ class Category
         return $this->summary;
     }
 
-    public function setSummary(?string $summary): void
+    public function setSummary(?string $summary): self
     {
         $this->summary = $summary;
+
+        return $this;
     }
 }

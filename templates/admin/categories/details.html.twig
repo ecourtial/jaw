@@ -5,7 +5,10 @@
 {% endblock %}
 
 {% block body %}
-    <p><strong>{{ 'category.summary'|trans}}</strong>: <span><i>{{ category.summary }}</i></span></p>
+    <p id="summary"><strong>{{ 'category.summary'|trans}}</strong>: <span><i>{{ category.summary }}</i></span></p>
+    <p id="slug"><strong>{{ 'category.slug'|trans}}</strong>: <span><i>{{ category.slug }}</i></span></p>
+    <p id="categId"><strong>Id: {{ category.id }}</strong></p>
+
     {% if category.posts|length != 0 %}
         <p><strong>Posts:</strong></p>
         <ul>

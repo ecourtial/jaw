@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Subsets\Sections;
 
 use App\Tests\Functional\Tools\UrlInterface;
+use App\DataFixtures\AppFixtures;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 Trait CategoriesTrait
@@ -22,36 +23,47 @@ Trait CategoriesTrait
         $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.0');
     }
 
-    protected function checkCategoriesListBeforeAddingAnother(KernelBrowser $client): void
+    /** Check the categories listing screen */
+    protected function checkCategoriesListBeforeAddingAnotherOne(KernelBrowser $client): void
     {
         $crawler = $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL);
         $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.0');
+        static::assertEquals('Categories index', $crawler->filter('h1')->text());
 
-        $result = [];
-        $link = $crawler->selectLink('Details');
+        foreach ($this->getFixturesCategories() as $key => $category) {
+            static::assertEquals($category->getTitle() . ' - Details - Edit', $crawler->filter('#categ_' . $category->getId())->text());
 
-        $link->each(function ($node, $i) use (&$result) {
-            /** @var \Symfony\Component\DomCrawler\Crawler $node */
-            $entry = [
-                'url' => $node->link()->getUri(),
-                'lineText' => $node->ancestors()->text(),
-            ];
+            $detailsLink = $crawler->filter('#details_categ_' . $category->getId());
+            static::assertEquals('Details', $detailsLink->text());
+            static::assertEquals(UrlInterface::CATEGORIES_LIST_SCREEN_URL . '/' . $category->getId(), $detailsLink->link()->getUri());
 
-            $result[] = $entry;
+            $detailsLink = $crawler->filter('#edit_categ_' . $category->getId());
+            static::assertEquals('Edit', $detailsLink->text());
+            static::assertEquals(UrlInterface::CATEGORIES_LIST_SCREEN_URL . '/' . $category->getId() . '/edit', $detailsLink->link()->getUri());
+        }
+    }
 
-        });
+    /** Check the category details screen */
+    protected function checktDetailsOfCategories(KernelBrowser $client): void
+    {
+        foreach ($this->getFixturesCategories() as $key => $category) {
+            $crawler = $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL . '/' . $category->getId());
 
-        $expected = [
-            [
-                'url' => UrlInterface::CATEGORIES_DETAIL_SCREEN_URL_ROOT . 1,
-                'lineText' => 'My first category - Details - Edit',
-            ],
-            [
-                'url' => UrlInterface::CATEGORIES_DETAIL_SCREEN_URL_ROOT . 2,
-                'lineText' => 'Another category - Details - Edit',
-            ],
-        ];
+            static::assertEquals('Category: ' . $category->getTitle(), $crawler->filter('h1')->text());
+            static::assertEquals('Summary: ' . $category->getSummary() , $crawler->filter('#summary')->text());
+            static::assertEquals('Slug: ' . $category->getSlug() , $crawler->filter('#slug')->text());
+            static::assertEquals('Id: ' . $category->getId(), $crawler->filter('#categId')->text());
+        }
+    }
 
-        static::assertEquals($expected, $result);
+    private function getFixturesCategories(): array
+    {
+        $categories = AppFixtures::getFixturesCategories();
+        foreach ($categories as $key => $category) {
+            $category->setId($key + 1);
+            // We set the id manually by guessing it (see DataFixtures structure).
+        }
+
+        return $categories;
     }
 }

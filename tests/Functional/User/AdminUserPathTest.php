@@ -2,12 +2,14 @@
 
 namespace App\Tests\Functional\User;
 
+use App\Tests\Functional\Subsets\CategoriesPathTrait;
 use App\Tests\Functional\Subsets\UserPathCaseTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AdminUserPathTest extends WebTestCase
 {
     use UserPathCaseTrait;
+    use CategoriesPathTrait;
 
     public function testAdminUserPath(): void
     {
@@ -71,6 +73,9 @@ class AdminUserPathTest extends WebTestCase
             $newGithubUsername,
             $newGoogleAnalyticsId
         );
+
+        // Categories
+        $this->checkCategoriesPath($client);
 
         // Keep that in last position
         $this->logout($client);

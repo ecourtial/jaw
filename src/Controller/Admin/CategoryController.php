@@ -20,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/admin/category')]
 class CategoryController extends AbstractAdminController
 {
-    #[Route('/list', name: 'category_list')]
+    #[Route('', name: 'category_list')]
     public function getList(CategoryRepository $categoryRepository): Response
     {
         return $this->generateView(

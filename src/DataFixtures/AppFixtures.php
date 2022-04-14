@@ -32,9 +32,11 @@ class AppFixtures extends Fixture
         $manager->persist($regularUser);
 
         // Create some categories
-        $category1 = $this->createCategory('My first category', 'my-first-category', 'The first one!');
+        $categories = static::getFixturesCategories();
+
+        $category1 = $categories[0];
         $manager->persist($category1);
-        $category2 = $this->createCategory('Another category', 'another-category', 'Another one!');
+        $category2 = $categories[1];
         $manager->persist($category2);
 
         // Create some posts
@@ -42,8 +44,8 @@ class AppFixtures extends Fixture
             'My first post',
             'my_first_post',
             $category1,
-            'The summary',
-            'Then content',
+            'The summary 1',
+            'Then content 1',
             $regularUser
         ));
 
@@ -51,8 +53,8 @@ class AppFixtures extends Fixture
             'My second post',
             'my_second_post',
             $category2,
-            'The summary',
-            'Then content',
+            'The summary 2',
+            'Then content 2',
             $regularUser
         ));
 
@@ -60,12 +62,21 @@ class AppFixtures extends Fixture
             'My third post',
             'my_third_post',
             $category2,
-            'The summary',
-            'Then content',
+            'The summary 3',
+            'Then content 3',
             $regularUser
         ));
 
         $manager->flush();
+    }
+
+    /** @return Category[] */
+    public static function getFixturesCategories(): array
+    {
+        return [
+            (new Category())->setTitle('My first category')->setSlug('my-first-category')->setSummary('The first one!'),
+            (new Category())->setTitle('Another category')->setSlug('another-category')->setSummary('Another one!'),
+        ];
     }
 
     private function initBlogConfiguration(): Configuration
@@ -108,16 +119,6 @@ class AppFixtures extends Fixture
         $user->setRoles(['ROLE_USER']);
 
         return $user;
-    }
-
-    private function createCategory(string $title, string $slug, string $summary): Category
-    {
-        $category = new Category();
-        $category->setTitle($title);
-        $category->setSlug($slug);
-        $category->setSummary($summary);
-
-        return $category;
     }
 
     private function createPost(string $title, string $slug, Category $category, string $summary, string $content, User $author): Post

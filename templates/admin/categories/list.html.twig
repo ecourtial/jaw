@@ -15,7 +15,7 @@
 
     <ul>
         {% for category in categories %}
-            <li>{{ category.title }} - <a href="{{ path('category_get', {id: category.id}) }}">{{ 'label.details'|trans }}</a> - <a href="{{ path('category_edit', {id: category.id}) }}">{{ 'category.edit'|trans }}</a></li>
+            <li id="categ_{{ category.id }}">{{ category.title }} - <a id="details_categ_{{ category.id }}" href="{{ path('category_get', {id: category.id}) }}">{{ 'label.details'|trans }}</a> - <a id="edit_categ_{{ category.id }}" href="{{ path('category_edit', {id: category.id}) }}">{{ 'category.edit'|trans }}</a></li>
         {% endfor %}
     </ul>
 {% endblock %}

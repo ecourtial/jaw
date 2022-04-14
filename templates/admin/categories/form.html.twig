@@ -2,9 +2,10 @@
 
 {% block screenTitle %}
     <h1>
-        {{ screenTitle }}
         {% if category is defined %}
-            : <span><i>{{ category.title }}</i></span>
+            {{ screenTitle }}: <span><i>{{ category.title }}</i></span>
+        {% else %}
+            {{ screenTitle }}
         {% endif %}
     </h1>
 {% endblock %}

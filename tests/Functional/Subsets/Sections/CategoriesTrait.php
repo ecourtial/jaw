@@ -85,8 +85,8 @@ Trait CategoriesTrait
         ]);
 
         $client->submit($form);
-        $crawler = $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL);
         static::assertEquals(200, $client->getResponse()->getStatusCode());
+        $crawler = $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL);
         $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.0');
 
         // 2- Get the id of the last created category (supposed to be ours), so we can do the previous checks again.
@@ -103,6 +103,58 @@ Trait CategoriesTrait
         });
         $lastEntry = array_pop($result);
         $this->newCategory->setId((int)substr($lastEntry['url'], -1));
+
+        $client->followRedirects(false);
+    }
+
+    /** Edit the newly created category */
+    protected function checkEditCategory(KernelBrowser $client): void
+    {
+        $client->followRedirects();
+
+        $crawler = $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL . '/' . $this->newCategory->getId() . '/edit');
+
+        $title = 'Edit the category: ' . $this->newCategory->getTitle();
+        $this->assertPageTitleContains('MyBlog Admin - ' . $title . ' - JAW v1.0');
+        static::assertEquals($title, $crawler->filter('h1')->text());
+
+        $this->newCategory->setTitle('New title');
+        $this->newCategory->setSummary('New summary');
+        $this->newCategory->setSummary('new-summary');
+
+        $form = $crawler->selectButton('saveCategorySubmitButton')->form([
+            'category[title]' => $this->newCategory->getTitle(),
+            'category[slug]' => $this->newCategory->getSlug(),
+            'category[summary]' => $this->newCategory->getSummary(),
+        ]);
+
+        $client->submit($form);
+        static::assertEquals(200, $client->getResponse()->getStatusCode());
+        $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL);
+        $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.0');
+
+        $client->followRedirects(false);
+    }
+
+    /** Delete the newly created category */
+    protected function checkDeleteCategory(KernelBrowser $client): void
+    {
+        $client->followRedirects();
+
+        $crawler = $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL . '/' . $this->newCategory->getId() . '/edit');
+
+        $title = 'Edit the category: ' . $this->newCategory->getTitle();
+        $this->assertPageTitleContains('MyBlog Admin - ' . $title . ' - JAW v1.0');
+        static::assertEquals($title, $crawler->filter('h1')->text());
+
+        $form = $crawler->selectButton('deleteCategorySubmitButton')->form();
+
+        $client->submit($form);
+        static::assertEquals(200, $client->getResponse()->getStatusCode());
+        $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL);
+        $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.0');
+
+        $this->newCategory = null;
 
         $client->followRedirects(false);
     }

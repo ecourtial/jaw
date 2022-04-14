@@ -75,7 +75,7 @@ class AdminUserPathTest extends WebTestCase
         );
 
         // Categories
-        $this->checkCategoriesPath($client);
+        //$this->checkCategoriesPath($client);
 
         // Keep that in last position
         $this->logout($client);

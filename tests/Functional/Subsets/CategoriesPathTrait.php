@@ -21,12 +21,17 @@ Trait CategoriesPathTrait
         $this->checkCategoryMenuItem($client);
         $this->checkCategoriesList($client);
         $this->checkDetailsOfCategories($client);
+
         $this->checkAddCategory($client);
         $this->checkCategoriesList($client);
         $this->checkDetailsOfCategories($client);
-        //Edit
-        //...
-        // Delete
-        //...
+
+        $this->checkEditCategory($client);
+        $this->checkCategoriesList($client);
+        $this->checkDetailsOfCategories($client);
+
+        $this->checkDeleteCategory($client);
+        $this->checkCategoriesList($client);
+        $this->checkDetailsOfCategories($client);
     }
 }

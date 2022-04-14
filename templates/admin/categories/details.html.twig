@@ -13,7 +13,7 @@
         <p><strong>Posts:</strong></p>
         <ul>
             {% for post in category.posts %}
-                <li>{{ post.title }} - <a href="">{{ 'post.edit'|trans }}</a></li>
+                <li id="post_{{ post.id }}">{{ post.title }} - <a href="">{{ 'post.edit'|trans }}</a></li>
             {% endfor %}
         </ul>
     {% else %}

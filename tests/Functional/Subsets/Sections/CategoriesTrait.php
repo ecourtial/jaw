@@ -30,7 +30,7 @@ Trait CategoriesTrait
         $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.0');
         static::assertEquals('Categories index', $crawler->filter('h1')->text());
 
-        foreach ($this->getFixturesCategories() as $key => $category) {
+        foreach ($this->getFixturesCategories() as $category) {
             static::assertEquals($category->getTitle() . ' - Details - Edit', $crawler->filter('#categ_' . $category->getId())->text());
 
             $detailsLink = $crawler->filter('#details_categ_' . $category->getId());
@@ -46,22 +46,33 @@ Trait CategoriesTrait
     /** Check the category details screen */
     protected function checktDetailsOfCategories(KernelBrowser $client): void
     {
-        foreach ($this->getFixturesCategories() as $key => $category) {
+        foreach ($this->getFixturesCategories() as $category) {
             $crawler = $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL . '/' . $category->getId());
 
             static::assertEquals('Category: ' . $category->getTitle(), $crawler->filter('h1')->text());
             static::assertEquals('Summary: ' . $category->getSummary() , $crawler->filter('#summary')->text());
             static::assertEquals('Slug: ' . $category->getSlug() , $crawler->filter('#slug')->text());
             static::assertEquals('Id: ' . $category->getId(), $crawler->filter('#categId')->text());
+
+            foreach ($category->getPosts() as $post) {
+                static::assertEquals($post->getTitle() . ' - Edit', $crawler->filter('#post_' . $post->getId())->text());
+            }
         }
     }
 
     private function getFixturesCategories(): array
     {
+        $postIndex = 1;
+
         $categories = AppFixtures::getFixturesCategories();
         foreach ($categories as $key => $category) {
+            // We set the ids manually by guessing it (see DataFixtures structure).
             $category->setId($key + 1);
-            // We set the id manually by guessing it (see DataFixtures structure).
+
+            foreach ($category->getPosts() as $post) {
+                $post->setId($postIndex);
+                $postIndex++;
+            }
         }
 
         return $categories;

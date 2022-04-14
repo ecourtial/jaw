@@ -21,61 +21,68 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
+        // BE CAREFUL IF CHANGING SOMETHING EXISTING HERE, AS DATA ARE USED FOR UNIT TESTS.
+
         // Create sample configuration
         $manager->persist($this->initBlogConfiguration());
 
         // Create a sample admin user
         $manager->persist($this->createAdminUser());
 
-        // Create a sample regular user
+        // Create a sample regular user (keep in this order, as the user id is used for some tests)
         $regularUser = $this->createRegularUser();
         $manager->persist($regularUser);
 
-        // Create some categories
-        $categories = static::getFixturesCategories();
-
-        $category1 = $categories[0];
-        $manager->persist($category1);
-        $category2 = $categories[1];
-        $manager->persist($category2);
-
-        // Create some posts
-        $manager->persist($this->createPost(
-            'My first post',
-            'my_first_post',
-            $category1,
-            'The summary 1',
-            'Then content 1',
-            $regularUser
-        ));
-
-        $manager->persist($this->createPost(
-            'My second post',
-            'my_second_post',
-            $category2,
-            'The summary 2',
-            'Then content 2',
-            $regularUser
-        ));
-
-        $manager->persist($this->createPost(
-            'My third post',
-            'my_third_post',
-            $category2,
-            'The summary 3',
-            'Then content 3',
-            $regularUser
-        ));
+        // Create some categories containing a few posts
+        $categories = static::getFixturesCategories($regularUser);
+        $manager->persist($categories[0]);
+        $manager->persist($categories[1]);
 
         $manager->flush();
     }
 
     /** @return Category[] */
-    public static function getFixturesCategories(): array
+    public static function getFixturesCategories(?User $regularUser = null): array
     {
+        $regularUser = $regularUser ?? (new User())->setId(2);
+
         return [
-            (new Category())->setTitle('My first category')->setSlug('my-first-category')->setSummary('The first one!'),
-            (new Category())->setTitle('Another category')->setSlug('another-category')->setSummary('Another one!'),
+            (new Category())
+                ->setTitle('My first category')
+                ->setSlug('my-first-category')
+                ->setSummary('The first one!')
+                ->addPost(
+                    (new Post())
+                    ->setTitle('My first post')
+                    ->setSlug('my_first_post')
+                    ->setSummary('The summary 1')
+                    ->setContent('Then content 1')
+                    ->setAuthor($regularUser)
+                    ->setLanguage('en')
+                )
+            ,
+            (new Category())
+                ->setTitle('Another category')
+                ->setSlug('another-category')
+                ->setSummary('Another one!')
+                ->addPost(
+                    (new Post())
+                        ->setTitle('My second post')
+                        ->setSlug('my_second_post')
+                        ->setSummary('The summary 2')
+                        ->setContent('Then content 2')
+                        ->setAuthor($regularUser)
+                        ->setLanguage('en')
+                )
+                ->addPost(
+                    (new Post())
+                        ->setTitle('My third post')
+                        ->setSlug('my_third_post')
+                        ->setSummary('The summary 3')
+                        ->setContent('Then content 3')
+                        ->setAuthor($regularUser)
+                        ->setLanguage('en')
+                )
         ];
     }
 
@@ -119,20 +126,5 @@ class AppFixtures extends Fixture
         $user->setRoles(['ROLE_USER']);
 
         return $user;
-    }
-
-    private function createPost(string $title, string $slug, Category $category, string $summary, string $content, User $author): Post
-    {
-        $post = new Post();
-        $post->setTitle($title);
-        $post->setSlug($slug);
-        $post->setCategory($category);
-        $post->setSummary($summary);
-        $post->setContent($content);
-        $post->setAuthor($author);
-        $post->setLanguage('en');
-        $post->setPublishedAt(new \DateTime());
-
-        return $post;
     }
 }

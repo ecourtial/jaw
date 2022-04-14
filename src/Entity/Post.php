@@ -94,9 +94,11 @@ class Post
         return $this->title;
     }
 
-    public function setTitle(?string $title): void
+    public function setTitle(?string $title): self
     {
         $this->title = $title;
+
+        return $this;
     }
 
     public function getSlug(): ?string
@@ -104,9 +106,11 @@ class Post
         return $this->slug;
     }
 
-    public function setSlug(string $slug): void
+    public function setSlug(string $slug): self
     {
         $this->slug = $slug;
+
+        return $this;
     }
 
     public function getContent(): ?string
@@ -114,9 +118,11 @@ class Post
         return $this->content;
     }
 
-    public function setContent(?string $content): void
+    public function setContent(?string $content): self
     {
         $this->content = $content;
+
+        return $this;
     }
 
     public function getPublishedAt(): \DateTime
@@ -124,9 +130,11 @@ class Post
         return $this->publishedAt;
     }
 
-    public function setPublishedAt(\DateTime $publishedAt): void
+    public function setPublishedAt(\DateTime $publishedAt): self
     {
         $this->publishedAt = $publishedAt;
+
+        return $this;
     }
 
     public function getAuthor(): ?User
@@ -134,9 +142,11 @@ class Post
         return $this->author;
     }
 
-    public function setAuthor(User $author): void
+    public function setAuthor(User $author): self
     {
         $this->author = $author;
+
+        return $this;
     }
 
     public function getSummary(): ?string
@@ -144,9 +154,11 @@ class Post
         return $this->summary;
     }
 
-    public function setSummary(?string $summary): void
+    public function setSummary(?string $summary): self
     {
         $this->summary = $summary;
+
+        return $this;
     }
 
     public function getLanguage(): ?string
@@ -154,9 +166,11 @@ class Post
         return $this->language;
     }
 
-    public function setLanguage(string $language): void
+    public function setLanguage(string $language): self
     {
         $this->language = $language;
+
+        return $this;
     }
 
     public function getCategory(): ?Category
@@ -164,8 +178,10 @@ class Post
         return $this->category;
     }
 
-    public function setCategory(Category $category): void
+    public function setCategory(Category $category): self
     {
         $this->category = $category;
+
+        return $this;
     }
 }

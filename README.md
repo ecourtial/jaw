@@ -28,6 +28,7 @@ somePassword123456
 JohntheRegular
 somePassword123456aa
 
+bin/console assets:install public
 
 
 Todo new version: change the app version in the conf file

@@ -14,6 +14,7 @@ namespace App\Form;
 use App\Entity\Category;
 use App\Entity\Post;
 use App\Repository\UserRepository;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -98,7 +99,7 @@ class PostType extends AbstractType
                 'attr' => ['class' => 'form-control',
                 ]
             ])
-            ->add('content', null, [
+            ->add('content', CKEditorType::class, [
                 'attr' => ['rows' => 20, 'class' => 'form-control'],
                 'label' => 'post.content',
             ])

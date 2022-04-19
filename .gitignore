@@ -28,3 +28,6 @@ docker/dev/docker/
 .phpunit.result.cache
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
+
+# CKeditor
+public/bundles

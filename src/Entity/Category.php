@@ -42,7 +42,7 @@ class Category
      * @ORM\Column(type="string", nullable=false)
      */
     #[
-        Assert\NotBlank(message: 'post.blank_summary'),
+        Assert\NotBlank(message: 'category.blank_summary'),
         Assert\Length(max: 255)
     ]
     private ?string $summary = null;

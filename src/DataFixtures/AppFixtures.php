@@ -59,6 +59,8 @@ class AppFixtures extends Fixture
                     ->setContent('Then content 1')
                     ->setAuthor($regularUser)
                     ->setLanguage('en')
+                    ->setTopPost(false)
+                    ->setOnline(true)
                 )
             ,
             (new Category())
@@ -73,6 +75,8 @@ class AppFixtures extends Fixture
                         ->setContent('Then content 2')
                         ->setAuthor($regularUser)
                         ->setLanguage('en')
+                        ->setTopPost(true)
+                        ->setOnline(true)
                 )
                 ->addPost(
                     (new Post())
@@ -82,6 +86,8 @@ class AppFixtures extends Fixture
                         ->setContent('Then content 3')
                         ->setAuthor($regularUser)
                         ->setLanguage('en')
+                        ->setTopPost(true)
+                        ->setOnline(false)
                 )
         ];
     }

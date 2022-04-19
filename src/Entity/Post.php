@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PostRepository")
  * @ORM\Table(name="posts")
- * @UniqueEntity(fields={"category,slug"}, message="post.slug_must_be_unique")
+ * @UniqueEntity(fields={"slug"}, message="post.slug_must_be_unique")
  */
 class Post
 {
@@ -72,6 +72,16 @@ class Post
      * @ORM\JoinColumn(nullable=false)
      */
     private ?Category $category = null;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=false, options={"default": false})
+     */
+    private bool $online = false;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=false, options={"default": false})
+     */
+    private bool $topPost = false;
 
     /**
      * @ORM\Column(type="string", nullable=false)
@@ -188,6 +198,30 @@ class Post
     public function setCategory(Category $category): self
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    public function isOnline(): bool
+    {
+        return $this->online;
+    }
+
+    public function setOnline(bool $isOnline): self
+    {
+        $this->online = $isOnline;
+
+        return $this;
+    }
+
+    public function isTopPost(): bool
+    {
+        return $this->topPost;
+    }
+
+    public function setTopPost(bool $isTopPost): self
+    {
+        $this->topPost = $isTopPost;
 
         return $this;
     }

@@ -73,6 +73,7 @@ phpstan_command:
 	php vendor/bin/phpstan analyse --memory-limit=-1
 
 phpunit_command:
+	make create_test_db_command
 	APP_ENV=test bin/console cache:warmup && vendor/bin/phpunit --testdox
 
 phpcs_command:

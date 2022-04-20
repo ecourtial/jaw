@@ -59,6 +59,9 @@ Trait CategoriesTrait
 
             foreach ($category->getPosts() as $post) {
                 static::assertEquals($post->getTitle() . ' - Edit', $crawler->filter('#post_' . $post->getId())->text());
+
+                $editUrl = UrlInterface::POSTS_LIST_URL . '/' . $post->getId() . '/edit';
+                static::assertEquals($editUrl, $crawler->filter('#edit_post_' . $post->getId())->link()->getUri());
             }
         }
     }

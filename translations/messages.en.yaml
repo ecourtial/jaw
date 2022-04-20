@@ -13,7 +13,7 @@ menu.configuration: Configuration
 menu.categories: Categories
 menu.categories.index: List
 menu.categories.add: Add
-menu.posts: Posts
+menu.posts: Create post
 menu.profile: Profile
 menu.logout: Logout
 menu.profile.account: Edit my profile
@@ -65,19 +65,41 @@ category.edition_form_title: Edit the category
 category.title: Title
 category.slug: Slug
 category.summary: Summary
+category.blank_summary: The summary cannot be empty.
 category.successfully_created: The category has been successfully created.
 category.successfully_updated: The category has been successfully updated.
 category.deleted_successfully: The category has been successfully deleted.
 category.deletion_error_has_posts: The category has not been deleted because it contains some posts.
 category.has_no_post: There is no post in this category.
+delete_modal.category: Delete the category?
 
 # Posts
-post.slug_must_be_unique: The combination of the post slug and category must be unique. Please choose another one.
+post.slug_must_be_unique: The slug must be unique. Please choose another one.
+post.creation_form_title: Create a post
 post.edit: Edit
+post.title: Title
+post.summary: Summary
+post.content: Content
+post.successfully_created: The post has been successfully created.
+post.successfully_updated: The post has been successfully updated.
+post.deleted_successfully: The post has been successfully deleted.
+post.blank_summary: The summary cannot be empty.
+post.blank_content: The content cannot be empty.
+post.too_short_content: The content must be at least 10 characters long.
+post.is_online: Is online?
+post.is_top_post: Is top post?
+post.edition_form_title: Edit the post
+delete_modal.post: Delete the post?
 
 # Various
 button.save_and_create_new: Save and create new
 button.delete: Delete
-delete_modal.category: Delete the category?
 button.cancel: Cancel
 label.details: Details
+yes: Yes
+no: No
+language: Language
+
+# Languages
+french: French
+english: English

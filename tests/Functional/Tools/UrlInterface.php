@@ -12,4 +12,5 @@ interface UrlInterface
     public const PROFILE_SCREEN_URL = 'http://localhost/admin/profile';
     public const CHANGE_PASSWORD_SCREEN_URL = 'http://localhost/admin/password';
     public const CATEGORIES_LIST_SCREEN_URL = 'http://localhost/admin/category';
+    public const POSTS_LIST_URL = 'http://localhost/admin/post';
 }

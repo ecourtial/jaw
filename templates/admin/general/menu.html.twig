@@ -10,11 +10,9 @@
                     <a class="nav-link active" aria-current="page" href="{{ url('admin_home') }}">{{ 'menu.home'|trans }}</a>
                 </li>
                 {% if is_granted('ROLE_USER') %}
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url('configuration') }}">{{ 'menu.configuration'|trans }}</a>
-                            </li>
-                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('post_add') }}">{{ 'menu.posts'|trans }}</a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ 'menu.categories'|trans }}
@@ -23,9 +21,6 @@
                                 <li><a class="dropdown-item" href="{{ url('category_list') }}">{{ 'menu.categories.index'|trans }}</a></li>
                                 <li><a class="dropdown-item" href="{{ url('category_add') }}">{{ 'menu.categories.add'|trans }}</a></li>
                             </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">{{ 'menu.posts'|trans }}</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -36,6 +31,11 @@
                                 <li><a class="dropdown-item" href="{{ url('password_change') }}">{{ 'menu.profile.password'|trans }}</a></li>
                             </ul>
                         </li>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url('configuration') }}">{{ 'menu.configuration'|trans }}</a>
+                            </li>
+                        {% endif %}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ logout_path() }}">{{ 'menu.logout'|trans }}</a>
                         </li>

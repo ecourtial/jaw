@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Post;
-use App\Exception\Category\CategoryNotEmptyException;
 use App\Form\PostType;
 use App\Repository\PostRepository;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;

@@ -94,7 +94,7 @@ class PostType extends AbstractType
                     ]
                 ]
             )
-            ->add('summary', TextareaType::class, [
+            ->add('summary', CKEditorType::class, [
                 'label' => 'post.summary',
                 'attr' => ['class' => 'form-control',
                 ]

@@ -3,6 +3,7 @@
 namespace App\Tests\Functional\User;
 
 use App\Tests\Functional\Subsets\CategoriesPathTrait;
+use App\Tests\Functional\Subsets\PostsPathTrait;
 use App\Tests\Functional\Subsets\UserPathCaseTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -10,6 +11,7 @@ class RegularUserPathTest extends WebTestCase
 {
     use UserPathCaseTrait;
     use CategoriesPathTrait;
+    use PostsPathTrait;
 
     public function testRegularUserPath(): void
     {
@@ -32,6 +34,9 @@ class RegularUserPathTest extends WebTestCase
 
         // Categories
         $this->checkCategoriesPath($client);
+
+        // Posts
+        $this->checkPostsPath($client);
 
         // Keep that in last position
         $this->logout($client);

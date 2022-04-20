@@ -17,6 +17,10 @@
         </div>
     {% endfor %}
 
+    {% if post is defined %}
+        <p id="postId"><strong>Id:</strong> {{ post.id }}</p>
+    {% endif %}
+
     {{ form_start(form) }}
     {{ form_widget(form) }}
     {{ form_rest(form) }}

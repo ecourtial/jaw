@@ -84,9 +84,11 @@ class Configuration
         return $this->blogTitle;
     }
 
-    public function setBlogTitle(?string $blogTitle): void
+    public function setBlogTitle(?string $blogTitle): self
     {
         $this->blogTitle = $blogTitle;
+
+        return $this;
     }
 
     public function getBlogDescription(): ?string
@@ -94,9 +96,11 @@ class Configuration
         return $this->blogDescription;
     }
 
-    public function setBlogDescription(?string $blogDescription): void
+    public function setBlogDescription(?string $blogDescription): self
     {
         $this->blogDescription = $blogDescription;
+
+        return $this;
     }
 
     public function getCopyrightMessage(): ?string
@@ -104,9 +108,11 @@ class Configuration
         return $this->copyrightMessage;
     }
 
-    public function setCopyrightMessage(?string $copyrightMessage): void
+    public function setCopyrightMessage(?string $copyrightMessage): self
     {
         $this->copyrightMessage = $copyrightMessage;
+
+        return $this;
     }
 
     public function getCopyrightExtraMessage(): ?string
@@ -114,9 +120,11 @@ class Configuration
         return $this->copyrightExtraMessage;
     }
 
-    public function setCopyrightExtraMessage(?string $copyrightExtraMessage): void
+    public function setCopyrightExtraMessage(?string $copyrightExtraMessage): self
     {
         $this->copyrightExtraMessage = $copyrightExtraMessage;
+
+        return $this;
     }
 
     public function getLinkedinUsername(): ?string
@@ -124,9 +132,11 @@ class Configuration
         return $this->linkedinUsername;
     }
 
-    public function setLinkedinUsername(?string $linkedinUsername): void
+    public function setLinkedinUsername(?string $linkedinUsername): self
     {
         $this->linkedinUsername = $linkedinUsername;
+
+        return $this;
     }
 
     public function getGithubUsername(): ?string
@@ -134,9 +144,11 @@ class Configuration
         return $this->githubUsername;
     }
 
-    public function setGithubUsername(?string $githubUsername): void
+    public function setGithubUsername(?string $githubUsername): self
     {
         $this->githubUsername = $githubUsername;
+
+        return $this;
     }
 
     public function getGoogleAnalyticsId(): ?string
@@ -144,8 +156,10 @@ class Configuration
         return $this->googleAnalyticsId;
     }
 
-    public function setGoogleAnalyticsId(?string $googleAnalyticsId): void
+    public function setGoogleAnalyticsId(?string $googleAnalyticsId): self
     {
         $this->googleAnalyticsId = $googleAnalyticsId;
+
+        return $this;
     }
 }

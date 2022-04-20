@@ -6,6 +6,14 @@ stop:
 	@cd docker/dev \
 	&& docker-compose stop
 
+########################
+# Init (for production)
+########################
+init:
+	bin/console doctrine:database:create
+	bin/console doctrine:migrations:migrate
+	bin/console app:init-config
+
 #############
 # Containers
 #############

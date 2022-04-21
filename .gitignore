@@ -31,3 +31,6 @@ docker/dev/docker/
 
 # CKeditor
 public/bundles
+
+# SQL dev Dumps
+docker/dev/dumps

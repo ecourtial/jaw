@@ -5,6 +5,7 @@ services:
     container_name: mysql_jaw
     volumes:
       - ./docker/data/db:/var/lib/mysql
+      - ./dumps:/var/www/html
     command: "--default-authentication-plugin=mysql_native_password"
     ports:
       - "${MYSQL_PORT:-3307}:3306"
@@ -13,6 +14,8 @@ services:
       - MYSQL_DATABASE=${DATABASE_NAME:-jaw}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_USER_PASSWORD=${MYSQL_USER_PASSWORD}
+      - DOCKER_USER_UID=${UID}
+      - DOCKER_USER_GID=${GID}
 
   nginx:
     container_name: nginx_jaw

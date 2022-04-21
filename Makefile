@@ -1,6 +1,7 @@
 start:
 	@cd docker/dev \
-	&& docker-compose up -d
+	&& docker-compose up -d \
+	&& docker-compose exec mysql bash -c '`chown -R $$DOCKER_USER_UID:$$DOCKER_USER_GID /var/lib/mysql`'
 
 stop:
 	@cd docker/dev \
@@ -72,6 +73,10 @@ migrate:
 fixtures:
 	@cd docker/dev \
 	&& docker-compose exec php bash -c 'make load_fixtures_command'
+
+dump_db:
+	@cd docker/dev \
+	&& docker-compose exec mysql bash -c 'mysqldump -u root jaw -p > /var/www/html/dump.sql && `chown -R $$DOCKER_USER_UID:$$DOCKER_USER_GID /var/www/html/dump.sql`'
 
 #### Internal (inside the container)
 

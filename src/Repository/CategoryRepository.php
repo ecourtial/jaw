@@ -23,6 +23,22 @@ class CategoryRepository extends ServiceEntityRepository
         parent::__construct($registry, Category::class);
     }
 
+    /** @return \App\Entity\Category[] */
+    public function listAll(): array
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('m');
+        $qb->from(Category::class, 'm');
+        $qb->orderBy('m.title');
+        $result = $qb->getQuery()->getResult();
+
+        if (empty($result)) {
+            $result = [];
+        }
+
+        return $result;
+    }
+
     public function save(Category $category): void
     {
         $this->getEntityManager()->persist($category);

@@ -83,6 +83,18 @@ class PostType extends AbstractType
                 ]
             )
             ->add(
+                'obsolete',
+                ChoiceType::class,
+                [
+                    'label' => 'post.is_obsolete',
+                    'attr' => ['class' => 'form-control'],
+                    'choices' => [
+                        'yes' => true,
+                        'no' => false
+                    ]
+                ]
+            )
+            ->add(
                 'language',
                 ChoiceType::class,
                 [

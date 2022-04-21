@@ -61,9 +61,9 @@ schema_update:
 	@cd docker/dev \
 	&& docker-compose exec php bash -c 'make update_db_schema_command'
 
-schema_drop:
+db_drop:
 	@cd docker/dev \
-	&& docker-compose exec php bash -c 'make drop_db_schema_command'
+	&& docker-compose exec php bash -c 'make drop_db_command'
 
 migrate:
 	@cd docker/dev \
@@ -97,8 +97,8 @@ schema_validate_command:
 update_db_schema_command:
 	APP_ENV=dev bin/console doctrine:schema:update --force
 
-drop_db_schema_command:
-	APP_ENV=dev bin/console doctrine:schema:drop --force
+drop_db_command:
+	APP_ENV=dev bin/console doctrine:database:drop --force
 
 migrate_command:
 	APP_ENV=dev bin/console doctrine:migrations:migrate

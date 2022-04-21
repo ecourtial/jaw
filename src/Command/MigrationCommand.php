@@ -1,23 +1,20 @@
 <?php
 
+/** THIS IS AN EXAMPLE OF A CUSTOM MIGRATION FROM AN OLD BLOG TO JAW */
+
 namespace App\Command;
 
 use App\Entity\Category;
 use App\Entity\Post;
-use App\Entity\User;
-use App\Repository\CategoryRepository;
 use App\Repository\UserRepository;
-use App\Validator\UserValidator;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\PDO\MySQL\Driver;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Exception\RuntimeException;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[AsCommand(
     name: 'app:migrate-db',
@@ -27,19 +24,68 @@ class MigrationCommand extends Command
 {
     private SymfonyStyle $io;
     private EntityManagerInterface $entityManager;
-    private CategoryRepository $categoryRepository;
     private UserRepository $userRepository;
+    private Connection $connection;
+    /** @var string[]  */
+    private array $charMap;
+    /** @var \App\Entity\Category[] */
+    private array $categories = [];
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        CategoryRepository $categoryRepository,
         UserRepository $userRepository,
         string $name = null
     ) {
         parent::__construct($name);
+
         $this->entityManager = $entityManager;
-        $this->categoryRepository = $categoryRepository;
         $this->userRepository = $userRepository;
+
+        $this->connection = new Connection(
+            [
+                'user' => 'root',
+                'password' => 'root',
+                'dbname' => 'dynamic',
+                'host' => 'mysql',
+                //'port' => $port
+            ],
+            new Driver(),
+        );
+
+        $this->charMap = array_flip([
+            'à' => 'Ã',
+            'â' => 'Ã¢',
+            'é' => 'Ã©',
+            'è' => 'Ã¨',
+            'ê' => 'Ãª',
+            'ë' => 'Ã«',
+            'î' => 'Ã®',
+            'ï' => 'Ã¯',
+            'ô' => 'Ã´',
+            'ö' => 'Ã¶',
+            'ù' => 'Ã¹',
+            'û' => 'Ã»',
+            'ü' => 'Ã¼',
+            'ç' => 'Ã§',
+            'œ' => 'Å',
+            '€' => 'â',
+            '°' => 'Â°',
+            // 'À' => 'Ã',
+            // 'Â' => 'Ã',
+            // 'É' => 'Ã',
+            // 'È' => 'Ã',
+            // 'Ê' => 'Ã',
+            // 'Ë' => 'Ã',
+            // 'Î' => 'Ã',
+            // 'Ï' => 'Ã',
+            // 'Ô' => 'Ã',
+            // 'Ö' => 'Ã',
+            // 'Ù' => 'Ã',
+            // 'Û' => 'Ã',
+            // 'Ü' => 'Ã',
+            // 'Ç' => 'Ã',
+            // 'Œ' => 'Å'
+        ]);
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
@@ -53,30 +99,68 @@ class MigrationCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $this->migrateCategories();
+        $this->migratePosts();
+
+        return Command::SUCCESS;
+    }
+
+    private function migrateCategories(): void
+    {
+        $migratedCategoriesCount = 0;
+
+        $readStatment = $this->connection->prepare('SELECT * FROM categories');
+        $result = $readStatment->executeQuery();
+
+        while ($row = $result->fetchAssociative()) {
+            $category = (new Category())
+                ->setSlug($row['URL'])
+                ->setTitle($this->cleanAccents($row['NAME']))
+                ->setSummary($this->cleanAccents($row['DESCRIPTION']));
+
+            $this->entityManager->persist($category);
+            $this->categories[$row['ID']] = $category;
+            $migratedCategoriesCount++;
+        }
+
+        $this->entityManager->flush();
+
+        $this->io->success(sprintf('%s categories were successfully migrated', $migratedCategoriesCount));
+    }
+
+    private function cleanAccents(string $stringToClean): string
+    {
+        $data = strtr($stringToClean, $this->charMap);
+
+        return  str_replace('€€™', "'", $data);
+    }
+
+    private function migratePosts(): void
+    {
         $migratedPostsCount = 0;
-
         $user = $this->userRepository->find(1);
-        $categ = $this->categoryRepository->find(1);
+        $postsInEnglish = [278, 279, 284, 286, 289, 290];
 
-        // ATTENTION AU LANGUAGE JAI # OU QUATRE ARTICLES EN ANGLAIS
+        foreach ($this->getPosts() as $entry) {
+            $language = in_array($entry['ID'], $postsInEnglish) ? 'en' : 'fr';
 
-        foreach ($this->getData() as $entry) {
             $post = (new Post())
-                ->setLanguage($entry['language'])
-                ->setSlug($entry['slug'])
-                ->setSummary($entry['summary'])
-                ->setTitle($entry['title'])
-                ->setContent($entry['content'])
-                ->setPublishedAt($entry['date'])
-                ->setTopPost($entry['toppost'])
-                ->setOnline($entry['online'])
+                ->setLanguage($language)
+                ->setSlug($entry['URL'])
+                ->setSummary($this->cleanAccents($entry['DESCRIPTION']))
+                ->setTitle($this->cleanAccents($entry['TITLE']))
+                ->setContent($this->cleanAccents($entry['CONTENT']))
+                ->setPublishedAt(new \DateTime($entry['DATE']))
+                ->setTopPost($entry['HOME'])
+                ->setOnline($entry['Online'])
+                ->setObsolete($entry['Obsolete'])
                 ->setAuthor($user)
-                ->setCategory($categ);
+                ->setCategory($this->categories[$entry['CATEG']]);
 
             $this->entityManager->persist($post);
             $migratedPostsCount++;
 
-            if ($migratedPostsCount % 2 === 0) {
+            if ($migratedPostsCount === 10) {
                 $this->entityManager->flush();
                 gc_collect_cycles();
             }
@@ -84,56 +168,16 @@ class MigrationCommand extends Command
 
         $this->entityManager->flush();
 
-        $this->io->success(sprintf('%s were successfully migrated', $migratedPostsCount));
-
-        return Command::SUCCESS;
+        $this->io->success(sprintf('%s posts were successfully migrated', $migratedPostsCount));
     }
 
-    private function getData(): \Generator
+    private function getPosts(): \Generator
     {
-        $data = [
-            [
-                'title' => 'One title',
-                'summary' => 'One summary',
-                'content' => 'One content',
-                'date' => new \DateTime(),
-                'language' => 'fr',
-                'toppost' => true,
-                'online' => true,
-                'slug' => 'one-slug'
-            ],
-            [
-                'title' => '2 One title',
-                'summary' => '2 One summary',
-                'content' => '2 One content',
-                'date' => new \DateTime(),
-                'language' => 'fr',
-                'toppost' => true,
-                'online' => true,
-                'slug' => '-one-slug'
-            ]
-        ];
+        $readStatment = $this->connection->prepare('SELECT * FROM articles');
+        $result = $readStatment->executeQuery();
 
-        foreach ($data as $entry) {
-            yield $entry;
+        while ($row = $result->fetchAssociative()) {
+            yield $row;
         }
-    }
-
-    /**
-     * The command help is usually included in the configure() method, but when
-     * it's too long, it's better to define a separate method to maintain the
-     * code readability.
-     */
-    private function getCommandHelp(): string
-    {
-        return <<<'HELP'
-            The <info>%command.name%</info> command creates new users and saves them in the database:
-
-              <info>php %command.full_name%</info> <comment>username password email</comment>
-              <comment>Ex: bin/console app:add-user pseudo password my@email.com "John Smith" --admin</comment>
-
-            By default the command creates regular users. To create administrator users,
-            add the <comment>--admin</comment> option like in the example above.
-            HELP;
     }
 }

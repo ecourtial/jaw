@@ -21,7 +21,7 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        // BE CAREFUL IF CHANGING SOMETHING EXISTING HERE, AS DATA ARE USED FOR UNIT TESTS.
+        // BE CAREFUL IF CHANGING SOMETHING EXISTING HERE, AS DATA ARE USED FOR FUNCTIONAL TESTS.
 
         // Create sample configuration
         $manager->persist($this->initBlogConfiguration());
@@ -55,7 +55,7 @@ class AppFixtures extends Fixture
                     (new Post())
                     ->setTitle('My first post')
                     ->setSlug('my_first_post')
-                    ->setSummary('The summary 1')
+                    ->setSummary('The summary 1 keyword')
                     ->setContent('Then content 1')
                     ->setAuthor($regularUser)
                     ->setLanguage('en')
@@ -80,7 +80,7 @@ class AppFixtures extends Fixture
                 )
                 ->addPost(
                     (new Post())
-                        ->setTitle('My third post')
+                        ->setTitle('My third post keyword')
                         ->setSlug('my_third_post')
                         ->setSummary('The summary 3')
                         ->setContent('Then content 3')

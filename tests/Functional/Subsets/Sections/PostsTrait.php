@@ -27,6 +27,7 @@ Trait PostsTrait
         $this->newPost = (new Post())
             ->setOnline(true)
             ->setTopPost(true)
+            ->setObsolete(false)
             ->setCategory((new Category())->setId(1))
             ->setContent('The awesome content of the post')
             ->setTitle('The title of the post')
@@ -46,6 +47,7 @@ Trait PostsTrait
             'post[title]' => $this->newPost->getTitle(),
             'post[category]' => $this->newPost->getCategory()->getId(),
             'post[online]' => (int)$this->newPost->isOnline(),
+            'post[obsolete]' => (int)$this->newPost->isObsolete(),
             'post[toppost]' => (int)$this->newPost->isTopPost(),
             'post[language]' => $this->newPost->getLanguage(),
             'post[summary]' => $this->newPost->getSummary(),
@@ -94,6 +96,7 @@ Trait PostsTrait
         $this->newPost
             ->setOnline(false)
             ->setTopPost(false)
+            ->setObsolete(true)
             ->setCategory((new Category())->setId(2))
             ->setContent('The new awesome content of the post')
             ->setTitle('The new title of the post')
@@ -105,6 +108,7 @@ Trait PostsTrait
             'post[title]' => $this->newPost->getTitle(),
             'post[category]' => $this->newPost->getCategory()->getId(),
             'post[online]' => (int)$this->newPost->isOnline(),
+            'post[obsolete]' => (int)$this->newPost->isObsolete(),
             'post[toppost]' => (int)$this->newPost->isTopPost(),
             'post[language]' => $this->newPost->getLanguage(),
             'post[summary]' => $this->newPost->getSummary(),

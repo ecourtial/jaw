@@ -50,3 +50,5 @@ make init
 
 posssible de mettre un adminer
 
+Example command pour migration depuis ma vieille DB.
+

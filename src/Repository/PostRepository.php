@@ -11,7 +11,9 @@
 
 namespace App\Repository;
 
+use App\Entity\Category;
 use App\Entity\Post;
+use App\Search\SearchResult;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -32,5 +34,52 @@ class PostRepository extends ServiceEntityRepository
     {
         $this->getEntityManager()->remove($post);
         $this->getEntityManager()->flush();
+    }
+
+    /** @return \App\Search\SearchResult[] */
+    public function search(string $keywords): array
+    {
+        $qb = $this->_em->createQueryBuilder();
+
+        $qb->select('m.id, m.title, m.slug, m.publishedAt, c.id as categId, c.title as categTitle, c.slug as categSlug');
+
+        $qb->from(Post::class, 'm');
+        $qb->from(Category::class, 'c');
+
+
+        $qb->where('m.title' . ' LIKE :request');
+        $qb->setParameter('request', "%$keywords%");
+        $qb->orWhere('m.summary' . ' LIKE :request');
+        $qb->setParameter('request', "%$keywords%");
+        $qb->orWhere('m.content' . ' LIKE :request');
+        $qb->setParameter('request', "%$keywords%");
+
+        $qb->andWhere('m.category = c.id');
+
+        $result = $qb->getQuery()->getResult();
+
+        $qb->orderBy('m.publishedAt', 'DESC');
+        $qb->setParameter('request', "%$keywords%");
+
+
+        if (empty($result)) {
+            $result = [];
+        }
+
+        $processedResult = [];
+
+        foreach ($result as $entry) {
+            $processedResult[] = new SearchResult(
+                $entry['id'],
+                $entry['title'],
+                $entry['slug'],
+                $entry['publishedAt'],
+                $entry['categId'],
+                $entry['categTitle'],
+                $entry['categSlug'],
+            );
+        }
+
+        return $processedResult;
     }
 }

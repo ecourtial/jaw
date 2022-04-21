@@ -92,7 +92,10 @@ post.is_obsolete: Is obsolete?
 post.edition_form_title: Edit the post
 delete_modal.post: Delete the post?
 
-# Various
+# Search
+search.result_title: Search result
+
+# Misc.
 button.save_and_create_new: Save and create new
 button.delete: Delete
 button.cancel: Cancel

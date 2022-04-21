@@ -46,21 +46,14 @@ class PostRepository extends ServiceEntityRepository
         $qb->from(Post::class, 'm');
         $qb->from(Category::class, 'c');
 
-
         $qb->where('m.title' . ' LIKE :request');
-        $qb->setParameter('request', "%$keywords%");
         $qb->orWhere('m.summary' . ' LIKE :request');
-        $qb->setParameter('request', "%$keywords%");
         $qb->orWhere('m.content' . ' LIKE :request');
-        $qb->setParameter('request', "%$keywords%");
-
         $qb->andWhere('m.category = c.id');
-
-        $result = $qb->getQuery()->getResult();
-
         $qb->orderBy('m.publishedAt', 'DESC');
         $qb->setParameter('request', "%$keywords%");
 
+        $result = $qb->getQuery()->getResult();
 
         if (empty($result)) {
             $result = [];

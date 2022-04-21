@@ -13,11 +13,11 @@ use App\Repository\PostRepository;
 
 class SearchEngine
 {
-    public function __construct(private PostRepository $postRepository)
+    public function __construct(private readonly PostRepository $postRepository)
     {
     }
 
-    /** @return \App\Entity\Post[] */
+    /** @return \App\Search\SearchResult[] */
     public function search(string $keywords): array
     {
         // @TODO Add an interface over this class so we could have different implementations

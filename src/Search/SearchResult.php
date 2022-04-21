@@ -19,7 +19,6 @@ class SearchResult
         public readonly int $categoryId,
         public readonly string $categoryTitle,
         public readonly string $categorySlug,
-    )
-    {
+    ) {
     }
 }

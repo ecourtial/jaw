@@ -1,7 +1,6 @@
 start:
 	@cd docker/dev \
-	&& docker-compose up -d \
-	&& docker-compose exec mysql bash -c '`chown -R $$DOCKER_USER_UID:$$DOCKER_USER_GID /var/lib/mysql`'
+	&& docker-compose up -d
 
 stop:
 	@cd docker/dev \

@@ -48,3 +48,5 @@ Parler du makefile pour le dev
 Pour installer en prod:
 make init
 
+posssible de mettre un adminer
+

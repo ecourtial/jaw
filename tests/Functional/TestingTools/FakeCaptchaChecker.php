@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Functional\Tools;
+namespace App\Tests\Functional\TestingTools;
 
 use App\Exception\Security\InvalidCaptchaException;
 use App\Google\CaptchaChecker;

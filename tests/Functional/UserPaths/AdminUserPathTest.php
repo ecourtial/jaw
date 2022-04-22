@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Tests\Functional\User;
+namespace App\Tests\Functional\UserPaths;
 
-use App\Tests\Functional\Subsets\CategoriesPathTrait;
-use App\Tests\Functional\Subsets\PostsPathTrait;
-use App\Tests\Functional\Subsets\UserPathCaseTrait;
+use App\Tests\Functional\UserPaths\Subsets\CategoriesPathTrait;
+use App\Tests\Functional\UserPaths\Subsets\PostsPathTrait;
+use App\Tests\Functional\UserPaths\Subsets\UserPathCaseTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AdminUserPathTest extends WebTestCase

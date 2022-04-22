@@ -7,9 +7,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Subsets;
+namespace App\Tests\Functional\UserPaths\Subsets;
 
-use App\Tests\Functional\Subsets\Sections\CategoriesTrait;
+use App\Tests\Functional\UserPaths\Subsets\Sections\CategoriesTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 Trait CategoriesPathTrait

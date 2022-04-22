@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Tests\Functional\Subsets;
+namespace App\Tests\Functional\UserPaths\Subsets;
 
-use App\Tests\Functional\Subsets\Sections\ConfigurationScreenTrait;
-use App\Tests\Functional\Subsets\Sections\UserLoginTrait;
-use App\Tests\Functional\Subsets\Sections\UserProfileTrait;
+use App\Tests\Functional\UserPaths\Subsets\Sections\ConfigurationScreenTrait;
+use App\Tests\Functional\UserPaths\Subsets\Sections\UserLoginTrait;
+use App\Tests\Functional\UserPaths\Subsets\Sections\UserProfileTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 Trait UserPathCaseTrait

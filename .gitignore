@@ -31,3 +31,7 @@ docker/dev/docker/
 
 # CKeditor
 public/bundles
+
+# Dev
+docker/dev/dumps
+public/adminer.php

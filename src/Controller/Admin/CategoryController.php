@@ -27,7 +27,7 @@ class CategoryController extends AbstractAdminController
             'admin/categories/list.html.twig',
             $this->translator->trans('categories.list'),
             $this->translator->trans('categories.list'),
-            ['categories' => $categoryRepository->findAll()]
+            ['categories' => $categoryRepository->listAll()]
         );
     }
 

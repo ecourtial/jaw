@@ -21,7 +21,7 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        // BE CAREFUL IF CHANGING SOMETHING EXISTING HERE, AS DATA ARE USED FOR UNIT TESTS.
+        // BE CAREFUL IF CHANGING SOMETHING EXISTING HERE, AS DATA ARE USED FOR FUNCTIONAL TESTS.
 
         // Create sample configuration
         $manager->persist($this->initBlogConfiguration());
@@ -34,15 +34,38 @@ class AppFixtures extends Fixture
         $manager->persist($regularUser);
 
         // Create some categories containing a few posts
-        $categories = static::getFixturesCategories($regularUser);
+        $categories = self::getFixturesCategories($regularUser);
         $manager->persist($categories[0]);
         $manager->persist($categories[1]);
 
         $manager->flush();
     }
 
+    /**
+     * This method is only used for testing, not for the fixtures
+     * @return Category[]
+     */
+    public static function getFixturesCategoriesForFunctionalTesting(): array
+    {
+        $postIndex = 1;
+
+        $categories = self::getFixturesCategories();
+        foreach ($categories as $key => $category) {
+            // We set the ids manually by guessing it (see DataFixtures structure).
+            $category->setId($key + 1);
+
+            foreach ($category->getPosts() as $post) {
+                $post->setId($postIndex);
+                $postIndex++;
+                $post->setCategory($category);
+            }
+        }
+
+        return $categories;
+    }
+
     /** @return Category[] */
-    public static function getFixturesCategories(?User $regularUser = null): array
+    private static function getFixturesCategories(?User $regularUser = null): array
     {
         $regularUser = $regularUser ?? (new User())->setId(2);
 
@@ -55,7 +78,7 @@ class AppFixtures extends Fixture
                     (new Post())
                     ->setTitle('My first post')
                     ->setSlug('my_first_post')
-                    ->setSummary('The summary 1')
+                    ->setSummary('The summary 1 keyword')
                     ->setContent('Then content 1')
                     ->setAuthor($regularUser)
                     ->setLanguage('en')
@@ -80,7 +103,7 @@ class AppFixtures extends Fixture
                 )
                 ->addPost(
                     (new Post())
-                        ->setTitle('My third post')
+                        ->setTitle('My third post keyword')
                         ->setSlug('my_third_post')
                         ->setSummary('The summary 3')
                         ->setContent('Then content 3')

@@ -7,11 +7,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Subsets\Sections;
+namespace App\Tests\Functional\UserPaths\Subsets\Sections;
 
-use App\Entity\Category;
-use App\Tests\Functional\Tools\UrlInterface;
 use App\DataFixtures\AppFixtures;
+use App\Entity\Category;
+use App\Tests\Functional\TestingTools\UrlInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 Trait CategoriesTrait
@@ -185,18 +185,7 @@ Trait CategoriesTrait
 
     private function getFixturesCategories(): array
     {
-        $postIndex = 1;
-
-        $categories = AppFixtures::getFixturesCategories();
-        foreach ($categories as $key => $category) {
-            // We set the ids manually by guessing it (see DataFixtures structure).
-            $category->setId($key + 1);
-
-            foreach ($category->getPosts() as $post) {
-                $post->setId($postIndex);
-                $postIndex++;
-            }
-        }
+        $categories = AppFixtures::getFixturesCategoriesForFunctionalTesting();
 
         if (null !== $this->newCategory) {
             $categories[] = $this->newCategory;

@@ -13,7 +13,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PostRepository")
- * @ORM\Table(name="posts")
+ * @ORM\Table(name="posts", indexes={
+ *     @ORM\Index(name="online", columns={"online"}),
+ *     @ORM\Index(name="summary", columns={"summary"})
+ * })
  * @UniqueEntity(fields={"slug"}, message="post.slug_must_be_unique")
  */
 class Post
@@ -82,6 +85,11 @@ class Post
      * @ORM\Column(type="boolean", nullable=false, options={"default": false})
      */
     private bool $topPost = false;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=false, options={"default": false})
+     */
+    private bool $obsolete = false;
 
     /**
      * @ORM\Column(type="string", nullable=false)
@@ -222,6 +230,18 @@ class Post
     public function setTopPost(bool $isTopPost): self
     {
         $this->topPost = $isTopPost;
+
+        return $this;
+    }
+
+    public function isObsolete(): bool
+    {
+        return $this->obsolete;
+    }
+
+    public function setObsolete(bool $isObsolete): self
+    {
+        $this->obsolete = $isObsolete;
 
         return $this;
     }

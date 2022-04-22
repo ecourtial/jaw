@@ -88,10 +88,14 @@ post.blank_content: The content cannot be empty.
 post.too_short_content: The content must be at least 10 characters long.
 post.is_online: Is online?
 post.is_top_post: Is top post?
+post.is_obsolete: Is obsolete?
 post.edition_form_title: Edit the post
 delete_modal.post: Delete the post?
 
-# Various
+# Search
+search.result_title: Search result
+
+# Misc.
 button.save_and_create_new: Save and create new
 button.delete: Delete
 button.cancel: Cancel

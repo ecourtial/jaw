@@ -6,6 +6,14 @@ stop:
 	@cd docker/dev \
 	&& docker-compose stop
 
+########################
+# Init (for production)
+########################
+init:
+	bin/console doctrine:database:create
+	bin/console doctrine:migrations:migrate
+	bin/console app:init-config
+
 #############
 # Containers
 #############
@@ -53,9 +61,9 @@ schema_update:
 	@cd docker/dev \
 	&& docker-compose exec php bash -c 'make update_db_schema_command'
 
-schema_drop:
+db_drop:
 	@cd docker/dev \
-	&& docker-compose exec php bash -c 'make drop_db_schema_command'
+	&& docker-compose exec php bash -c 'make drop_db_command'
 
 migrate:
 	@cd docker/dev \
@@ -64,6 +72,10 @@ migrate:
 fixtures:
 	@cd docker/dev \
 	&& docker-compose exec php bash -c 'make load_fixtures_command'
+
+dump_db:
+	@cd docker/dev \
+	&& docker-compose exec mysql bash -c 'mysqldump -u root jaw -p > /var/www/html/dump.sql && `chown -R $$DOCKER_USER_UID:$$DOCKER_USER_GID /var/www/html/dump.sql`'
 
 #### Internal (inside the container)
 
@@ -85,8 +97,8 @@ schema_validate_command:
 update_db_schema_command:
 	APP_ENV=dev bin/console doctrine:schema:update --force
 
-drop_db_schema_command:
-	APP_ENV=dev bin/console doctrine:schema:drop --force
+drop_db_command:
+	APP_ENV=dev bin/console doctrine:database:drop --force
 
 migrate_command:
 	APP_ENV=dev bin/console doctrine:migrations:migrate

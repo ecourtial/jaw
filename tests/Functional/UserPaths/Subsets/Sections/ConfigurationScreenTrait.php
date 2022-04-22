@@ -7,9 +7,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Subsets\Sections;
+namespace App\Tests\Functional\UserPaths\Subsets\Sections;
 
-use App\Tests\Functional\Tools\UrlInterface;
+use App\Tests\Functional\TestingTools\UrlInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 Trait ConfigurationScreenTrait

@@ -3,6 +3,6 @@ services:
     public: true
 
   App\Google\CaptchaChecker:
-    class: App\Tests\Functional\Tools\FakeCaptchaChecker
+    class: App\Tests\Functional\TestingTools\FakeCaptchaChecker
     arguments:
       $env: '%kernel.environment%'

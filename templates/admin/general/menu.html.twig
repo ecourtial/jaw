@@ -40,9 +40,9 @@
                             <a class="nav-link" href="{{ logout_path() }}">{{ 'menu.logout'|trans }}</a>
                         </li>
                     </ul>
-                    <form class="d-flex">
-                        <input class="form-control me-2" type="search" placeholder="{{ 'menu.search.request'|trans }}" aria-label="Search">
-                        <button class="btn btn-outline-success" type="submit">{{ 'menu.search.button'|trans }}</button>
+                    <form class="d-flex" method="post" action="{{ url('search') }}">
+                        <input class="form-control me-2" name="query" type="search" placeholder="{{ 'menu.search.request'|trans }}" aria-label="Search" required>
+                        <button class="btn btn-outline-success" id="searchPostsButton" type="submit">{{ 'menu.search.button'|trans }}</button>
                     </form>
             {% endif %}
         </div>

@@ -185,18 +185,7 @@ Trait CategoriesTrait
 
     private function getFixturesCategories(): array
     {
-        $postIndex = 1;
-
-        $categories = AppFixtures::getFixturesCategories();
-        foreach ($categories as $key => $category) {
-            // We set the ids manually by guessing it (see DataFixtures structure).
-            $category->setId($key + 1);
-
-            foreach ($category->getPosts() as $post) {
-                $post->setId($postIndex);
-                $postIndex++;
-            }
-        }
+        $categories = AppFixtures::getFixturesCategoriesForFunctionalTesting();
 
         if (null !== $this->newCategory) {
             $categories[] = $this->newCategory;

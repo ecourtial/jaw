@@ -42,7 +42,7 @@
                     </ul>
                     <form class="d-flex" method="post" action="{{ url('search') }}">
                         <input class="form-control me-2" name="query" type="search" placeholder="{{ 'menu.search.request'|trans }}" aria-label="Search" required>
-                        <button class="btn btn-outline-success" type="submit">{{ 'menu.search.button'|trans }}</button>
+                        <button class="btn btn-outline-success" id="searchPostsButton" type="submit">{{ 'menu.search.button'|trans }}</button>
                     </form>
             {% endif %}
         </div>

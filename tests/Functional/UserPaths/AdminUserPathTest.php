@@ -4,6 +4,7 @@ namespace App\Tests\Functional\UserPaths;
 
 use App\Tests\Functional\UserPaths\Subsets\CategoriesPathTrait;
 use App\Tests\Functional\UserPaths\Subsets\PostsPathTrait;
+use App\Tests\Functional\UserPaths\Subsets\SearchPathTrait;
 use App\Tests\Functional\UserPaths\Subsets\UserPathCaseTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -12,6 +13,7 @@ class AdminUserPathTest extends WebTestCase
     use UserPathCaseTrait;
     use CategoriesPathTrait;
     use PostsPathTrait;
+    use SearchPathTrait;
 
     public function testAdminUserPath(): void
     {
@@ -81,6 +83,9 @@ class AdminUserPathTest extends WebTestCase
 
         // Posts
         $this->checkPostsPath($client);
+
+        // Search
+        $this->searchPosts($client);
 
         // Keep that in last position
         $this->logout($client);

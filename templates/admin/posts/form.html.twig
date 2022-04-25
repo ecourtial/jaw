@@ -17,6 +17,12 @@
         </div>
     {% endfor %}
 
+    {% for message in app.flashes('alert') %}
+        <div class="alert alert-danger">
+            {{ message|trans }}
+        </div>
+    {% endfor %}
+
     {% if post is defined %}
         <p id="postId"><strong>Id:</strong> {{ post.id }}</p>
         <p id="creationDate"><strong>{{ 'creation_date'|trans }}:</strong> {{ post.createdAt|date("Y-m-d H:i:s") }}</p>

@@ -5,6 +5,9 @@ Stack
 
 Symfo 6
 Bootstrap 5
+Lister le composants Symfo (Client, Doctrine, Security, Translation)
+FosCKeditor...
+VOIR LE fichier composer.json
 
 Conf :
 

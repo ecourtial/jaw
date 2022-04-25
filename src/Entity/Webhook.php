@@ -38,44 +38,44 @@ class Webhook
         self::RESOURCE_ACTION_DELETION,
     ];
 
-    private const MAX_ATTEMPT_COUNT = 5;
+    public const MAX_ATTEMPT_COUNT = 5;
 
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private ?int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", nullable=false)
      */
-    private ?string $resourceType;
+    private ?string $resourceType = null;
 
     /**
      * @ORM\Column(type="integer", nullable=false)
      */
-    private ?int $resourceId;
+    private ?int $resourceId = null;
 
     /**
      * @ORM\Column(type="string", nullable=false)
      */
-    private ?string $action;
+    private ?string $action = null;
 
     /**
      * @ORM\Column(type="datetime", nullable=false)
      */
-    private ?\DateTime $creationDate;
+    private ?\DateTime $creationDate = null;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private ?\DateTime $processedDate;
+    private ?\DateTime $processedDate = null;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private ?\DateTime $lastAttempt;
+    private ?\DateTime $lastAttempt = null;
 
     /**
      * @ORM\Column(type="integer", nullable=false)
@@ -177,9 +177,11 @@ class Webhook
         return $this->attemptCount;
     }
 
-    /** @ORM\PreUpdate() */
-    public function updateAttemptCount(): void
+    // I did not set any PreUpdate annotation because I needed something to edit,so I could update the object.
+    public function incrementAttemptCount(): self
     {
         $this->attemptCount++;
+
+        return $this;
     }
 }

@@ -12,6 +12,7 @@ namespace App\Controller\Admin;
 use App\Entity\Post;
 use App\Form\PostType;
 use App\Repository\PostRepository;
+use Psr\Log\LogLevel;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -33,18 +34,26 @@ class PostController extends AbstractAdminController
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $postRepository->save($post);
+            $this->entityManager->beginTransaction();
+            try {
+                $postRepository->save($post);
+                $this->entityManager->commit();
 
-            /** @var \Symfony\Component\Form\SubmitButton $saveAndCreateNewButton */
-            $saveAndCreateNewButton = $form->get('saveAndCreateNew');
+                /** @var \Symfony\Component\Form\SubmitButton $saveAndCreateNewButton */
+                $saveAndCreateNewButton = $form->get('saveAndCreateNew');
 
-            $this->addFlash('success', 'post.successfully_created');
+                $this->addFlash('success', 'post.successfully_created');
 
-            if ($saveAndCreateNewButton->isClicked()) {
-                return $this->redirectToRoute('post_add');
+                if ($saveAndCreateNewButton->isClicked()) {
+                    return $this->redirectToRoute('post_add');
+                }
+
+                return $this->redirectToRoute('post_edit', ['id' => $post->getId()]);
+            } catch (\Throwable $exception) {
+                $this->entityManager->rollback();
+                $this->logger->log(LogLevel::ERROR, 'Impossible to create the post.', ['exception' => $exception]);
+                $this->addFlash('alert', 'generic_error_message');
             }
-
-            return $this->redirectToRoute('post_edit', ['id' => $post->getId()]);
         }
 
         return $this->generateView(
@@ -62,10 +71,18 @@ class PostController extends AbstractAdminController
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $postRepository->save($post);
-            $this->addFlash('success', 'post.successfully_updated');
+            $this->entityManager->beginTransaction();
+            try {
+                $postRepository->save($post);
+                $this->entityManager->commit();
+                $this->addFlash('success', 'post.successfully_updated');
 
-            return $this->redirectToRoute('post_edit', ['id' => $post->getId()]);
+                return $this->redirectToRoute('post_edit', ['id' => $post->getId()]);
+            } catch (\Throwable $exception) {
+                $this->entityManager->rollback();
+                $this->logger->log(LogLevel::ERROR, 'Impossible to update the post.', ['exception' => $exception]);
+                $this->addFlash('alert', 'generic_error_message');
+            }
         }
 
         return $this->generateView(
@@ -81,8 +98,16 @@ class PostController extends AbstractAdminController
     {
         // @phpstan-ignore-next-line
         if (true === $this->isCsrfTokenValid('delete', $this->request->request->get('token'))) {
-            $postRepository->delete($post);
-            $this->addFlash('success', 'post.deleted_successfully');
+            $this->entityManager->beginTransaction();
+            try {
+                $postRepository->delete($post);
+                $this->entityManager->commit();
+                $this->addFlash('success', 'post.deleted_successfully');
+            } catch (\Throwable $exception) {
+                $this->entityManager->rollback();
+                $this->logger->log(LogLevel::ERROR, 'Impossible to delete the post.', ['exception' => $exception]);
+                $this->addFlash('alert', 'generic_error_message');
+            }
         }
 
         return $this->redirectToRoute('category_list');

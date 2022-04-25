@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Event;
 
 use App\Entity\Webhook;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\WebhookRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ResourceEventSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
+    public function __construct(private readonly WebhookRepository $webhookRepository)
     {
     }
 
@@ -28,7 +28,6 @@ class ResourceEventSubscriber implements EventSubscriberInterface
             ->setResourceType($event->getResource()->getResourceType())
             ->setAction($event->getActionType());
 
-        $this->entityManager->persist($webhook);
-        $this->entityManager->flush();
+        $this->webhookRepository->create($webhook);
     }
 }

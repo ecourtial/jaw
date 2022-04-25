@@ -37,15 +37,4 @@ class ConfigurationRepositoryTest extends TestCase
 
         static::assertEquals($configuration, $repo->get());
     }
-
-    public function testSave(): void
-    {
-        $configuration = (new Configuration())->setLinkedinUsername('LinkedinUsername');
-
-        $this->entityManager->expects(static::once())->method('persist')->with($configuration);
-        $this->entityManager->expects(static::once())->method('flush');
-
-        $repo = new ConfigurationRepository($this->entityManager);
-        $repo->save($configuration);
-    }
 }

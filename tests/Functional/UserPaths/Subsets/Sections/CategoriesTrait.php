@@ -33,7 +33,7 @@ Trait CategoriesTrait
         $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.0');
         static::assertEquals('Categories index', $crawler->filter('h1')->text());
 
-        foreach ($this->getFixturesCategories() as $category) {
+        foreach ($this->getCategories() as $category) {
             static::assertEquals($category->getTitle() . ' - Details - Edit', $crawler->filter('#categ_' . $category->getId())->text());
 
             $detailsLink = $crawler->filter('#details_categ_' . $category->getId());
@@ -49,13 +49,15 @@ Trait CategoriesTrait
     /** Check the category details screen */
     protected function checkDetailsOfCategories(KernelBrowser $client): void
     {
-        foreach ($this->getFixturesCategories() as $category) {
+        foreach ($this->getCategories() as $category) {
             $crawler = $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL . '/' . $category->getId());
 
             static::assertEquals('Category: ' . $category->getTitle(), $crawler->filter('h1')->text());
             static::assertEquals('Summary: ' . $category->getSummary() , $crawler->filter('#summary')->text());
             static::assertEquals('Slug: ' . $category->getSlug() , $crawler->filter('#slug')->text());
             static::assertEquals('Id: ' . $category->getId(), $crawler->filter('#categId')->text());
+            static::assertEquals('Creation date: ' . $category->getCreatedAt()->format('Y-m-d H:i:s'), $crawler->filter('#creationDate')->text());
+            static::assertEquals('Last modification: ' . $category->getUpdatedAt()->format('Y-m-d H:i:s'), $crawler->filter('#updateDate')->text());
 
             foreach ($category->getPosts() as $post) {
                 $extra = '';
@@ -183,7 +185,7 @@ Trait CategoriesTrait
 
         $crawler = $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL . '/' . 1 . '/edit');
 
-        $title = 'Edit the category: ' . $this->getFixturesCategories()[0]->getTitle();
+        $title = 'Edit the category: ' . $this->getCategories()[0]->getTitle();
         $this->assertPageTitleContains('MyBlog Admin - ' . $title . ' - JAW v1.0');
         static::assertEquals($title, $crawler->filter('h1')->text());
 
@@ -197,14 +199,8 @@ Trait CategoriesTrait
         $client->followRedirects(false);
     }
 
-    private function getFixturesCategories(): array
+    private function getCategories(): array
     {
-        $categories = AppFixtures::getFixturesCategoriesForFunctionalTesting();
-
-        if (null !== $this->newCategory) {
-            $categories[] = $this->newCategory;
-        }
-
-        return $categories;
+        return self::getContainer()->get('App\Repository\CategoryRepository')->findAll();
     }
 }

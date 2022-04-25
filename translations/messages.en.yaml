@@ -107,6 +107,8 @@ yes: Yes
 no: No
 language: Language
 generic_error_message: An error occurred.
+creation_date: Creation date
+last_edition_date: Last modification
 
 # Languages
 french: French

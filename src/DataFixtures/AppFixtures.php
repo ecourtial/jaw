@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Repository\CategoryRepository;
 use App\Repository\ConfigurationRepository;
 use App\Repository\PostRepository;
+use App\Service\ConfigurationService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -17,7 +18,7 @@ class AppFixtures extends Fixture
 {
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
-        private readonly ConfigurationRepository $configurationRepository,
+        private readonly ConfigurationService $configurationService,
         private readonly CategoryRepository $categoryRepository,
     ) {
     }
@@ -27,7 +28,7 @@ class AppFixtures extends Fixture
         // BE CAREFUL IF CHANGING SOMETHING EXISTING HERE, AS DATA ARE USED FOR FUNCTIONAL TESTS.
 
         // Create sample configuration
-        $this->configurationRepository->save($this->initBlogConfiguration());
+        $this->configurationService->save($this->initBlogConfiguration());
 
         // Create a sample admin user
         $manager->persist($this->createAdminUser());
@@ -38,36 +39,13 @@ class AppFixtures extends Fixture
         $manager->flush();
 
         // Create some categories containing a few posts
-        $categories = self::getFixturesCategories($regularUser);
+        $categories = $this->getFixturesCategories($regularUser);
         $this->categoryRepository->save($categories[0]);
         $this->categoryRepository->save($categories[1]);
     }
 
-    /**
-     * This method is only used for testing, not for the fixtures
-     * @return Category[]
-     */
-    public static function getFixturesCategoriesForFunctionalTesting(): array
-    {
-        $postIndex = 1;
-
-        $categories = self::getFixturesCategories();
-        foreach ($categories as $key => $category) {
-            // We set the ids manually by guessing it (see DataFixtures structure).
-            $category->setId($key + 1);
-
-            foreach ($category->getPosts() as $post) {
-                $post->setId($postIndex);
-                $postIndex++;
-                $post->setCategory($category);
-            }
-        }
-
-        return $categories;
-    }
-
     /** @return Category[] */
-    private static function getFixturesCategories(?User $regularUser = null): array
+    private function getFixturesCategories(?User $regularUser = null): array
     {
         $regularUser = $regularUser ?? (new User())->setId(2);
 

@@ -19,6 +19,8 @@
 
     {% if post is defined %}
         <p id="postId"><strong>Id:</strong> {{ post.id }}</p>
+        <p id="creationDate"><strong>{{ 'creation_date'|trans }}:</strong> {{ post.createdAt|date("Y-m-d H:i:s") }}</p>
+        <p id="updateDate"><strong>{{ 'last_edition_date'|trans }}:</strong> {{ post.updatedAt|date("Y-m-d H:i:s") }}</p>
     {% endif %}
 
     {{ form_start(form) }}

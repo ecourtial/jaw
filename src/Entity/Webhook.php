@@ -178,7 +178,7 @@ class Webhook
     }
 
     /** @ORM\PreUpdate() */
-    public function updateAttemptCount(): self
+    public function updateAttemptCount(): void
     {
         $this->attemptCount++;
     }

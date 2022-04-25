@@ -5,10 +5,11 @@ namespace App\Tests\Functional\Repository;
 use App\Entity\Category;
 use App\Entity\Post;
 use App\Entity\User;
+use App\Entity\Webhook;
 use App\Repository\CategoryRepository;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\WebhookRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class PostRepositoryTest extends KernelTestCase
@@ -16,7 +17,7 @@ class PostRepositoryTest extends KernelTestCase
     private CategoryRepository $categoryRepository;
     private PostRepository $postRepository;
     private UserRepository $userRepository;
-    private EntityManagerInterface $entityManager;
+    private WebhookRepository $webhookRepository;
 
     public function setup(): void
     {
@@ -37,9 +38,10 @@ class PostRepositoryTest extends KernelTestCase
             ->getManager()
             ->getRepository(User::class);
 
-        $this->entityManager = $kernel->getContainer()
+        $this->webhookRepository = $kernel->getContainer()
             ->get('doctrine')
-            ->getManager();
+            ->getManager()
+            ->getRepository(Webhook::class);
     }
 
 
@@ -61,14 +63,14 @@ class PostRepositoryTest extends KernelTestCase
             ->setCategory($this->categoryRepository->find(1));
 
         $this->postRepository->save($post);
-        $this->entityManager->flush();
 
         static::assertTrue(is_int($post->getId()));
+        static::assertCount(1, $this->webhookRepository->findBy(['resourceId' => $post->getId(), 'action' => Webhook::RESOURCE_ACTION_CREATION]));
 
         // Delete
 
+        $postId = $post->getId();
         $this->postRepository->delete($post);
-        $this->entityManager->flush();
         $posts = $this->postRepository->findAll();
 
         static::assertCount(3, $posts);
@@ -77,6 +79,8 @@ class PostRepositoryTest extends KernelTestCase
                 static::fail('Oooups: it seems that we deleted the wrong post or did not deleted it at all!');
             }
         }
+
+        static::assertCount(1, $this->webhookRepository->findBy(['resourceId' => $postId, 'action' => Webhook::RESOURCE_ACTION_DELETION]));
     }
 
     public function testSearch(): void

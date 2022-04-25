@@ -19,7 +19,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class ConfigurationRepository
 {
-
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly EventDispatcherInterface $eventDispatcher,
@@ -39,6 +38,7 @@ class ConfigurationRepository
     public function save(Configuration $configuration): void
     {
         $this->entityManager->persist($configuration);
+        $this->entityManager->flush();
         $this->eventDispatcher->dispatch(new ResourceEvent($configuration, Webhook::RESOURCE_ACTION_EDITION), ResourceEvent::NAME);
     }
 }

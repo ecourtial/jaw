@@ -1,14 +1,5 @@
 <?php
 
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace App\Repository;
 
 use App\Entity\Category;
@@ -21,7 +12,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class CategoryRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry, private readonly EventDispatcherInterface $eventDispatcher,)
+    public function __construct(ManagerRegistry $registry, private readonly EventDispatcherInterface $eventDispatcher)
     {
         parent::__construct($registry, Category::class);
     }
@@ -47,16 +38,20 @@ class CategoryRepository extends ServiceEntityRepository
         $actionType = ($category->getId() === null) ? Webhook::RESOURCE_ACTION_CREATION : Webhook::RESOURCE_ACTION_EDITION;
 
         $this->getEntityManager()->persist($category);
+        $this->getEntityManager()->flush();
         $this->eventDispatcher->dispatch(new ResourceEvent($category, $actionType), ResourceEvent::NAME);
     }
 
     public function delete(Category $category): void
     {
         if ($category->getPosts()->isEmpty()) {
-            $this->getEntityManager()->remove($category);
             $this->eventDispatcher->dispatch(new ResourceEvent($category, Webhook::RESOURCE_ACTION_DELETION), ResourceEvent::NAME);
-        } else {
-            throw new CategoryNotEmptyException();
+            $this->getEntityManager()->remove($category);
+            $this->getEntityManager()->flush();
+
+            return;
         }
+
+        throw new CategoryNotEmptyException();
     }
 }

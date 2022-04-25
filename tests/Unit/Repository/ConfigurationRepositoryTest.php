@@ -2,6 +2,8 @@
 
 namespace App\Tests\Unit\Repository;
 
+use App\Entity\Webhook;
+use App\Event\ResourceEvent;
 use App\Repository\ConfigurationRepository;
 use App\Entity\Configuration;
 use Doctrine\ORM\AbstractQuery;
@@ -39,5 +41,22 @@ class ConfigurationRepositoryTest extends TestCase
         $repo = new ConfigurationRepository($this->entityManager, $this->eventDispatcher);
 
         static::assertEquals($configuration, $repo->get());
+    }
+
+    public function testSave(): void
+    {
+        $configuration = (new Configuration())->setLinkedinUsername('LinkedinUsername');
+
+        $this->entityManager->expects(static::once())->method('persist')->with($configuration);
+        $this->entityManager->expects(static::once())->method('flush');
+
+        $this->eventDispatcher->expects(static::once())->method('dispatch')
+            ->with(
+                new ResourceEvent($configuration, Webhook::RESOURCE_ACTION_EDITION),
+                ResourceEvent::NAME
+            );
+
+        $repo = new ConfigurationRepository($this->entityManager, $this->eventDispatcher);
+        $repo->save($configuration);
     }
 }

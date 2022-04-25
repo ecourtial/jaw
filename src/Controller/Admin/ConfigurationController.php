@@ -30,11 +30,13 @@ class ConfigurationController extends AbstractAdminController
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->beginTransaction();
             try {
                 $configurationRepository->save($configuration);
-                $entityManager->flush();
+                $this->entityManager->commit();
                 $this->addFlash('success', 'configuration.updated_successfully');
             } catch (\Throwable $exception) {
+                $this->entityManager->rollback();
                 $this->logger->log(LogLevel::ERROR, 'Impossible to save the configuration.', ['exception' => $exception]);
                 $this->addFlash('alert', 'generic_error_message');
             }

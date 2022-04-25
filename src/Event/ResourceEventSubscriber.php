@@ -21,7 +21,7 @@ class ResourceEventSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function createWebhook(ResourceEvent $event)
+    public function createWebhook(ResourceEvent $event): void
     {
         $webhook = (new Webhook())
             ->setResourceId($event->getResource()->getId())
@@ -29,5 +29,6 @@ class ResourceEventSubscriber implements EventSubscriberInterface
             ->setAction($event->getActionType());
 
         $this->entityManager->persist($webhook);
+        $this->entityManager->flush();
     }
 }

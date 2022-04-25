@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +24,7 @@ abstract class AbstractAdminController extends AbstractController
     protected TranslatorInterface $translator;
     protected Request $request;
     protected LoggerInterface $logger;
+    protected EntityManagerInterface $entityManager;
 
     public function __construct(
         string $appVersion,
@@ -30,12 +32,14 @@ abstract class AbstractAdminController extends AbstractController
         TranslatorInterface $translator,
         RequestStack $requestStack,
         LoggerInterface $logger,
+        EntityManagerInterface $entityManager,
     ) {
         $this->appVersion = $appVersion;
         $this->appName = $appName;
         $this->translator = $translator;
         $this->request = $requestStack->getCurrentRequest() ?? throw new \RuntimeException('Main request cannot be null');
         $this->logger = $logger;
+        $this->entityManager = $entityManager;
     }
 
     /** @param mixed[] $parameters */

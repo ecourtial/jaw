@@ -37,7 +37,7 @@ class PostRepository extends ServiceEntityRepository
     }
 
     /** @return \App\Search\SearchResult[] */
-    public function search(string $keywords): array
+    public function search(string $keywords, int $limit): array
     {
         $qb = $this->_em->createQueryBuilder();
 
@@ -51,6 +51,7 @@ class PostRepository extends ServiceEntityRepository
         $qb->orWhere('m.content' . ' LIKE :request');
         $qb->andWhere('m.category = c.id');
         $qb->orderBy('m.publishedAt', 'DESC');
+        $qb->setMaxResults($limit);
         $qb->setParameter('request', "%$keywords%");
 
         $result = $qb->getQuery()->getResult();

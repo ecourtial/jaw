@@ -10,6 +10,9 @@ namespace App\Controller\Admin;
 
 use App\Form\ConfigurationType;
 use App\Service\ConfigurationService;
+use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,8 +21,11 @@ class Configuration extends AbstractAdminController
 {
     #[Route('/admin/configuration', methods: ['GET', 'POST'], name: 'configuration')]
     #[IsGranted('ROLE_ADMIN')]
-    public function __invoke(ConfigurationService $configurationService): Response
-    {
+    public function __invoke(
+        ConfigurationService $configurationService,
+        EntityManagerInterface $entityManager,
+        LoggerInterface $logger,
+    ): Response {
         $configuration = $configurationService->get();
 
         $form = $this->createForm(ConfigurationType::class, $configuration);
@@ -28,8 +34,10 @@ class Configuration extends AbstractAdminController
         if ($form->isSubmitted() && $form->isValid()) {
             try {
                 $configurationService->save($configuration);
+                $entityManager->flush();
                 $this->addFlash('success', 'configuration.updated_successfully');
             } catch (\Throwable $exception) {
+                $logger->log(LogLevel::ERROR, 'Impossible to save the configuration.', ['exception' => $exception]);
                 $this->addFlash('alert', 'generic_error_message');
             }
 

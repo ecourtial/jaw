@@ -18,9 +18,9 @@ class SearchEngine
     }
 
     /** @return \App\Search\SearchResult[] */
-    public function search(string $keywords): array
+    public function search(string $keywords, int $limit = 30): array
     {
         // @TODO Add an interface over this class so we could have different implementations
-        return $this->postRepository->search($keywords);
+        return $this->postRepository->search($keywords, $limit);
     }
 }

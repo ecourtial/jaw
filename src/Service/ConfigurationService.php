@@ -12,30 +12,20 @@ namespace App\Service;
 use App\Entity\Configuration;
 use App\Repository\ConfigurationRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
 
 class ConfigurationService
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly ConfigurationRepository $configurationRepository,
-        private readonly LoggerInterface $logger
     ) {
     }
 
+    // Remember to flush after that
     public function save(Configuration $configuration): void
     {
-        $this->entityManager->beginTransaction();
-
-        try {
-            $this->configurationRepository->save($configuration);
-            $this->entityManager->commit();
-        } catch (\Throwable $exception) {
-            $this->entityManager->rollback();
-            $this->logger->log(LogLevel::ERROR, 'Impossible to save the configuration.', ['exception' => $exception]);
-            throw  $exception;
-        }
+        $this->entityManager->persist($configuration);
+        // Dispatch here
     }
 
     public function get(): Configuration

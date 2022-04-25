@@ -73,7 +73,7 @@ class PostRepositoryTest extends KernelTestCase
 
     public function testSearch(): void
     {
-        $posts = $this->postRepository->search('keyword');
+        $posts = $this->postRepository->search('keyword', 10);
         static::assertCount(2, $posts);
         static::assertEquals(1, $posts[0]->id);
         static::assertEquals(3, $posts[1]->id);

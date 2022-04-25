@@ -22,7 +22,7 @@ class SearchEngineTest extends TestCase
 
         $repository->expects(static::once())
             ->method('search')
-            ->with($query)
+            ->with($query, 30)
             ->willReturn($result);
 
         static::assertEquals($result, $searchEngine->search($query));

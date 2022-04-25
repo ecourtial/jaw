@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="configuration")
  * @ORM\HasLifecycleCallbacks()
  */
-class Configuration
+class Configuration implements ResourceInterface
 {
     /**
      * @ORM\Id
@@ -72,6 +72,11 @@ class Configuration
      * @ORM\Column(type="datetime", nullable=false)
      */
     private ?\DateTime $updatedAt = null;
+
+    public function getResourceType(): string
+    {
+        return 'configuration';
+    }
 
     public function getId(): ?int
     {

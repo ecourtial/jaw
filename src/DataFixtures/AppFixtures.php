@@ -105,7 +105,7 @@ class AppFixtures extends Fixture
         $configuration->setCopyrightExtraMessage('Or I will unleash my poodle.');
         $configuration->setLinkedinUsername('LinkedinPseudo');
         $configuration->setGithubUsername('GithubPseudo');
-        $configuration->setGoogleAnalyticsId('1234A');
+        $configuration->setGoogleAnalyticsId('1234Abcdef');
 
         return $configuration;
     }

@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\WebhookRepository")
  * @ORM\Table(name="webhooks")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Webhook
 {
@@ -27,15 +28,17 @@ class Webhook
         self::RESOURCE_TYPE_POST,
     ];
 
-    private const RESOURCE_ACTION_CREATION = 'created';
-    private const RESOURCE_ACTION_EDITION = 'edited';
-    private const RESOURCE_ACTION_DELETION = 'deleted';
+    public const RESOURCE_ACTION_CREATION = 'created';
+    public const RESOURCE_ACTION_EDITION = 'edited';
+    public const RESOURCE_ACTION_DELETION = 'deleted';
 
     private const RESOURCE_ACTIONS = [
         self::RESOURCE_ACTION_CREATION,
         self::RESOURCE_ACTION_EDITION,
         self::RESOURCE_ACTION_DELETION,
     ];
+
+    private const MAX_ATTEMPT_COUNT = 5;
 
     /**
      * @ORM\Id
@@ -68,6 +71,16 @@ class Webhook
      * @ORM\Column(type="datetime", nullable=true)
      */
     private ?\DateTime $processedDate;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private ?\DateTime $lastAttempt;
+
+    /**
+     * @ORM\Column(type="integer", nullable=false)
+     */
+    private int $attemptCount = 0;
 
     public function getId(): ?int
     {
@@ -130,11 +143,10 @@ class Webhook
         return $this->creationDate;
     }
 
-    public function setCreationDate(?\DateTime $creationDate): self
+    /** @ORM\PrePersist () */
+    public function setCreationDate(): void
     {
-        $this->creationDate = $creationDate;
-
-        return $this;
+        $this->creationDate = new \DateTime();
     }
 
     public function getProcessedDate(): ?\DateTime
@@ -149,4 +161,25 @@ class Webhook
         return $this;
     }
 
+    public function getLastAttempt(): ?\DateTime
+    {
+        return $this->lastAttempt;
+    }
+
+    /** @ORM\PreUpdate() */
+    public function setLastAttempt(): void
+    {
+        $this->lastAttempt = new \DateTime();
+    }
+
+    public function getAttemptCount(): int
+    {
+        return $this->attemptCount;
+    }
+
+    /** @ORM\PreUpdate() */
+    public function updateAttemptCount(): self
+    {
+        $this->attemptCount++;
+    }
 }

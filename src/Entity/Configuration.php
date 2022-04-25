@@ -10,13 +10,12 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\ConfigurationRepository")
  * @ORM\Table(name="configuration")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Configuration
 {
@@ -68,6 +67,11 @@ class Configuration
      */
     #[Assert\Length(min: 5, max: 50)]
     private ?string $googleAnalyticsId;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=false)
+     */
+    private ?\DateTime $updatedAt = null;
 
     public function getId(): ?int
     {
@@ -161,5 +165,19 @@ class Configuration
         $this->googleAnalyticsId = $googleAnalyticsId;
 
         return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @ORM\PreUpdate()
+     * @ORM\PrePersist()
+     */
+    public function setUpdatedAt(): void
+    {
+        $this->updatedAt = new \DateTime();
     }
 }

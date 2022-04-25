@@ -6,17 +6,20 @@ use App\Entity\Category;
 use App\Entity\Configuration;
 use App\Entity\Post;
 use App\Entity\User;
+use App\Repository\CategoryRepository;
+use App\Repository\ConfigurationRepository;
+use App\Repository\PostRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
-    private UserPasswordHasherInterface $passwordHasher;
-
-    public function __construct(UserPasswordHasherInterface $passwordHasher)
-    {
-        $this->passwordHasher = $passwordHasher;
+    public function __construct(
+        private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly ConfigurationRepository $configurationRepository,
+        private readonly CategoryRepository $categoryRepository,
+    ) {
     }
 
     public function load(ObjectManager $manager): void
@@ -24,7 +27,7 @@ class AppFixtures extends Fixture
         // BE CAREFUL IF CHANGING SOMETHING EXISTING HERE, AS DATA ARE USED FOR FUNCTIONAL TESTS.
 
         // Create sample configuration
-        $manager->persist($this->initBlogConfiguration());
+        $this->configurationRepository->save($this->initBlogConfiguration());
 
         // Create a sample admin user
         $manager->persist($this->createAdminUser());
@@ -32,13 +35,12 @@ class AppFixtures extends Fixture
         // Create a sample regular user (keep in this order, as the user id is used for some tests)
         $regularUser = $this->createRegularUser();
         $manager->persist($regularUser);
+        $manager->flush();
 
         // Create some categories containing a few posts
         $categories = self::getFixturesCategories($regularUser);
-        $manager->persist($categories[0]);
-        $manager->persist($categories[1]);
-
-        $manager->flush();
+        $this->categoryRepository->save($categories[0]);
+        $this->categoryRepository->save($categories[1]);
     }
 
     /**
@@ -111,6 +113,7 @@ class AppFixtures extends Fixture
                         ->setLanguage('en')
                         ->setTopPost(true)
                         ->setOnline(false)
+                        ->setObsolete(true)
                 )
         ];
     }

@@ -7,6 +7,12 @@
         </div>
     {% endfor %}
 
+    {% for message in app.flashes('alert') %}
+        <div class="alert alert-danger">
+            {{ message|trans }}
+        </div>
+    {% endfor %}
+
     {{ form_start(form) }}
     {{ form_widget(form) }}
     {{ form_rest(form) }}

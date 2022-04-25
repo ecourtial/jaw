@@ -17,6 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="App\Repository\CategoryRepository")
  * @ORM\Table(name="categories")
  * @UniqueEntity(fields={"slug"}, message="category.slug_must_be_unique")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Category
 {
@@ -59,6 +60,16 @@ class Category
      * @ORM\OrderBy({"publishedAt": "DESC"})
      */
     private Collection $posts;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=false)
+     */
+    private ?\DateTime $createdAt = null;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=false)
+     */
+    private ?\DateTime $updatedAt = null;
 
     public function __construct()
     {
@@ -133,5 +144,32 @@ class Category
         $this->summary = $summary;
 
         return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @ORM\PrePersist()
+     */
+    public function setCreatedAt(): void
+    {
+        $this->createdAt = new \DateTime();
+    }
+
+    public function getUpdatedAt(): ?\DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @ORM\PreUpdate()
+     * @ORM\PrePersist()
+     */
+    public function setUpdatedAt(): void
+    {
+        $this->updatedAt  = new \DateTime();
     }
 }

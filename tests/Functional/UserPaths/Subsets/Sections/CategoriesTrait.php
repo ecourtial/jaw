@@ -58,7 +58,21 @@ Trait CategoriesTrait
             static::assertEquals('Id: ' . $category->getId(), $crawler->filter('#categId')->text());
 
             foreach ($category->getPosts() as $post) {
-                static::assertEquals($post->getTitle() . ' - Edit', $crawler->filter('#post_' . $post->getId())->text());
+                $extra = '';
+
+                if ($post->isTopPost()) {
+                    $extra .= ' - Top post';
+                }
+
+                if ($post->isObsolete()) {
+                    $extra .= ' - Obsolete';
+                }
+
+                if (false === $post->isOnline()) {
+                    $extra .= ' - Offline';
+                }
+
+                static::assertEquals($post->getTitle() . $extra . ' - Edit', $crawler->filter('#post_' . $post->getId())->text());
 
                 $editUrl = UrlInterface::POSTS_LIST_URL . '/' . $post->getId() . '/edit';
                 static::assertEquals($editUrl, $crawler->filter('#edit_post_' . $post->getId())->link()->getUri());

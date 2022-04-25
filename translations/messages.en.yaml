@@ -91,6 +91,9 @@ post.is_top_post: Is top post?
 post.is_obsolete: Is obsolete?
 post.edition_form_title: Edit the post
 delete_modal.post: Delete the post?
+post.top_post: Top post
+post.obsolete: Obsolete
+post.offline: Offline
 
 # Search
 search.result_title: Search result
@@ -103,6 +106,7 @@ label.details: Details
 yes: Yes
 no: No
 language: Language
+generic_error_message: An error occurred.
 
 # Languages
 french: French

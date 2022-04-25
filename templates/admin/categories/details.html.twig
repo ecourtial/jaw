@@ -13,7 +13,21 @@
         <p><strong>Posts:</strong></p>
         <ul>
             {% for post in category.posts %}
-                <li id="post_{{ post.id }}">{{ post.title }} - <a id="edit_post_{{ post.id }}" href="{{ path('post_edit', {id: post.id}) }}">{{ 'post.edit'|trans }}</a></li>
+                <li id="post_{{ post.id }}">{{ post.title }} -
+
+                    {% if post.toppost %}
+                        <i class="top_post-label">{{ 'post.top_post'|trans}}</i> -
+                    {% endif %}
+
+                    {% if post.obsolete %}
+                        <i class="obsolete-label">{{ 'post.obsolete'|trans}}</i> -
+                    {% endif %}
+
+                    {% if false == post.online %}
+                        <i class="offline-label">{{ 'post.offline'|trans}}</i> -
+                    {% endif %}
+
+                    <a id="edit_post_{{ post.id }}" href="{{ path('post_edit', {id: post.id}) }}">{{ 'post.edit'|trans }}</a></li>
             {% endfor %}
         </ul>
     {% else %}

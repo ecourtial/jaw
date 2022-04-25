@@ -12,7 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * This repository only allows to load all the configuration at once.
- * So far we only allow to create one configuration data.
+ * So far we only allow to create one configuration data set.
  */
 class ConfigurationRepository
 {

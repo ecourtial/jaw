@@ -120,8 +120,9 @@ Trait CategoriesTrait
 
             $result[] = $entry;
         });
+
         $lastEntry = array_pop($result);
-        $this->newCategory->setId((int)substr($lastEntry['url'], -1));
+        $this->newCategory = self::getContainer()->get('App\Repository\CategoryRepository')->find((int)substr($lastEntry['url'], -1));
 
         $client->followRedirects(false);
     }
@@ -151,6 +152,8 @@ Trait CategoriesTrait
         static::assertEquals(200, $client->getResponse()->getStatusCode());
         $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL);
         $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.0');
+
+        $this->newCategory = self::getContainer()->get('App\Repository\CategoryRepository')->find($this->newCategory->getId());
 
         $client->followRedirects(false);
     }

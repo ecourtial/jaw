@@ -6,10 +6,6 @@ use App\Entity\Category;
 use App\Entity\Configuration;
 use App\Entity\Post;
 use App\Entity\User;
-use App\Repository\CategoryRepository;
-use App\Repository\ConfigurationRepository;
-use App\Repository\PostRepository;
-use App\Service\ConfigurationService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -18,8 +14,6 @@ class AppFixtures extends Fixture
 {
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
-        private readonly ConfigurationService $configurationService,
-        private readonly CategoryRepository $categoryRepository,
     ) {
     }
 
@@ -28,7 +22,7 @@ class AppFixtures extends Fixture
         // BE CAREFUL IF CHANGING SOMETHING EXISTING HERE, AS DATA ARE USED FOR FUNCTIONAL TESTS.
 
         // Create sample configuration
-        $this->configurationService->save($this->initBlogConfiguration());
+        $manager->persist($this->initBlogConfiguration());
 
         // Create a sample admin user
         $manager->persist($this->createAdminUser());
@@ -40,8 +34,10 @@ class AppFixtures extends Fixture
 
         // Create some categories containing a few posts
         $categories = $this->getFixturesCategories($regularUser);
-        $this->categoryRepository->save($categories[0]);
-        $this->categoryRepository->save($categories[1]);
+        $manager->persist($categories[0]);
+        $manager->persist($categories[1]);
+
+        $manager->flush();
     }
 
     /** @return Category[] */

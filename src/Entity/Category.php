@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity(fields={"slug"}, message="category.slug_must_be_unique")
  * @ORM\HasLifecycleCallbacks()
  */
-class Category
+class Category implements ResourceInterface
 {
     /**
      * @ORM\Id
@@ -74,6 +74,11 @@ class Category
     public function __construct()
     {
         $this->posts = new ArrayCollection();
+    }
+
+    public function getResourceType(): string
+    {
+        return 'category';
     }
 
     public function getId(): ?int

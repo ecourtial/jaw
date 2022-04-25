@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity(fields={"slug"}, message="post.slug_must_be_unique")
  * @ORM\HasLifecycleCallbacks()
  */
-class Post
+class Post implements ResourceInterface
 {
     /**
      * @ORM\Id
@@ -111,6 +111,11 @@ class Post
     public function __construct()
     {
         $this->publishedAt = new \DateTime();
+    }
+
+    public function getResourceType(): string
+    {
+        return 'post';
     }
 
     public function getId(): ?int

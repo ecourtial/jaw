@@ -6,11 +6,13 @@ use App\Entity\Category;
 use App\Entity\Post;
 use App\Exception\Category\CategoryNotEmptyException;
 use App\Repository\CategoryRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class CategoryRepositoryTest extends KernelTestCase
 {
     private CategoryRepository $categoryRepository;
+    private EntityManagerInterface $entityManager;
 
     public function setup(): void
     {
@@ -20,6 +22,10 @@ class CategoryRepositoryTest extends KernelTestCase
             ->get('doctrine')
             ->getManager()
             ->getRepository(Category::class);
+
+        $this->entityManager = $kernel->getContainer()
+            ->get('doctrine')
+            ->getManager();
     }
 
 
@@ -33,6 +39,7 @@ class CategoryRepositoryTest extends KernelTestCase
             ->setSlug('the-slug');
 
         $this->categoryRepository->save($category);
+        $this->entityManager->flush();
 
         static::assertTrue(is_int($category->getId()));
 
@@ -46,6 +53,7 @@ class CategoryRepositoryTest extends KernelTestCase
         // Delete
 
         $this->categoryRepository->delete($category);
+        $this->entityManager->flush();
 
         $categories = $this->categoryRepository->listAll();
 

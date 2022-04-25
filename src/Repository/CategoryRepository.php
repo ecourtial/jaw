@@ -12,13 +12,16 @@
 namespace App\Repository;
 
 use App\Entity\Category;
+use App\Entity\Webhook;
+use App\Event\ResourceEvent;
 use App\Exception\Category\CategoryNotEmptyException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class CategoryRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private readonly EventDispatcherInterface $eventDispatcher,)
     {
         parent::__construct($registry, Category::class);
     }
@@ -41,15 +44,17 @@ class CategoryRepository extends ServiceEntityRepository
 
     public function save(Category $category): void
     {
+        $actionType = ($category->getId() === null) ? Webhook::RESOURCE_ACTION_CREATION : Webhook::RESOURCE_ACTION_EDITION;
+
         $this->getEntityManager()->persist($category);
-        $this->getEntityManager()->flush();
+        $this->eventDispatcher->dispatch(new ResourceEvent($category, $actionType), ResourceEvent::NAME);
     }
 
     public function delete(Category $category): void
     {
         if ($category->getPosts()->isEmpty()) {
             $this->getEntityManager()->remove($category);
-            $this->getEntityManager()->flush();
+            $this->eventDispatcher->dispatch(new ResourceEvent($category, Webhook::RESOURCE_ACTION_DELETION), ResourceEvent::NAME);
         } else {
             throw new CategoryNotEmptyException();
         }

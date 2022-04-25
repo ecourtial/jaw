@@ -8,14 +8,17 @@ use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class ConfigurationRepositoryTest extends TestCase
 {
     private EntityManagerInterface $entityManager;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function setup(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
+        $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
     }
 
     public function testGet(): void
@@ -33,7 +36,7 @@ class ConfigurationRepositoryTest extends TestCase
 
         $queryBuilder->expects(static::once())->method('getQuery')->willReturn($query);
 
-        $repo = new ConfigurationRepository($this->entityManager);
+        $repo = new ConfigurationRepository($this->entityManager, $this->eventDispatcher);
 
         static::assertEquals($configuration, $repo->get());
     }

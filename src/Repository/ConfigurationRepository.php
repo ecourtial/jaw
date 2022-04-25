@@ -8,7 +8,10 @@
 namespace App\Repository;
 
 use App\Entity\Configuration;
+use App\Entity\Webhook;
+use App\Event\ResourceEvent;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * This repository only allows to load all the configuration at once.
@@ -16,11 +19,11 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class ConfigurationRepository
 {
-    private EntityManagerInterface $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly EventDispatcherInterface $eventDispatcher,
+    ) {
     }
 
     public function get(): Configuration
@@ -30,5 +33,12 @@ class ConfigurationRepository
         $qb->from(Configuration::class, 'm');
 
         return $qb->getQuery()->getSingleResult();
+    }
+
+    // Remember to flush after that
+    public function save(Configuration $configuration): void
+    {
+        $this->entityManager->persist($configuration);
+        $this->eventDispatcher->dispatch(new ResourceEvent($configuration, Webhook::RESOURCE_ACTION_EDITION), ResourceEvent::NAME);
     }
 }

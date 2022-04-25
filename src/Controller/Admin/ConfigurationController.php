@@ -9,35 +9,33 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Form\ConfigurationType;
-use App\Service\ConfigurationService;
+use App\Repository\ConfigurationRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class Configuration extends AbstractAdminController
+class ConfigurationController extends AbstractAdminController
 {
     #[Route('/admin/configuration', methods: ['GET', 'POST'], name: 'configuration')]
     #[IsGranted('ROLE_ADMIN')]
     public function __invoke(
-        ConfigurationService $configurationService,
+        ConfigurationRepository $configurationRepository,
         EntityManagerInterface $entityManager,
-        LoggerInterface $logger,
     ): Response {
-        $configuration = $configurationService->get();
+        $configuration = $configurationRepository->get();
 
         $form = $this->createForm(ConfigurationType::class, $configuration);
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $configurationService->save($configuration);
+                $configurationRepository->save($configuration);
                 $entityManager->flush();
                 $this->addFlash('success', 'configuration.updated_successfully');
             } catch (\Throwable $exception) {
-                $logger->log(LogLevel::ERROR, 'Impossible to save the configuration.', ['exception' => $exception]);
+                $this->logger->log(LogLevel::ERROR, 'Impossible to save the configuration.', ['exception' => $exception]);
                 $this->addFlash('alert', 'generic_error_message');
             }
 

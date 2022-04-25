@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Repository\CategoryRepository;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class PostRepositoryTest extends KernelTestCase
@@ -15,6 +16,7 @@ class PostRepositoryTest extends KernelTestCase
     private CategoryRepository $categoryRepository;
     private PostRepository $postRepository;
     private UserRepository $userRepository;
+    private EntityManagerInterface $entityManager;
 
     public function setup(): void
     {
@@ -34,6 +36,10 @@ class PostRepositoryTest extends KernelTestCase
             ->get('doctrine')
             ->getManager()
             ->getRepository(User::class);
+
+        $this->entityManager = $kernel->getContainer()
+            ->get('doctrine')
+            ->getManager();
     }
 
 
@@ -55,12 +61,14 @@ class PostRepositoryTest extends KernelTestCase
             ->setCategory($this->categoryRepository->find(1));
 
         $this->postRepository->save($post);
+        $this->entityManager->flush();
 
         static::assertTrue(is_int($post->getId()));
 
         // Delete
 
         $this->postRepository->delete($post);
+        $this->entityManager->flush();
         $posts = $this->postRepository->findAll();
 
         static::assertCount(3, $posts);

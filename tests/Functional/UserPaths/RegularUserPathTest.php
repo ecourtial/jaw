@@ -2,22 +2,35 @@
 
 namespace App\Tests\Functional\UserPaths;
 
-use App\Tests\Functional\UserPaths\Admin\CategoriesPathTrait;
-use App\Tests\Functional\UserPaths\Admin\PostsPathTrait;
-use App\Tests\Functional\UserPaths\Admin\SearchPathTrait;
-use App\Tests\Functional\UserPaths\Admin\UserPathCaseTrait;
+use App\Tests\Functional\UserPaths\Admin\AdminCategoriesPathTrait;
+use App\Tests\Functional\UserPaths\Admin\AdminPostsPathTrait;
+use App\Tests\Functional\UserPaths\Admin\AdminSearchPathTrait;
+use App\Tests\Functional\UserPaths\Admin\AdminUserPathCaseTrait;
+use App\Tests\Functional\UserPaths\Api\ApiConfigurationPathTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class RegularUserPathTest extends WebTestCase
 {
-    use UserPathCaseTrait;
-    use CategoriesPathTrait;
-    use PostsPathTrait;
-    use SearchPathTrait;
+    use AdminUserPathCaseTrait;
+    use AdminCategoriesPathTrait;
+    use AdminPostsPathTrait;
+    use AdminSearchPathTrait;
+    use ApiConfigurationPathTrait;
 
     public function testRegularUserPath(): void
     {
         $client = static::createClient();
+
+        /*************************************/
+        /**************** API ****************/
+        /*************************************/
+
+        $this->hasNoAccessToConfigurationEndpoint($client);
+        $this->hasAccessToConfigurationEndpoint($client);
+
+        /*************************************/
+        /************ SITE ADMIN *************/
+        /*************************************/
 
         // Security basics
         $this->checkStandardSecurity(

@@ -17,6 +17,8 @@ use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPasspor
 
 class ApiKeyAuthenticator extends AbstractAuthenticator
 {
+    public const API_TOKEN_HEADER_NAME = 'X-AUTH-TOKEN';
+
     /**
      * Called on every request to decide if this authenticator should be
      * used for the request. Returning `false` will cause this authenticator
@@ -24,12 +26,12 @@ class ApiKeyAuthenticator extends AbstractAuthenticator
      */
     public function supports(Request $request): ?bool
     {
-        return $request->headers->has('X-AUTH-TOKEN');
+        return $request->headers->has(self::API_TOKEN_HEADER_NAME);
     }
 
     public function authenticate(Request $request): Passport
     {
-        $apiToken = $request->headers->get('X-AUTH-TOKEN');
+        $apiToken = $request->headers->get(self::API_TOKEN_HEADER_NAME);
         if (null === $apiToken) {
             // The token header was empty, authentication fails with HTTP Status
             // Code 401 "Unauthorized"

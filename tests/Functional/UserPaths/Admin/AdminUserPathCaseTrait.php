@@ -7,7 +7,7 @@ use App\Tests\Functional\UserPaths\Admin\Sections\UserLoginTrait;
 use App\Tests\Functional\UserPaths\Admin\Sections\UserProfileTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
-Trait UserPathCaseTrait
+Trait AdminUserPathCaseTrait
 {
     use UserLoginTrait;
     use UserProfileTrait;

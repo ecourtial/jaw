@@ -2,22 +2,26 @@
 
 namespace App\Tests\Functional\UserPaths;
 
-use App\Tests\Functional\UserPaths\Admin\CategoriesPathTrait;
-use App\Tests\Functional\UserPaths\Admin\PostsPathTrait;
-use App\Tests\Functional\UserPaths\Admin\SearchPathTrait;
-use App\Tests\Functional\UserPaths\Admin\UserPathCaseTrait;
+use App\Tests\Functional\UserPaths\Admin\AdminCategoriesPathTrait;
+use App\Tests\Functional\UserPaths\Admin\AdminPostsPathTrait;
+use App\Tests\Functional\UserPaths\Admin\AdminSearchPathTrait;
+use App\Tests\Functional\UserPaths\Admin\AdminUserPathCaseTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AdminUserPathTest extends WebTestCase
 {
-    use UserPathCaseTrait;
-    use CategoriesPathTrait;
-    use PostsPathTrait;
-    use SearchPathTrait;
+    use AdminUserPathCaseTrait;
+    use AdminCategoriesPathTrait;
+    use AdminPostsPathTrait;
+    use AdminSearchPathTrait;
 
     public function testAdminUserPath(): void
     {
         $client = static::createClient();
+
+        /*************************************/
+        /************ SITE ADMIN *************/
+        /*************************************/
 
         $newPassword = 'someNewPassword';
 

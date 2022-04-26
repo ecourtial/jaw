@@ -73,6 +73,17 @@ class Configuration implements ResourceInterface
      */
     private ?\DateTime $updatedAt = null;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="text", nullable=true)
+     */
+    #[
+        Assert\Length(min: 10, max: 250, minMessage: 'configuration.url_too_short_content', maxMessage: 'configuration.url_too_long_content'),
+        Assert\Url
+    ]
+    private ?string $callbackUrl = null;
+
     public function getResourceType(): string
     {
         return 'configuration';
@@ -184,5 +195,17 @@ class Configuration implements ResourceInterface
     public function setUpdatedAt(): void
     {
         $this->updatedAt = new \DateTime();
+    }
+
+    public function getCallbackUrl(): ?string
+    {
+        return $this->callbackUrl;
+    }
+
+    public function setCallbackUrl(?string $callbackUrl): self
+    {
+        $this->callbackUrl = $callbackUrl;
+
+        return $this;
     }
 }

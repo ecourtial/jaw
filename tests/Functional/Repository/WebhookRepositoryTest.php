@@ -49,6 +49,11 @@ class WebhookRepositoryTest extends KernelTestCase
 
         static::assertFalse($this->webhookRepository->create($webhook3));
 
+        // Get the first unprocessed (must be the creation one)
+
+        $firstEntry = $this->webhookRepository->findAll()[0];
+        static::assertEquals($firstEntry, $this->webhookRepository->getFirstUnprocessed());
+
         // Reach the max count of attempt
 
         $webhook4 = $this->webhookRepository->getUnprocessedWebhookExists($webhook3);

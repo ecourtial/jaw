@@ -177,7 +177,7 @@ class Webhook
         return $this->attemptCount;
     }
 
-    // I did not set any PreUpdate annotation because I needed something to edit,so I could update the object.
+    // I did not set any PreUpdate annotation because I needed something to edit, so I could update the object.
     public function incrementAttemptCount(): self
     {
         $this->attemptCount++;

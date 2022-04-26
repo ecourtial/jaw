@@ -53,4 +53,21 @@ class WebhookRepository extends ServiceEntityRepository
         $this->getEntityManager()->persist($webhook);
         $this->getEntityManager()->flush();
     }
+
+    // Return the first entry not processed or aborted.
+    public function getFirstUnprocessed(): ?Webhook
+    {
+        $q = $this->createQueryBuilder('p')
+            ->where('p.processedDate IS NULL')
+            ->andWhere('p.attemptCount < :maxAttemptCount')
+            ->setParameter('maxAttemptCount', Webhook::MAX_ATTEMPT_COUNT)
+            ->setMaxResults(1)
+            ->getQuery();
+
+        if ($q->getResult()) {
+            return $q->getResult()[0];
+        }
+
+        return null;
+    }
 }

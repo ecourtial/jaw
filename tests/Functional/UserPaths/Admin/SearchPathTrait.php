@@ -7,9 +7,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\UserPaths\Subsets;
+namespace App\Tests\Functional\UserPaths\Admin;
 
-use App\Tests\Functional\UserPaths\Subsets\Sections\SearchTrait;
+use App\Tests\Functional\UserPaths\Admin\Sections\SearchTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 Trait SearchPathTrait

@@ -7,9 +7,8 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\UserPaths\Subsets\Sections;
+namespace App\Tests\Functional\UserPaths\Admin\Sections;
 
-use App\DataFixtures\AppFixtures;
 use App\Tests\Functional\TestingTools\UrlInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 

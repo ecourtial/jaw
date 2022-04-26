@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Event;
+namespace App\EventSubscriber;
 
 use App\Entity\Webhook;
+use App\Event\ResourceEvent;
 use App\Repository\WebhookRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 

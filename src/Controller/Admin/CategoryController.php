@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Category;
-use App\Entity\Webhook;
 use App\Exception\Category\CategoryNotEmptyException;
 use App\Form\CategoryType;
 use App\Repository\CategoryRepository;

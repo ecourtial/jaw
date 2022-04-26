@@ -10,9 +10,11 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Category;
+use App\Entity\Webhook;
 use App\Exception\Category\CategoryNotEmptyException;
 use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
+use Psr\Log\LogLevel;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -45,15 +47,23 @@ class CategoryController extends AbstractAdminController
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $categoryRepository->save($category);
+            $this->entityManager->beginTransaction();
+            try {
+                $categoryRepository->save($category);
+                $this->entityManager->commit();
 
-            /** @var \Symfony\Component\Form\SubmitButton $saveAndCreateNewButton */
-            $saveAndCreateNewButton = $form->get('saveAndCreateNew');
+                /** @var \Symfony\Component\Form\SubmitButton $saveAndCreateNewButton */
+                $saveAndCreateNewButton = $form->get('saveAndCreateNew');
 
-            if ($saveAndCreateNewButton->isClicked()) {
-                $this->addFlash('success', 'category.successfully_created');
+                if ($saveAndCreateNewButton->isClicked()) {
+                    $this->addFlash('success', 'category.successfully_created');
 
-                return $this->redirectToRoute('category_add');
+                    return $this->redirectToRoute('category_add');
+                }
+            } catch (\Throwable $exception) {
+                $this->entityManager->rollback();
+                $this->logger->log(LogLevel::ERROR, 'Impossible to create the category.', ['exception' => $exception]);
+                $this->addFlash('alert', 'generic_error_message');
             }
 
             return $this->redirectToRoute('category_list');
@@ -74,8 +84,16 @@ class CategoryController extends AbstractAdminController
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $categoryRepository->save($category);
-            $this->addFlash('success', 'category.successfully_updated');
+            $this->entityManager->beginTransaction();
+            try {
+                $categoryRepository->save($category);
+                $this->entityManager->commit();
+                $this->addFlash('success', 'category.successfully_updated');
+            } catch (\Throwable $exception) {
+                $this->entityManager->rollback();
+                $this->logger->log(LogLevel::ERROR, 'Impossible to update the category.', ['exception' => $exception]);
+                $this->addFlash('alert', 'generic_error_message');
+            }
 
             return $this->redirectToRoute('category_edit', ['id' => $category->getId()]);
         }
@@ -93,11 +111,18 @@ class CategoryController extends AbstractAdminController
     {
         // @phpstan-ignore-next-line
         if (true === $this->isCsrfTokenValid('delete', $this->request->request->get('token'))) {
+            $this->entityManager->beginTransaction();
             try {
                 $categoryRepository->delete($category);
+                $this->entityManager->commit();
                 $this->addFlash('success', 'category.deleted_successfully');
             } catch (CategoryNotEmptyException $exception) {
+                $this->entityManager->rollback();
                 $this->addFlash('alert', 'category.deletion_error_has_posts');
+            } catch (\Throwable $exception) {
+                $this->entityManager->rollback();
+                $this->logger->log(LogLevel::ERROR, 'Impossible to delete the category.', ['exception' => $exception]);
+                $this->addFlash('alert', 'generic_error_message');
             }
         }
 

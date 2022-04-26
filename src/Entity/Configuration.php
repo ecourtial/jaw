@@ -10,15 +10,14 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\ConfigurationRepository")
  * @ORM\Table(name="configuration")
+ * @ORM\HasLifecycleCallbacks()
  */
-class Configuration
+class Configuration implements ResourceInterface
 {
     /**
      * @ORM\Id
@@ -68,6 +67,27 @@ class Configuration
      */
     #[Assert\Length(min: 5, max: 50)]
     private ?string $googleAnalyticsId;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=false)
+     */
+    private ?\DateTime $updatedAt = null;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="text", nullable=true)
+     */
+    #[
+        Assert\Length(min: 10, max: 250, minMessage: 'configuration.url_too_short_content', maxMessage: 'configuration.url_too_long_content'),
+        Assert\Url
+    ]
+    private ?string $callbackUrl = null;
+
+    public function getResourceType(): string
+    {
+        return 'configuration';
+    }
 
     public function getId(): ?int
     {
@@ -159,6 +179,32 @@ class Configuration
     public function setGoogleAnalyticsId(?string $googleAnalyticsId): self
     {
         $this->googleAnalyticsId = $googleAnalyticsId;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @ORM\PreUpdate()
+     * @ORM\PrePersist()
+     */
+    public function setUpdatedAt(): void
+    {
+        $this->updatedAt = new \DateTime();
+    }
+
+    public function getCallbackUrl(): ?string
+    {
+        return $this->callbackUrl;
+    }
+
+    public function setCallbackUrl(?string $callbackUrl): self
+    {
+        $this->callbackUrl = $callbackUrl;
 
         return $this;
     }

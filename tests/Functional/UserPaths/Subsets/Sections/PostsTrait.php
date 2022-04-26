@@ -62,8 +62,8 @@ Trait PostsTrait
         $this->assertPageTitleContains('MyBlog Admin - Edit the post: ' . $this->newPost->getTitle() . ' - JAW v1.0');
         static::assertEquals('Edit the post: ' . $this->newPost->getTitle(), $crawler->filter('h1')->text());
 
-        // Set the post id
-        $this->newPost->setId($this->getIdFromEditPage($crawler));
+        // Load the post to get the fully hydrated object
+        $this->newPost = self::getContainer()->get('App\Repository\PostRepository')->find($this->getIdFromEditPage($crawler));
 
         $client->followRedirects(false);
     }
@@ -80,6 +80,8 @@ Trait PostsTrait
         $this->assertPageTitleContains('MyBlog Admin - Edit the post: ' . $this->newPost->getTitle() . ' - JAW v1.0');
         static::assertEquals('Edit the post: ' . $this->newPost->getTitle(), $crawler->filter('h1')->text());
         static::assertEquals($this->newPost->getId(), $this->getIdFromEditPage($crawler));
+        static::assertEquals('Creation date: ' . $this->newPost->getCreatedAt()->format('Y-m-d H:i:s'), $crawler->filter('#creationDate')->text());
+        static::assertEquals('Last modification: ' . $this->newPost->getUpdatedAt()->format('Y-m-d H:i:s'), $crawler->filter('#updateDate')->text());
 
         // Check the form content
         $formValues = $crawler->selectButton('savePostSubmitButton')->form()->getPhpValues();

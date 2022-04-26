@@ -12,11 +12,9 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
-    private UserPasswordHasherInterface $passwordHasher;
-
-    public function __construct(UserPasswordHasherInterface $passwordHasher)
-    {
-        $this->passwordHasher = $passwordHasher;
+    public function __construct(
+        private readonly UserPasswordHasherInterface $passwordHasher,
+    ) {
     }
 
     public function load(ObjectManager $manager): void
@@ -32,40 +30,18 @@ class AppFixtures extends Fixture
         // Create a sample regular user (keep in this order, as the user id is used for some tests)
         $regularUser = $this->createRegularUser();
         $manager->persist($regularUser);
+        $manager->flush();
 
         // Create some categories containing a few posts
-        $categories = self::getFixturesCategories($regularUser);
+        $categories = $this->getFixturesCategories($regularUser);
         $manager->persist($categories[0]);
         $manager->persist($categories[1]);
 
         $manager->flush();
     }
 
-    /**
-     * This method is only used for testing, not for the fixtures
-     * @return Category[]
-     */
-    public static function getFixturesCategoriesForFunctionalTesting(): array
-    {
-        $postIndex = 1;
-
-        $categories = self::getFixturesCategories();
-        foreach ($categories as $key => $category) {
-            // We set the ids manually by guessing it (see DataFixtures structure).
-            $category->setId($key + 1);
-
-            foreach ($category->getPosts() as $post) {
-                $post->setId($postIndex);
-                $postIndex++;
-                $post->setCategory($category);
-            }
-        }
-
-        return $categories;
-    }
-
     /** @return Category[] */
-    private static function getFixturesCategories(?User $regularUser = null): array
+    private function getFixturesCategories(?User $regularUser = null): array
     {
         $regularUser = $regularUser ?? (new User())->setId(2);
 
@@ -111,6 +87,7 @@ class AppFixtures extends Fixture
                         ->setLanguage('en')
                         ->setTopPost(true)
                         ->setOnline(false)
+                        ->setObsolete(true)
                 )
         ];
     }
@@ -124,7 +101,7 @@ class AppFixtures extends Fixture
         $configuration->setCopyrightExtraMessage('Or I will unleash my poodle.');
         $configuration->setLinkedinUsername('LinkedinPseudo');
         $configuration->setGithubUsername('GithubPseudo');
-        $configuration->setGoogleAnalyticsId('1234A');
+        $configuration->setGoogleAnalyticsId('1234Abcdef');
 
         return $configuration;
     }

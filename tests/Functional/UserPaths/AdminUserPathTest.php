@@ -44,7 +44,7 @@ class AdminUserPathTest extends WebTestCase
             'Or I will unleash my poodle.',
             'LinkedinPseudo',
             'GithubPseudo',
-            '1234A'
+            '1234Abcdef'
         );
 
         $newBlogTitle = 'NewBlogTitle';

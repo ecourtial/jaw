@@ -26,7 +26,7 @@ Trait SearchTrait
         static::assertEquals(2, count($crawler->filter("[id^=post_]")));
 
         // Check each entry
-        $categories = AppFixtures::getFixturesCategoriesForFunctionalTesting();
+        $categories = self::getContainer()->get('App\Repository\CategoryRepository')->findAll();
 
         $posts = [
             $categories[0]->getPosts()[0],

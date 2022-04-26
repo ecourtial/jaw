@@ -53,6 +53,9 @@ configuration.linkedin_username: Your username on Linkedin.
 configuration.github_username: Your username on Github.
 configuration.google_analytics_id: Your Google Analytics Id.
 configuration.updated_successfully: The configuration has been successfully updated.
+configuration.callback_url: Callback URL for the webhook when a resource is updated
+configuration.url_too_short_content: The URL is too short (min. 10 chars).
+configuration.url_long_short_content: The URL is too long (max. 250 chars).
 
 # Categories
 category.label: Category
@@ -91,6 +94,9 @@ post.is_top_post: Is top post?
 post.is_obsolete: Is obsolete?
 post.edition_form_title: Edit the post
 delete_modal.post: Delete the post?
+post.top_post: Top post
+post.obsolete: Obsolete
+post.offline: Offline
 
 # Search
 search.result_title: Search result
@@ -103,6 +109,9 @@ label.details: Details
 yes: Yes
 no: No
 language: Language
+generic_error_message: An error occurred.
+creation_date: Creation date
+last_edition_date: Last modification
 
 # Languages
 french: French

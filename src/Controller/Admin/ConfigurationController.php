@@ -10,25 +10,36 @@ namespace App\Controller\Admin;
 
 use App\Form\ConfigurationType;
 use App\Repository\ConfigurationRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LogLevel;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class Configuration extends AbstractAdminController
+class ConfigurationController extends AbstractAdminController
 {
     #[Route('/admin/configuration', methods: ['GET', 'POST'], name: 'configuration')]
     #[IsGranted('ROLE_ADMIN')]
-    public function __invoke(ConfigurationRepository $configurationRepository): Response
-    {
+    public function __invoke(
+        ConfigurationRepository $configurationRepository,
+        EntityManagerInterface $entityManager,
+    ): Response {
         $configuration = $configurationRepository->get();
 
         $form = $this->createForm(ConfigurationType::class, $configuration);
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $configurationRepository->save($configuration);
-
-            $this->addFlash('success', 'configuration.updated_successfully');
+            $this->entityManager->beginTransaction();
+            try {
+                $configurationRepository->save($configuration);
+                $this->entityManager->commit();
+                $this->addFlash('success', 'configuration.updated_successfully');
+            } catch (\Throwable $exception) {
+                $this->entityManager->rollback();
+                $this->logger->log(LogLevel::ERROR, 'Impossible to save the configuration.', ['exception' => $exception]);
+                $this->addFlash('alert', 'generic_error_message');
+            }
 
             return $this->redirectToRoute('configuration');
         }

@@ -4,13 +4,16 @@ namespace App\Tests\Functional\Repository;
 
 use App\Entity\Category;
 use App\Entity\Post;
+use App\Entity\Webhook;
 use App\Exception\Category\CategoryNotEmptyException;
 use App\Repository\CategoryRepository;
+use App\Repository\WebhookRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class CategoryRepositoryTest extends KernelTestCase
 {
     private CategoryRepository $categoryRepository;
+    private WebhookRepository $webhookRepository;
 
     public function setup(): void
     {
@@ -20,6 +23,11 @@ class CategoryRepositoryTest extends KernelTestCase
             ->get('doctrine')
             ->getManager()
             ->getRepository(Category::class);
+
+        $this->webhookRepository = $kernel->getContainer()
+            ->get('doctrine')
+            ->getManager()
+            ->getRepository(Webhook::class);
     }
 
 
@@ -35,6 +43,7 @@ class CategoryRepositoryTest extends KernelTestCase
         $this->categoryRepository->save($category);
 
         static::assertTrue(is_int($category->getId()));
+        static::assertCount(1, $this->webhookRepository->findBy(['resourceId' => $category->getId(), 'action' => Webhook::RESOURCE_ACTION_CREATION]));
 
         // Listing
 
@@ -45,6 +54,7 @@ class CategoryRepositoryTest extends KernelTestCase
 
         // Delete
 
+        $categId = $category->getId();
         $this->categoryRepository->delete($category);
 
         $categories = $this->categoryRepository->listAll();
@@ -55,6 +65,8 @@ class CategoryRepositoryTest extends KernelTestCase
                 static::fail('Oooups: it seems that we deleted the wrong category or did not deleted it at all!');
             }
         }
+
+        static::assertCount(1, $this->webhookRepository->findBy(['resourceId' => $categId, 'action' => Webhook::RESOURCE_ACTION_DELETION]));
 
         // Delete is not possible
 

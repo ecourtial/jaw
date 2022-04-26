@@ -56,6 +56,11 @@ class ConfigurationType extends AbstractType
                 'required' => false,
                 'attr' => ['class' => 'form-control']
             ])
+            ->add('callbackUrl', TextType::class, [
+                'label' => 'configuration.callback_url',
+                'required' => false,
+                'attr' => ['class' => 'form-control']
+            ])
             ->add('currentPassword', PasswordType::class, [
                 'constraints' => [
                     new UserPassword(),

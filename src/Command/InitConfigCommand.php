@@ -19,7 +19,7 @@ class InitConfigCommand extends Command
     private SymfonyStyle $io;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
+        private readonly EntityManagerInterface $entityManager,
         string $name = null
     ) {
         parent::__construct($name);

@@ -5,9 +5,11 @@ namespace App\Tests\Functional\Repository;
 use App\Entity\Category;
 use App\Entity\Post;
 use App\Entity\User;
+use App\Entity\Webhook;
 use App\Repository\CategoryRepository;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
+use App\Repository\WebhookRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class PostRepositoryTest extends KernelTestCase
@@ -15,6 +17,7 @@ class PostRepositoryTest extends KernelTestCase
     private CategoryRepository $categoryRepository;
     private PostRepository $postRepository;
     private UserRepository $userRepository;
+    private WebhookRepository $webhookRepository;
 
     public function setup(): void
     {
@@ -34,6 +37,11 @@ class PostRepositoryTest extends KernelTestCase
             ->get('doctrine')
             ->getManager()
             ->getRepository(User::class);
+
+        $this->webhookRepository = $kernel->getContainer()
+            ->get('doctrine')
+            ->getManager()
+            ->getRepository(Webhook::class);
     }
 
 
@@ -57,9 +65,11 @@ class PostRepositoryTest extends KernelTestCase
         $this->postRepository->save($post);
 
         static::assertTrue(is_int($post->getId()));
+        static::assertCount(1, $this->webhookRepository->findBy(['resourceId' => $post->getId(), 'action' => Webhook::RESOURCE_ACTION_CREATION]));
 
         // Delete
 
+        $postId = $post->getId();
         $this->postRepository->delete($post);
         $posts = $this->postRepository->findAll();
 
@@ -69,11 +79,13 @@ class PostRepositoryTest extends KernelTestCase
                 static::fail('Oooups: it seems that we deleted the wrong post or did not deleted it at all!');
             }
         }
+
+        static::assertCount(1, $this->webhookRepository->findBy(['resourceId' => $postId, 'action' => Webhook::RESOURCE_ACTION_DELETION]));
     }
 
     public function testSearch(): void
     {
-        $posts = $this->postRepository->search('keyword');
+        $posts = $this->postRepository->search('keyword', 10);
         static::assertCount(2, $posts);
         static::assertEquals(1, $posts[0]->id);
         static::assertEquals(3, $posts[1]->id);

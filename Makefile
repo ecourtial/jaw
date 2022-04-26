@@ -77,6 +77,11 @@ dump_db:
 	@cd docker/dev \
 	&& docker-compose exec mysql bash -c 'mysqldump -u root jaw -p > /var/www/html/dump.sql && `chown -R $$DOCKER_USER_UID:$$DOCKER_USER_GID /var/www/html/dump.sql`'
 
+# To use when you want to create a new migration file. You have to run 'make migrate' just after.
+make create_migration:
+	@cd docker/dev \
+	&& docker-compose exec php bash -c 'bin/console doctrine:database:drop --force && bin/console doctrine:database:create && make migrate_command && bin/console doctrine:migration:diff'
+
 #### Internal (inside the container)
 
 phpstan_command:

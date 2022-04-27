@@ -24,7 +24,7 @@ Trait ApiConfigurationPathTrait
 
         $client->request(
             'GET',
-            UrlInterface::CONFIGURATION_ENDPOINT_URL, 
+            UrlInterface::CONFIGURATION_ENDPOINT_URL,
             [],
             [],
             [

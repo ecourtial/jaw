@@ -99,7 +99,7 @@ class PostRepository extends ServiceEntityRepository implements ApiFilterableRes
 
         $result['createdAt'] = $result['createdAt']->format(\DateTimeInterface::ATOM);
         $result['updatedAt'] = $result['updatedAt']->format(\DateTimeInterface::ATOM);
-        $result['publishedAt'] =  $result['publishedAt'] === null ? null:$result['publishedAt']->format(\DateTimeInterface::ATOM);
+        $result['publishedAt'] =  $result['publishedAt'] === null ? null : $result['publishedAt']->format(\DateTimeInterface::ATOM);
 
         return $result;
     }

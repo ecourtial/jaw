@@ -43,7 +43,7 @@ trait ApiPostTrait
         static::assertEquals($expected, \json_decode($client->getResponse()->getContent(), true));
     }
 
-    public function checkErrorWhenTooManyFilters(KernelBrowser $client): void
+    public function checkErrorWhenTooManyFiltersForPost(KernelBrowser $client): void
     {
         $client->request(
             'GET',
@@ -60,7 +60,7 @@ trait ApiPostTrait
         static::assertEquals($expected, \json_decode($client->getResponse()->getContent(), true));
     }
 
-    public function checkErrorWhenUnsupportedFilters(KernelBrowser $client): void
+    public function checkErrorWhenUnsupportedFiltersForPost(KernelBrowser $client): void
     {
         $client->request(
             'GET',
@@ -76,7 +76,6 @@ trait ApiPostTrait
         $expected = ['message' => 'No supported filter was given. Available filters are: id, slug.'];
         static::assertEquals($expected, \json_decode($client->getResponse()->getContent(), true));
     }
-
 
     public function checkCanAccessToGetPost(KernelBrowser $client): void
     {

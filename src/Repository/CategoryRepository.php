@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Category;
+use App\Entity\Post;
 use App\Entity\Webhook;
 use App\Event\ResourceEvent;
 use App\Exception\Category\CategoryNotEmptyException;
@@ -57,6 +58,33 @@ class CategoryRepository extends ServiceEntityRepository implements ApiFilterabl
 
     public function getByApiFilter(string $filter, string|int $param): array
     {
-        
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $qb->select(
+            'c.id, c.title, c.summary, c.createdAt, c.updatedAt, c.slug'
+        );
+        $qb->from(Category::class, 'c');
+
+        if ($filter === 'slug') {
+            $qb->where('c.slug' . ' LIKE :param');
+            $qb->setParameter('param', "%$param%");
+        } elseif ($filter === 'id') {
+            $qb->where('c.id = :param');
+            $qb->setParameter('param', $param);
+        } else {
+            throw new \LogicException('Unsupported filter: ' . $filter);
+        }
+
+        $result = $qb->getQuery()->getSingleResult();
+
+        $result['createdAt'] = $result['createdAt']->format(\DateTimeInterface::ATOM);
+        $result['updatedAt'] = $result['updatedAt']->format(\DateTimeInterface::ATOM);
+
+        $result['postCount'] = $this->getEntityManager()->getConnection()->executeQuery(
+            'SELECT COUNT(*) as count FROM posts WHERE category_id = :categId',
+            ['categId' => $result['id']]
+        )->fetchAssociative()['count'];
+
+        return $result;
     }
 }

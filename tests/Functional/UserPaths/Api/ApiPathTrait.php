@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\UserPaths\Api;
 
+use App\Tests\Functional\UserPaths\Api\Sections\ApiCategoryTrait;
 use App\Tests\Functional\UserPaths\Api\Sections\ApiConfigurationTrait;
 use App\Tests\Functional\UserPaths\Api\Sections\ApiPostTrait;
 use App\Tests\Functional\UserPaths\Api\Sections\ApiUserPathTrait;
@@ -19,6 +20,7 @@ trait ApiPathTrait
     use ApiConfigurationTrait;
     use ApiPostTrait;
     use ApiUserPathTrait;
+    use ApiCategoryTrait;
 
     public function checkApiRoutes(KernelBrowser $client): void
     {
@@ -29,8 +31,8 @@ trait ApiPathTrait
         // Posts
         $this->hasNoAccessToGetPost($client);
         $this->checkGetPostNotFound($client);
-        $this->checkErrorWhenTooManyFilters($client);
-        $this->checkErrorWhenUnsupportedFilters($client);
+        $this->checkErrorWhenTooManyFiltersForPost($client);
+        $this->checkErrorWhenUnsupportedFiltersForPost($client);
         $this->checkCanAccessToGetPost($client);
 
         // Users
@@ -38,5 +40,12 @@ trait ApiPathTrait
         $this->checkCannotAccessUserBecauseConnectedUserIsNotAdmin($client);
         $this->checkUserNotFound($client);
         $this->checkUserFoundWithAdminUserConnected($client);
+
+        // Categories
+        $this->hasNoAccessToGetCategory($client);
+        $this->checkGetCategoryNotFound($client);
+        $this->checkErrorWhenTooManyFiltersForCategory($client);
+        $this->checkErrorWhenUnsupportedFiltersForCategory($client);
+        $this->checkCanAccessToGetCategory($client);
     }
 }

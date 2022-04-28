@@ -13,7 +13,7 @@ use App\Entity\Category;
 use App\Tests\Functional\TestingTools\UrlInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
-Trait CategoriesTrait
+trait CategoriesTrait
 {
     private ?Category $newCategory = null;
 

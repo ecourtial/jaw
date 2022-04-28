@@ -15,7 +15,7 @@ use App\Tests\Functional\TestingTools\UrlInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\DomCrawler\Crawler;
 
-Trait PostsTrait
+trait PostsTrait
 {
     private ?Post $newPost;
 

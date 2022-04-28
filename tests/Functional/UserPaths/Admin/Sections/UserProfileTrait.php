@@ -12,7 +12,7 @@ namespace App\Tests\Functional\UserPaths\Admin\Sections;
 use App\Tests\Functional\TestingTools\UrlInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
-Trait UserProfileTrait
+trait UserProfileTrait
 {
     protected function checkEditProfileMenuItem(KernelBrowser $client): void
     {

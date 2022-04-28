@@ -12,7 +12,7 @@ namespace App\Tests\Functional\UserPaths\Admin;
 use App\Tests\Functional\UserPaths\Admin\Sections\PostsTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
-Trait AdminPostsPathTrait
+trait AdminPostsPathTrait
 {
     use PostsTrait;
 

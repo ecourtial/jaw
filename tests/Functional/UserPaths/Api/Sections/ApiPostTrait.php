@@ -9,7 +9,7 @@ use App\Tests\Functional\TestingTools\RequestTools;
 use App\Tests\Functional\TestingTools\UrlInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
-Trait ApiPostTrait
+trait ApiPostTrait
 {
     public function hasNoAccessToGetPost(KernelBrowser $client): void
     {
@@ -34,11 +34,47 @@ Trait ApiPostTrait
             [],
             [],
             [
-                RequestTools::formatCustomHeaderName(ApiKeyAuthenticator::API_TOKEN_HEADER_NAME) => $this->getFirstUserToken()
+                RequestTools::formatCustomHeaderName(ApiKeyAuthenticator::API_TOKEN_HEADER_NAME) => $this->getAdminUserToken()
             ]
         );
 
         static::assertEquals(404, $client->getResponse()->getStatusCode());
+        $expected = ['message' => 'No result found.'];
+        static::assertEquals($expected, \json_decode($client->getResponse()->getContent(), true));
+    }
+
+    public function checkErrorWhenTooManyFilters(KernelBrowser $client): void
+    {
+        $client->request(
+            'GET',
+            UrlInterface::GET_POST_ENDPOINT_URL . 'id=99&slug=toto',
+            [],
+            [],
+            [
+                RequestTools::formatCustomHeaderName(ApiKeyAuthenticator::API_TOKEN_HEADER_NAME) => $this->getAdminUserToken()
+            ]
+        );
+
+        static::assertEquals(400, $client->getResponse()->getStatusCode());
+        $expected = ['message' => 'Only one filter can be accepted, 2 given.'];
+        static::assertEquals($expected, \json_decode($client->getResponse()->getContent(), true));
+    }
+
+    public function checkErrorWhenUnsupportedFilters(KernelBrowser $client): void
+    {
+        $client->request(
+            'GET',
+            UrlInterface::GET_POST_ENDPOINT_URL . 'foo=bar',
+            [],
+            [],
+            [
+                RequestTools::formatCustomHeaderName(ApiKeyAuthenticator::API_TOKEN_HEADER_NAME) => $this->getAdminUserToken()
+            ]
+        );
+
+        static::assertEquals(400, $client->getResponse()->getStatusCode());
+        $expected = ['message' => 'No supported filter was given. Available filters are: id, slug.'];
+        static::assertEquals($expected, \json_decode($client->getResponse()->getContent(), true));
     }
 
 
@@ -59,7 +95,7 @@ Trait ApiPostTrait
             [],
             [],
             [
-                RequestTools::formatCustomHeaderName(ApiKeyAuthenticator::API_TOKEN_HEADER_NAME) => $this->getFirstUserToken()
+                RequestTools::formatCustomHeaderName(ApiKeyAuthenticator::API_TOKEN_HEADER_NAME) => $this->getAdminUserToken()
             ]
         );
 
@@ -90,7 +126,7 @@ Trait ApiPostTrait
         return $result;
     }
 
-    private function getFirstUserToken(): string
+    private function getAdminUserToken(): string
     {
         $userRepository = static::getContainer()
             ->get('doctrine')
@@ -98,5 +134,25 @@ Trait ApiPostTrait
             ->getRepository(User::class);
 
         return $userRepository->find(1)->getToken();
+    }
+
+    private function getRegularUserToken(): string
+    {
+        $userRepository = static::getContainer()
+            ->get('doctrine')
+            ->getManager()
+            ->getRepository(User::class);
+
+        return $userRepository->find(2)->getToken();
+    }
+
+    private function getUser(int $userId): User
+    {
+        $userRepository = static::getContainer()
+            ->get('doctrine')
+            ->getManager()
+            ->getRepository(User::class);
+
+        return $userRepository->find($userId);
     }
 }

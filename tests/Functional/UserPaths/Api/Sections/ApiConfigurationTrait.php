@@ -2,13 +2,13 @@
 
 namespace App\Tests\Functional\UserPaths\Api\Sections;
 
-use App\Entity\User;
+use App\Repository\ConfigurationRepository;
 use App\Security\ApiKeyAuthenticator;
 use App\Tests\Functional\TestingTools\RequestTools;
 use App\Tests\Functional\TestingTools\UrlInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
-Trait ApiConfigurationTrait
+trait ApiConfigurationTrait
 {
     public function hasNoAccessToConfigurationEndpoint(KernelBrowser $client): void
     {
@@ -28,21 +28,36 @@ Trait ApiConfigurationTrait
 
     public function hasAccessToConfigurationEndpoint(KernelBrowser $client): void
     {
-        $userRepository = static::getContainer()
-            ->get('doctrine')
-            ->getManager()
-            ->getRepository(User::class);
-
         $client->request(
             'GET',
             UrlInterface::CONFIGURATION_ENDPOINT_URL,
             [],
             [],
             [
-                RequestTools::formatCustomHeaderName(ApiKeyAuthenticator::API_TOKEN_HEADER_NAME) => $this->getFirstUserToken()
+                RequestTools::formatCustomHeaderName(ApiKeyAuthenticator::API_TOKEN_HEADER_NAME) => $this->getAdminUserToken()
             ]
         );
 
         static::assertEquals(200, $client->getResponse()->getStatusCode());
+
+        $configurationRepository = static::getContainer()
+            ->get(ConfigurationRepository::class);
+
+        $configuration = $configurationRepository->get();
+
+        $expected = [
+            'title' => $configuration->getBlogTitle(),
+            'description' => $configuration->getBlogDescription(),
+            'callbackUrl' => $configuration->getCallbackUrl(),
+            'createdAt' => $configuration->getCreatedAt()->format(\DateTimeInterface::ATOM),
+            'updatedAt' => $configuration->getUpdatedAt()->format(\DateTimeInterface::ATOM),
+            'copyrightMessage' => $configuration->getCopyrightMessage(),
+            'copyrightExtraMessage' => $configuration->getCopyrightExtraMessage(),
+            'githubUserName' => $configuration->getGithubUsername(),
+            'linkedinUserName' => $configuration->getLinkedinUsername(),
+            'googleAnalyticsId' => $configuration->getGoogleAnalyticsId(),
+        ];
+
+        static::assertEquals($expected, \json_decode($client->getResponse()->getContent(), true));
     }
 }

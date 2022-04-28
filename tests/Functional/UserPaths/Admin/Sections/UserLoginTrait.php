@@ -13,7 +13,7 @@ use App\Google\CaptchaChecker;
 use App\Tests\Functional\TestingTools\UrlInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
-Trait UserLoginTrait
+trait UserLoginTrait
 {
     protected function loginWithSuccess(KernelBrowser $client, string $username, string $password): void
     {

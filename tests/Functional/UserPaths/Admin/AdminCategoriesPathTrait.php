@@ -12,7 +12,7 @@ namespace App\Tests\Functional\UserPaths\Admin;
 use App\Tests\Functional\UserPaths\Admin\Sections\CategoriesTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
-Trait AdminCategoriesPathTrait
+trait AdminCategoriesPathTrait
 {
     use CategoriesTrait;
 

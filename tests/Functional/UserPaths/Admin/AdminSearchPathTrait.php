@@ -12,7 +12,7 @@ namespace App\Tests\Functional\UserPaths\Admin;
 use App\Tests\Functional\UserPaths\Admin\Sections\SearchTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
-Trait AdminSearchPathTrait
+trait AdminSearchPathTrait
 {
     use SearchTrait;
 

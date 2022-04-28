@@ -23,7 +23,7 @@ class PostController extends AbstractJawController
     {
         $queryParamsCount = count($this->request->query);
         if ($queryParamsCount > 1) {
-            return new JsonResponse(['message' => "Only one filter can be accepted, $queryParamsCount given."], 401);
+            return new JsonResponse(['message' => "Only one filter can be accepted, $queryParamsCount given."], 400);
         }
 
         $id = (int)$this->request->get('id');
@@ -45,9 +45,9 @@ class PostController extends AbstractJawController
         try {
             return new JsonResponse($postRepository->getByApiFilter($filter, $param));
         } catch (NoResultException $exception) {
-            return new JsonResponse(['message' => 'No result found'], 404);
+            return new JsonResponse(['message' => 'No result found.'], 404);
         } catch (\LogicException $exception) {
-            return new JsonResponse(['message' => 'No supported filter was given. Available filters are: id, slug.'], 401);
+            return new JsonResponse(['message' => 'No supported filter was given. Available filters are: id, slug.'], 400);
         }
     }
 }

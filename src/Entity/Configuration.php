@@ -17,8 +17,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="configuration")
  * @ORM\HasLifecycleCallbacks()
  */
-class Configuration implements ResourceInterface
+class Configuration implements DatedResourceInterface
 {
+    use DatedResourceTrait;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -67,11 +69,6 @@ class Configuration implements ResourceInterface
      */
     #[Assert\Length(min: 5, max: 50)]
     private ?string $googleAnalyticsId;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=false)
-     */
-    private ?\DateTime $updatedAt = null;
 
     /**
      * @var string
@@ -181,20 +178,6 @@ class Configuration implements ResourceInterface
         $this->googleAnalyticsId = $googleAnalyticsId;
 
         return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTime
-    {
-        return $this->updatedAt;
-    }
-
-    /**
-     * @ORM\PreUpdate()
-     * @ORM\PrePersist()
-     */
-    public function setUpdatedAt(): void
-    {
-        $this->updatedAt = new \DateTime();
     }
 
     public function getCallbackUrl(): ?string

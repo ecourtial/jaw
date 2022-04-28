@@ -43,7 +43,11 @@ class CategoryRepositoryTest extends KernelTestCase
         $this->categoryRepository->save($category);
 
         static::assertTrue(is_int($category->getId()));
-        static::assertCount(1, $this->webhookRepository->findBy(['resourceId' => $category->getId(), 'action' => Webhook::RESOURCE_ACTION_CREATION]));
+        static::assertCount(1, $this->webhookRepository->findBy([
+            'resourceId' => $category->getId(),
+            'action' => Webhook::RESOURCE_ACTION_CREATION,
+            'resourceType' => $category->getResourceType()
+        ]));
 
         // Listing
 

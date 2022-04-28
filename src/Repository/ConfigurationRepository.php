@@ -34,7 +34,6 @@ class ConfigurationRepository
         return $qb->getQuery()->getSingleResult();
     }
 
-    // Remember to flush after that
     public function save(Configuration $configuration): void
     {
         $this->entityManager->persist($configuration);

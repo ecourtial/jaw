@@ -17,9 +17,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(name="users")
+ * @ORM\HasLifecycleCallbacks()
  */
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, DatedResourceInterface
 {
+    use DatedResourceTrait;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -64,12 +67,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private array $roles = [];
 
+    public function getResourceType(): string
+    {
+        return 'user';
+    }
+
     public function getId(): ?int
     {
-        if (null === $this->id) {
-            throw new \LogicException('User has not bee initialized yet!');
-        }
-
         return $this->id;
     }
 

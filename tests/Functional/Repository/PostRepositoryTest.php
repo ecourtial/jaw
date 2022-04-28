@@ -65,7 +65,11 @@ class PostRepositoryTest extends KernelTestCase
         $this->postRepository->save($post);
 
         static::assertTrue(is_int($post->getId()));
-        static::assertCount(1, $this->webhookRepository->findBy(['resourceId' => $post->getId(), 'action' => Webhook::RESOURCE_ACTION_CREATION]));
+        static::assertCount(1, $this->webhookRepository->findBy([
+            'resourceId' => $post->getId(),
+            'action' => Webhook::RESOURCE_ACTION_CREATION,
+            'resourceType' => $post->getResourceType()
+        ]));
 
         // Delete
 

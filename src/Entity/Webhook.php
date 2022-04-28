@@ -21,11 +21,13 @@ class Webhook
     private const RESOURCE_TYPE_CONFIGURATION = 'configuration';
     private const RESOURCE_TYPE_CATEGORY = 'category';
     private const RESOURCE_TYPE_POST = 'post';
+    private const RESOURCE_TYPE_USER = 'user';
 
     private const RESOURCE_TYPES = [
         self::RESOURCE_TYPE_CONFIGURATION,
         self::RESOURCE_TYPE_CATEGORY,
         self::RESOURCE_TYPE_POST,
+        self::RESOURCE_TYPE_USER,
     ];
 
     public const RESOURCE_ACTION_CREATION = 'created';

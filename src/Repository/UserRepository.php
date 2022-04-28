@@ -12,23 +12,25 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Entity\Webhook;
+use App\Event\ResourceEvent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-/**
- * This custom Doctrine repository is empty because so far we don't need any custom
- * method to query for application user information. But it's always a good practice
- * to define a custom repository that will be used when the application grows.
- *
- * See https://symfony.com/doc/current/doctrine.html#querying-for-objects-the-repository
- *
- * @author Ryan Weaver <weaverryan@gmail.com>
- * @author Javier Eguiluz <javier.eguiluz@gmail.com>
- */
 class UserRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private readonly EventDispatcherInterface $eventDispatcher)
     {
         parent::__construct($registry, User::class);
+    }
+
+    public function save(User $user): void
+    {
+        $actionType = ($user->getId() === null) ? Webhook::RESOURCE_ACTION_CREATION : Webhook::RESOURCE_ACTION_EDITION;
+
+        $this->getEntityManager()->persist($user);
+        $this->getEntityManager()->flush();
+        $this->eventDispatcher->dispatch(new ResourceEvent($user, $actionType), ResourceEvent::NAME);
     }
 }

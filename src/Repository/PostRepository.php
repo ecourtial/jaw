@@ -88,7 +88,7 @@ class PostRepository extends ServiceEntityRepository
         if ($filter === 'slug') {
             $qb->where('p.slug' . ' LIKE :param');
             $qb->setParameter('param', "%$param%");
-        } elseif($filter === 'id') {
+        } elseif ($filter === 'id') {
             $qb->where('p.id = :param');
             $qb->setParameter('param', $param);
         } else {

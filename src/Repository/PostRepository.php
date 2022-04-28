@@ -12,7 +12,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class PostRepository extends ServiceEntityRepository
+class PostRepository extends ServiceEntityRepository implements ApiFilterableResultInterface
 {
     public function __construct(ManagerRegistry $registry, private readonly EventDispatcherInterface $eventDispatcher)
     {
@@ -39,7 +39,7 @@ class PostRepository extends ServiceEntityRepository
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
-        $qb->select('p.id, p.title, p.slug, p.publishedAt, c.id as categId, c.title as categTitle, c.slug as categSlug');
+        $qb->select('p.id, p.title, p.slug, p.createdAt, c.id as categId, c.title as categTitle, c.slug as categSlug');
 
         $qb->from(Post::class, 'p');
         $qb->from(Category::class, 'c');
@@ -48,7 +48,7 @@ class PostRepository extends ServiceEntityRepository
         $qb->orWhere('p.summary' . ' LIKE :request');
         $qb->orWhere('p.content' . ' LIKE :request');
         $qb->andWhere('p.category = c.id');
-        $qb->orderBy('p.publishedAt', 'DESC');
+        $qb->orderBy('p.createdAt', 'DESC');
         $qb->setMaxResults($limit);
         $qb->setParameter('request', "%$keywords%");
 
@@ -65,7 +65,7 @@ class PostRepository extends ServiceEntityRepository
                 $entry['id'],
                 $entry['title'],
                 $entry['slug'],
-                $entry['publishedAt'],
+                $entry['createdAt'],
                 $entry['categId'],
                 $entry['categTitle'],
                 $entry['categSlug'],
@@ -80,7 +80,7 @@ class PostRepository extends ServiceEntityRepository
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select(
-            'p.id, p.title, p.summary, p.publishedAt, p.updatedAt, p.slug, p.online, p.topPost, '
+            'p.id, p.title, p.summary, p.createdAt, p.updatedAt, p.publishedAt, p.slug, p.online, p.topPost, '
             . 'p.language, p.obsolete, IDENTITY(p.category) as categoryId, IDENTITY(p.author) as authorId, p.content'
         );
         $qb->from(Post::class, 'p');
@@ -97,8 +97,9 @@ class PostRepository extends ServiceEntityRepository
 
         $result = $qb->getQuery()->getSingleResult();
 
-        $result['publishedAt'] = $result['publishedAt']->format(\DateTimeInterface::ATOM);
+        $result['createdAt'] = $result['createdAt']->format(\DateTimeInterface::ATOM);
         $result['updatedAt'] = $result['updatedAt']->format(\DateTimeInterface::ATOM);
+        $result['publishedAt'] =  $result['publishedAt'] === null ? null:$result['publishedAt']->format(\DateTimeInterface::ATOM);
 
         return $result;
     }

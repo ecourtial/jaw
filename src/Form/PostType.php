@@ -126,8 +126,6 @@ class PostType extends AbstractType
                     $post->setSlug($this->slugger->slug($postTitle)->lower());
                 }
 
-                $post->setPublishedAt(new \DateTime());
-
                 $post->setAuthor(
                     // @phpstan-ignore-next-line
                     $this->userRepository->findByUsername($this->security->getUser()->getUserIdentifier())[0]

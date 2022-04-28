@@ -54,7 +54,6 @@ class PostRepositoryTest extends KernelTestCase
             ->setSummary('The Summary')
             ->setSlug('the-slug')
             ->setObsolete(false)
-            ->setPublishedAt(new \DateTime())
             ->setOnline(true)
             ->setTopPost(true)
             ->setContent('The content')
@@ -65,6 +64,7 @@ class PostRepositoryTest extends KernelTestCase
         $this->postRepository->save($post);
 
         static::assertTrue(is_int($post->getId()));
+        static::assertNotNull(is_int($post->getPublishedAt()));
         static::assertCount(1, $this->webhookRepository->findBy([
             'resourceId' => $post->getId(),
             'action' => Webhook::RESOURCE_ACTION_CREATION,

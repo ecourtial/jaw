@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/api/v1/user')]
 class UserController extends AbstractController
 {
-    #[Route('/{id<\d+>}', methods: ['GET'], name: 'user_get')]
+    #[Route('/{id<\d+>}', methods: ['GET'], name: 'api_user_get')]
     public function getConfig(User $user = null): JsonResponse
     {
         if (false === \in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {

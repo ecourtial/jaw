@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/api/v1/configuration')]
 class ConfigurationController extends AbstractController
 {
-    #[Route('', methods: ['GET'], name: 'api_config')]
+    #[Route('', methods: ['GET'], name: 'api_configuration_get')]
     public function getConfig(ConfigurationRepository $configurationRepository): JsonResponse
     {
         $configuration = $configurationRepository->get();

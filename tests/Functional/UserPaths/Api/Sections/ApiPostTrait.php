@@ -86,12 +86,28 @@ trait ApiPostTrait
             ->getManager()
             ->getRepository(Post::class);
 
-        $post = $postRepository->find(1);
+        $post = $postRepository->find(1); // Published
         $formattedPost = $this->formatPostForExpectedApiResult($post);
 
         $client->request(
             'GET',
-            UrlInterface::GET_POST_ENDPOINT_URL . 'id=1',
+            UrlInterface::GET_POST_ENDPOINT_URL . 'id=' . $post->getId(),
+            [],
+            [],
+            [
+                RequestTools::formatCustomHeaderName(ApiKeyAuthenticator::API_TOKEN_HEADER_NAME) => $this->getAdminUserToken()
+            ]
+        );
+
+        static::assertEquals($formattedPost, \json_decode($client->getResponse()->getContent(), true));
+
+        // By slug
+        $post = $postRepository->find(3); // Not published yet
+        $formattedPost = $this->formatPostForExpectedApiResult($post);
+
+        $client->request(
+            'GET',
+            UrlInterface::GET_POST_ENDPOINT_URL . 'slug=' . $post->getSlug(),
             [],
             [],
             [
@@ -108,7 +124,7 @@ trait ApiPostTrait
             'id' => $post->getId(),
             'title' => $post->getTitle(),
             'summary' => $post->getSummary(),
-            'publishedAt' => $post->getPublishedAt(),
+            'createdAt' => $post->getCreatedAt(),
             'updatedAt' => $post->getUpdatedAt(),
             'slug' => $post->getSlug(),
             'online' => $post->isOnline(),
@@ -118,10 +134,12 @@ trait ApiPostTrait
             'categoryId' => $post->getCategory()->getId(),
             'authorId' => $post->getAuthor()->getId(),
             'content' => $post->getContent(),
+            'publishedAt' => $post->getPublishedAt(),
         ];
 
-        $result['publishedAt'] = $result['publishedAt']->format(\DateTimeInterface::ATOM);
+        $result['createdAt'] = $result['createdAt']->format(\DateTimeInterface::ATOM);
         $result['updatedAt'] = $result['updatedAt']->format(\DateTimeInterface::ATOM);
+        $result['publishedAt'] =  $result['publishedAt'] === null ? null:$result['publishedAt']->format(\DateTimeInterface::ATOM);
 
         return $result;
     }

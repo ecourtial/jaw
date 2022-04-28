@@ -63,9 +63,9 @@ class Post implements DatedResourceInterface
     private ?string $content = null;
 
     /**
-     * @ORM\Column(type="datetime", nullable=false)
+     * @ORM\Column(type="datetime", nullable=true)
      */
-    private \DateTime $publishedAt;
+    private ?\DateTime $publishedAt = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User")
@@ -99,11 +99,6 @@ class Post implements DatedResourceInterface
      */
     #[Assert\NotBlank]
     private ?string $language = null;
-
-    public function __construct()
-    {
-        $this->publishedAt = new \DateTime();
-    }
 
     public function getResourceType(): string
     {
@@ -158,14 +153,22 @@ class Post implements DatedResourceInterface
         return $this;
     }
 
-    public function getPublishedAt(): \DateTime
+    public function getPublishedAt(): ?\DateTime
     {
         return $this->publishedAt;
     }
 
-    public function setPublishedAt(\DateTime $publishedAt): self
+    /**
+     * @ORM\PreUpdate()
+     * @ORM\PrePersist()
+     */
+    public function setPublishedAt(): self
     {
-        $this->publishedAt = $publishedAt;
+        if ($this->isOnline()) {
+            $this->publishedAt = new \DateTime();
+        } else {
+            $this->publishedAt = null;
+        }
 
         return $this;
     }

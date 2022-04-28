@@ -59,7 +59,7 @@ class Category implements DatedResourceInterface
      *      orphanRemoval=true,
      *      cascade={"persist"}
      * )
-     * @ORM\OrderBy({"publishedAt": "DESC"})
+     * @ORM\OrderBy({"createdAt": "DESC"})
      */
     private Collection $posts;
 

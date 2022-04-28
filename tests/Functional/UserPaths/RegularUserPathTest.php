@@ -6,7 +6,7 @@ use App\Tests\Functional\UserPaths\Admin\AdminCategoriesPathTrait;
 use App\Tests\Functional\UserPaths\Admin\AdminPostsPathTrait;
 use App\Tests\Functional\UserPaths\Admin\AdminSearchPathTrait;
 use App\Tests\Functional\UserPaths\Admin\AdminUserPathCaseTrait;
-use App\Tests\Functional\UserPaths\Api\ApiConfigurationPathTrait;
+use App\Tests\Functional\UserPaths\Api\ApiPathTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class RegularUserPathTest extends WebTestCase
@@ -15,7 +15,7 @@ class RegularUserPathTest extends WebTestCase
     use AdminCategoriesPathTrait;
     use AdminPostsPathTrait;
     use AdminSearchPathTrait;
-    use ApiConfigurationPathTrait;
+    use ApiPathTrait;
 
     public function testRegularUserPath(): void
     {
@@ -25,8 +25,7 @@ class RegularUserPathTest extends WebTestCase
         /**************** API ****************/
         /*************************************/
 
-        $this->hasNoAccessToConfigurationEndpoint($client);
-        $this->hasAccessToConfigurationEndpoint($client);
+        $this->checkApiRoutes($client);
 
         /*************************************/
         /************ SITE ADMIN *************/

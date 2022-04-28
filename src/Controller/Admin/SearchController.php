@@ -9,11 +9,12 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Controller\AbstractJawController;
 use App\Search\SearchEngine;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class SearchController extends AbstractAdminController
+class SearchController extends AbstractJawController
 {
     #[Route('/admin/search', methods: ['POST'], name: 'search')]
     public function __invoke(SearchEngine $searchEngine): Response

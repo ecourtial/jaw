@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Category;
 use App\Entity\Post;
+use App\Entity\User;
 use App\Entity\Webhook;
 use App\Event\ResourceEvent;
 use App\Search\SearchResult;
@@ -36,18 +37,18 @@ class PostRepository extends ServiceEntityRepository
     /** @return \App\Search\SearchResult[] */
     public function search(string $keywords, int $limit): array
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->getEntityManager()->createQueryBuilder();
 
-        $qb->select('m.id, m.title, m.slug, m.publishedAt, c.id as categId, c.title as categTitle, c.slug as categSlug');
+        $qb->select('p.id, p.title, p.slug, p.publishedAt, c.id as categId, c.title as categTitle, c.slug as categSlug');
 
-        $qb->from(Post::class, 'm');
+        $qb->from(Post::class, 'p');
         $qb->from(Category::class, 'c');
 
-        $qb->where('m.title' . ' LIKE :request');
-        $qb->orWhere('m.summary' . ' LIKE :request');
-        $qb->orWhere('m.content' . ' LIKE :request');
-        $qb->andWhere('m.category = c.id');
-        $qb->orderBy('m.publishedAt', 'DESC');
+        $qb->where('p.title' . ' LIKE :request');
+        $qb->orWhere('p.summary' . ' LIKE :request');
+        $qb->orWhere('p.content' . ' LIKE :request');
+        $qb->andWhere('p.category = c.id');
+        $qb->orderBy('p.publishedAt', 'DESC');
         $qb->setMaxResults($limit);
         $qb->setParameter('request', "%$keywords%");
 
@@ -72,5 +73,33 @@ class PostRepository extends ServiceEntityRepository
         }
 
         return $processedResult;
+    }
+
+    public function getByApiFilter(string $filter, string|int $param): array
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $qb->select(
+            'p.id, p.title, p.summary, p.publishedAt, p.updatedAt, p.slug, p.online, p.topPost, '
+            . 'p.language, p.obsolete, IDENTITY(p.category) as categoryId, IDENTITY(p.author) as authorId, p.content'
+        );
+        $qb->from(Post::class, 'p');
+
+        if ($filter === 'slug') {
+            $qb->where('p.slug' . ' LIKE :param');
+            $qb->setParameter('param', "%$param%");
+        } elseif($filter === 'id') {
+            $qb->where('p.id = :param');
+            $qb->setParameter('param', $param);
+        } else {
+            throw new \LogicException('Unsupported filter: ' . $filter);
+        }
+
+        $result = $qb->getQuery()->getSingleResult();
+
+        $result['publishedAt'] = $result['publishedAt']->format(\DateTimeInterface::ATOM);
+        $result['updatedAt'] = $result['updatedAt']->format(\DateTimeInterface::ATOM);
+
+        return $result;
     }
 }

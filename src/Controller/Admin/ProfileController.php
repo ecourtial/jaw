@@ -9,12 +9,13 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Controller\AbstractJawController;
 use App\Form\UserType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ProfileController extends AbstractAdminController
+class ProfileController extends AbstractJawController
 {
     #[Route('/admin/profile', methods: ['GET', 'POST'], name: 'profile')]
     public function __invoke(EntityManagerInterface $entityManager): Response

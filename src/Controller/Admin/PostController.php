@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Controller\AbstractJawController;
 use App\Entity\Post;
 use App\Form\PostType;
 use App\Repository\PostRepository;
@@ -18,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/admin/post')]
-class PostController extends AbstractAdminController
+class PostController extends AbstractJawController
 {
     #[Route('/add', methods: ['GET', 'POST'], name: 'post_add')]
     public function create(PostRepository $postRepository): Response

@@ -90,4 +90,16 @@ class PostRepositoryTest extends KernelTestCase
         static::assertEquals(1, $posts[0]->id);
         static::assertEquals(3, $posts[1]->id);
     }
+
+    public function testGetByApiFilter(): void
+    {
+        $post = $this->postRepository->getByApiFilter('slug', 'my_second_post');
+        static::assertEquals('my_second_post', $post['slug']);
+
+        $post = $this->postRepository->getByApiFilter('id', 1);
+        static::assertEquals('my_first_post', $post['slug']);
+
+        static::expectExceptionMessage('Unsupported filter: foo');
+        $this->postRepository->getByApiFilter('foo', 1);
+    }
 }

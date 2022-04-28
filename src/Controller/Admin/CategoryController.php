@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Controller\AbstractJawController;
 use App\Entity\Category;
 use App\Exception\Category\CategoryNotEmptyException;
 use App\Form\CategoryType;
@@ -19,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/admin/category')]
-class CategoryController extends AbstractAdminController
+class CategoryController extends AbstractJawController
 {
     #[Route('', name: 'category_list')]
     public function getList(CategoryRepository $categoryRepository): Response

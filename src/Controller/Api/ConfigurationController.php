@@ -14,10 +14,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/api/v1')]
+#[Route('/api/v1/configuration')]
 class ConfigurationController extends AbstractController
 {
-    #[Route('/configuration', methods: ['GET'], name: 'api_config')]
+    #[Route('', methods: ['GET'], name: 'api_config')]
     public function getConfig(ConfigurationRepository $configurationRepository): JsonResponse
     {
         $configuration = $configurationRepository->get();

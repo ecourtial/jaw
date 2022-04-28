@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Controller\AbstractJawController;
 use App\Form\ChangePasswordType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +17,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
-class PasswordController extends AbstractAdminController
+class PasswordController extends AbstractJawController
 {
     #[Route('/admin/password', methods: ['GET', 'POST'], name: 'password_change')]
     public function __invoke(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response

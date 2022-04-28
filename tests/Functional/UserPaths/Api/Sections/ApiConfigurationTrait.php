@@ -1,16 +1,27 @@
 <?php
 
-namespace App\Tests\Functional\UserPaths\Api;
+namespace App\Tests\Functional\UserPaths\Api\Sections;
 
 use App\Entity\User;
 use App\Security\ApiKeyAuthenticator;
+use App\Tests\Functional\TestingTools\RequestTools;
 use App\Tests\Functional\TestingTools\UrlInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
-Trait ApiConfigurationPathTrait
+Trait ApiConfigurationTrait
 {
     public function hasNoAccessToConfigurationEndpoint(KernelBrowser $client): void
     {
+        $client->request(
+            'GET',
+            UrlInterface::CONFIGURATION_ENDPOINT_URL,
+            [],
+            [],
+            [
+                RequestTools::formatCustomHeaderName(ApiKeyAuthenticator::API_TOKEN_HEADER_NAME) => 'nope'
+            ]
+        );
+
         $client->request('GET', UrlInterface::CONFIGURATION_ENDPOINT_URL);
         static::assertEquals(401, $client->getResponse()->getStatusCode());
     }
@@ -28,9 +39,10 @@ Trait ApiConfigurationPathTrait
             [],
             [],
             [
-                str_replace('-', '_', 'HTTP_' . ApiKeyAuthenticator::API_TOKEN_HEADER_NAME) => $userRepository->findAll()[0]->getToken()
+                RequestTools::formatCustomHeaderName(ApiKeyAuthenticator::API_TOKEN_HEADER_NAME) => $this->getFirstUserToken()
             ]
         );
+
         static::assertEquals(200, $client->getResponse()->getStatusCode());
     }
 }

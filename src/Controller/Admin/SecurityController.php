@@ -9,11 +9,12 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Controller\AbstractJawController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
-class SecurityController extends AbstractAdminController
+class SecurityController extends AbstractJawController
 {
     #[Route('/login', name: 'security_login')]
     public function login(string $recaptchaPublicKey, AuthenticationUtils $authenticationUtils): Response

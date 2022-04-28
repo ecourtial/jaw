@@ -6,6 +6,7 @@ use App\Tests\Functional\UserPaths\Admin\AdminCategoriesPathTrait;
 use App\Tests\Functional\UserPaths\Admin\AdminPostsPathTrait;
 use App\Tests\Functional\UserPaths\Admin\AdminSearchPathTrait;
 use App\Tests\Functional\UserPaths\Admin\AdminUserPathCaseTrait;
+use App\Tests\Functional\UserPaths\Api\ApiPathTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AdminUserPathTest extends WebTestCase
@@ -14,10 +15,17 @@ class AdminUserPathTest extends WebTestCase
     use AdminCategoriesPathTrait;
     use AdminPostsPathTrait;
     use AdminSearchPathTrait;
+    use ApiPathTrait;
 
     public function testAdminUserPath(): void
     {
         $client = static::createClient();
+
+        /*************************************/
+        /**************** API ****************/
+        /*************************************/
+
+        $this->checkApiRoutes($client);
 
         /*************************************/
         /************ SITE ADMIN *************/

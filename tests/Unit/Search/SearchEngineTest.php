@@ -16,8 +16,8 @@ class SearchEngineTest extends TestCase
 
         $query = 'some keywords';
         $result = [
-            new SearchResult(1, 'd', 'd', new \DateTime(), 1, 'd', 'd'),
-            new SearchResult(2, 'e', 'e', new \DateTime(), 1, 'e', 'e'),
+            new SearchResult(1, 'd', 'd', new \DateTime(), new \DateTime(), new \DateTime(), 1, 'd', 'd'),
+            new SearchResult(2, 'e', 'e', new \DateTime(), new \DateTime(), new \DateTime(), 1, 'e', 'e'),
         ];
 
         $repository->expects(static::once())

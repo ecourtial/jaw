@@ -10,13 +10,13 @@ declare(strict_types=1);
 namespace App\Controller\Api;
 
 use App\Controller\AbstractJawController;
-use App\Repository\ApiFilterableResultInterface;
+use App\Repository\ApiSimpleFilterResultInterface;
 use Doctrine\ORM\NoResultException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class AbstractSimpleFilterApiController extends AbstractJawController
+class AbstractFilteredResultApiController extends AbstractJawController
 {
-    public function getResult(ApiFilterableResultInterface $repository): JsonResponse
+    public function getResultForUniqueFilter(ApiSimpleFilterResultInterface $repository): JsonResponse
     {
         $queryParamsCount = count($this->request->query);
         if ($queryParamsCount > 1) {
@@ -40,11 +40,15 @@ class AbstractSimpleFilterApiController extends AbstractJawController
         }
 
         try {
-            return new JsonResponse($repository->getByApiFilter($filter, $param));
+            $response = new JsonResponse($repository->getByUniqueApiFilter($filter, $param));
         } catch (NoResultException $exception) {
-            return new JsonResponse(['message' => 'No result found.'], 404);
+            $response = new JsonResponse(['message' => 'No result found.'], 404);
         } catch (\LogicException $exception) {
-            return new JsonResponse(['message' => 'No supported filter was given. Available filters are: id, slug.'], 400);
+            $response = new JsonResponse(['message' => 'No supported filter was given. Available filters are: id, slug.'], 400);
         }
+
+        return $response;
     }
+
+
 }

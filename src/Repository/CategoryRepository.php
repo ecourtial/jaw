@@ -11,7 +11,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class CategoryRepository extends ServiceEntityRepository implements ApiFilterableResultInterface
+class CategoryRepository extends ServiceEntityRepository implements ApiSimpleFilterResultInterface
 {
     public function __construct(ManagerRegistry $registry, private readonly EventDispatcherInterface $eventDispatcher)
     {
@@ -56,7 +56,7 @@ class CategoryRepository extends ServiceEntityRepository implements ApiFilterabl
         throw new CategoryNotEmptyException();
     }
 
-    public function getByApiFilter(string $filter, string|int $param): array
+    public function getByUniqueApiFilter(string $filter, string|int $param): array
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 

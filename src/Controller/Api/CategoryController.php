@@ -14,11 +14,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api/v1/category')]
-class CategoryController extends AbstractSimpleFilterApiController
+class CategoryController extends AbstractFilteredResultApiController
 {
     #[Route('', methods: ['GET'], name: 'api_category_get')]
     public function getCategory(CategoryRepository $categoryRepository): JsonResponse
     {
-        return $this->getResult($categoryRepository);
+        return $this->getResultForUniqueFilter($categoryRepository);
     }
 }

@@ -12,7 +12,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class PostRepository extends ServiceEntityRepository implements ApiFilterableResultInterface
+class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterResultInterface, ApiMultipleFiltersResultInterface
 {
     public function __construct(ManagerRegistry $registry, private readonly EventDispatcherInterface $eventDispatcher)
     {
@@ -39,7 +39,7 @@ class PostRepository extends ServiceEntityRepository implements ApiFilterableRes
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
-        $qb->select('p.id, p.title, p.slug, p.createdAt, c.id as categId, c.title as categTitle, c.slug as categSlug');
+        $qb->select('p.id, p.title, p.slug, p.createdAt, p.updatedAt, p.publishedAt, c.id as categId, c.title as categTitle, c.slug as categSlug');
 
         $qb->from(Post::class, 'p');
         $qb->from(Category::class, 'c');
@@ -66,6 +66,8 @@ class PostRepository extends ServiceEntityRepository implements ApiFilterableRes
                 $entry['title'],
                 $entry['slug'],
                 $entry['createdAt'],
+                $entry['updatedAt'],
+                $entry['publishedAt'],
                 $entry['categId'],
                 $entry['categTitle'],
                 $entry['categSlug'],
@@ -75,7 +77,7 @@ class PostRepository extends ServiceEntityRepository implements ApiFilterableRes
         return $processedResult;
     }
 
-    public function getByApiFilter(string $filter, string|int $param): array
+    public function getByUniqueApiFilter(string $filter, string|int $param): array
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
@@ -102,5 +104,10 @@ class PostRepository extends ServiceEntityRepository implements ApiFilterableRes
         $result['publishedAt'] =  $result['publishedAt'] === null ? null : $result['publishedAt']->format(\DateTimeInterface::ATOM);
 
         return $result;
+    }
+
+    public function getByMultipleApiFilters(array $params): array
+    {
+        // TODO: Implement getByMultipleApiFilters() method.
     }
 }

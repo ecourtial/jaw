@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Controller\Api;
 
 use App\Controller\AbstractJawController;
+use App\Repository\ApiMultipleFiltersResultInterface;
 use App\Repository\ApiSimpleFilterResultInterface;
 use Doctrine\ORM\NoResultException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -50,5 +51,8 @@ class AbstractFilteredResultApiController extends AbstractJawController
         return $response;
     }
 
-
+    public function getResultForMultipleFilters(ApiMultipleFiltersResultInterface $repository): JsonResponse
+    {
+        return new JsonResponse($repository->getByMultipleApiFilters($this->request->query->all()));
+    }
 }

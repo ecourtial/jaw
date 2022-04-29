@@ -21,4 +21,10 @@ class PostController extends AbstractFilteredResultApiController
     {
         return $this->getResultForUniqueFilter($postRepository);
     }
+
+    #[Route('/search', methods: ['GET'], name: 'api_post_search')]
+    public function search(PostRepository $postRepository): JsonResponse
+    {
+        return $this->getResultForMultipleFilters($postRepository);
+    }
 }

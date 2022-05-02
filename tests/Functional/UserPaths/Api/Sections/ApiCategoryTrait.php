@@ -3,6 +3,7 @@
 namespace App\Tests\Functional\UserPaths\Api\Sections;
 
 use App\Entity\Category;
+use App\Repository\CategoryRepository;
 use App\Security\ApiKeyAuthenticator;
 use App\Tests\Functional\TestingTools\RequestTools;
 use App\Tests\Functional\TestingTools\UrlInterface;
@@ -113,21 +114,92 @@ trait ApiCategoryTrait
         static::assertEquals($formattedPost, \json_decode($client->getResponse()->getContent(), true));
     }
 
+    public function checkCantSearchCategoriesIfNotAuthenticated(KernelBrowser $client): void
+    {
+        $client->request(
+            'GET',
+            UrlInterface::GET_SEARCH_CATEGORY_ENDPOINT_URL . 'id=99',
+            [],
+            [],
+            [
+                RequestTools::formatCustomHeaderName(ApiKeyAuthenticator::API_TOKEN_HEADER_NAME) => 'nope'
+            ]
+        );
+
+        static::assertEquals(401, $client->getResponse()->getStatusCode());
+    }
+
+    public function checkSearchCategoriesWithNoResult(KernelBrowser $client): void
+    {
+        $client->request(
+            'GET',
+            UrlInterface::GET_SEARCH_CATEGORY_ENDPOINT_URL . 'id=99',
+            [],
+            [],
+            [
+                RequestTools::formatCustomHeaderName(ApiKeyAuthenticator::API_TOKEN_HEADER_NAME) => $this->getAdminUserToken()
+            ]
+        );
+
+        $result = \json_decode($client->getResponse()->getContent(), true);
+        $expectedResult = [
+            "resultCount" => 0,
+            "totalResultCount" => 0,
+            "page"=> 1,
+            "totalPageCount" => 1,
+            "categories" => []
+        ];
+        static::assertEquals($expectedResult, $result);
+    }
+
+    public function checkSearchCategoriesWithResult(KernelBrowser $client): void
+    {
+        $client->request(
+            'GET',
+            UrlInterface::GET_SEARCH_CATEGORY_ENDPOINT_URL . 'id=2',
+            [],
+            [],
+            [
+                RequestTools::formatCustomHeaderName(ApiKeyAuthenticator::API_TOKEN_HEADER_NAME) => $this->getAdminUserToken()
+            ]
+        );
+
+        $result = \json_decode($client->getResponse()->getContent(), true);
+        $expectedResult = [
+            "resultCount" => 1,
+            "totalResultCount" => 1,
+            "page"=> 1,
+            "totalPageCount" => 1,
+            "categories" => [
+                $this->formatCategoryForExpectedApiResult($this->getCategoryRepository()->find(2)),
+            ]
+        ];
+        static::assertEquals($expectedResult, $result);
+    }
+
     private function formatCategoryForExpectedApiResult(Category $category): array
     {
         $result = [
             'id' => $category->getId(),
             'title' => $category->getTitle(),
             'summary' => $category->getSummary(),
-            'createdAt' => $category->getCreatedAt(),
-            'updatedAt' => $category->getUpdatedAt(),
             'slug' => $category->getSlug(),
             'postCount' => \count($category->getPosts()),
+            'createdAt' => $category->getCreatedAt(),
+            'updatedAt' => $category->getUpdatedAt(),
         ];
 
         $result['createdAt'] = $result['createdAt']->format(\DateTimeInterface::ATOM);
         $result['updatedAt'] = $result['updatedAt']->format(\DateTimeInterface::ATOM);
 
         return $result;
+    }
+
+    private function getCategoryRepository(): CategoryRepository
+    {
+        return static::getContainer()
+            ->get('doctrine')
+            ->getManager()
+            ->getRepository(Category::class);
     }
 }

@@ -111,11 +111,11 @@ class PostRepositoryTest extends KernelTestCase
 
     public function testGetByUniqueApiFilter(): void
     {
-        $post = $this->postRepository->getByUniqueApiFilter('slug', 'my_second_post');
-        static::assertEquals('my_second_post', $post['slug']);
+        $post = $this->postRepository->getByUniqueApiFilter('slug', 'my-second-post');
+        static::assertEquals('my-second-post', $post['slug']);
 
         $post = $this->postRepository->getByUniqueApiFilter('id', 1);
-        static::assertEquals('my_first_post', $post['slug']);
+        static::assertEquals('my-first-post', $post['slug']);
 
         static::expectExceptionMessage('Unsupported filter: foo');
         $this->postRepository->getByUniqueApiFilter('foo', 1);

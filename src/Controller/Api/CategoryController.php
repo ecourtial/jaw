@@ -21,4 +21,10 @@ class CategoryController extends AbstractFilteredResultApiController
     {
         return $this->getResultForUniqueFilter($categoryRepository);
     }
+
+    #[Route('/search', methods: ['GET'], name: 'api_category_search')]
+    public function search(CategoryRepository $categoryRepository): JsonResponse
+    {
+        return $this->getResultForMultipleFilters($categoryRepository);
+    }
 }

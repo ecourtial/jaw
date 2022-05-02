@@ -50,5 +50,8 @@ trait ApiPathTrait
         $this->checkErrorWhenTooManyFiltersForCategory($client);
         $this->checkErrorWhenUnsupportedFiltersForCategory($client);
         $this->checkCanAccessToGetCategory($client);
+        $this->checkCantSearchCategoriesIfNotAuthenticated($client);
+        $this->checkSearchCategoriesWithNoResult($client);
+        $this->checkSearchCategoriesWithResult($client);
     }
 }

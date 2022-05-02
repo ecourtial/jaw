@@ -88,4 +88,82 @@ class CategoryRepositoryTest extends KernelTestCase
 
         $this->categoryRepository->delete($category);
     }
+
+    public function testGetByUniqueApiFilter(): void
+    {
+        $post = $this->categoryRepository->getByUniqueApiFilter('slug', 'another-category');
+        static::assertEquals('another-category', $post['slug']);
+
+        $post = $this->categoryRepository->getByUniqueApiFilter('id', 1);
+        static::assertEquals('my-first-category', $post['slug']);
+
+        static::expectExceptionMessage('Unsupported filter: foo');
+        $this->categoryRepository->getByUniqueApiFilter('foo', 1);
+    }
+
+    public function testGetByMultipleApiFilters(): void
+    {
+        $params = [
+            'content' => 1, // Must be ignored
+            'page' => 2,
+            'limit' => 1,
+            'orderByField' => [
+                'title' => 'DESC'
+            ]
+        ];
+
+        $categories = $this->categoryRepository->getByMultipleApiFilters($params);
+
+        static::assertEquals(1, $categories['resultCount']);
+        static::assertEquals(2, $categories['totalResultCount']);
+        static::assertEquals(2, $categories['page']);
+        static::assertEquals(2, $categories['totalPageCount']);
+        static::assertCount(1, $categories['categories']);
+        static::assertEquals(2, $categories['categories'][0]['id']);
+
+        $params = [
+            'content' => 1, // Must be ignored
+            'orderByField' => [
+                'title' => 'DESC'
+            ]
+        ];
+
+        $categories = $this->categoryRepository->getByMultipleApiFilters($params);
+
+        static::assertEquals(2, $categories['resultCount']);
+        static::assertEquals(2, $categories['totalResultCount']);
+        static::assertEquals(1, $categories['page']);
+        static::assertEquals(1, $categories['totalPageCount']);
+        static::assertCount(2, $categories['categories']);
+        static::assertEquals(1, $categories['categories'][0]['id']);
+        static::assertEquals(2, $categories['categories'][1]['id']);
+
+        $params = [
+            'orderByField' => [
+                'postCount' => 'DESC'
+            ]
+        ];
+
+        $categories = $this->categoryRepository->getByMultipleApiFilters($params);
+
+        static::assertEquals(2, $categories['resultCount']);
+        static::assertEquals(2, $categories['totalResultCount']);
+        static::assertEquals(1, $categories['page']);
+        static::assertEquals(1, $categories['totalPageCount']);
+        static::assertCount(2, $categories['categories']);
+        static::assertEquals(2, $categories['categories'][0]['id']);
+        static::assertEquals(1, $categories['categories'][1]['id']);
+
+        $params = [
+            'slug' => 'foo'
+        ];
+
+        $categories = $this->categoryRepository->getByMultipleApiFilters($params);
+
+        static::assertEquals(0, $categories['resultCount']);
+        static::assertEquals(0, $categories['totalResultCount']);
+        static::assertEquals(1, $categories['page']);
+        static::assertEquals(1, $categories['totalPageCount']);
+        static::assertCount(0, $categories['categories']);
+    }
 }

@@ -136,7 +136,7 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
     /** @return array<string, mixed> */
     public function getByMultipleApiFilters(array $params): array
     {
-        // Creation of the second par of the query (the conditions)
+        // Creation of the second part of the query (the conditions)
         $query = 'WHERE id IS NOT NULL ';
         $queryParams = [];
 

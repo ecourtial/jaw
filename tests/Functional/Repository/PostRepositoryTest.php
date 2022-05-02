@@ -177,5 +177,17 @@ class PostRepositoryTest extends KernelTestCase
         static::assertCount(2, $posts['posts']);
         static::assertEquals(3, $posts['posts'][0]['id']);
         static::assertEquals(1, $posts['posts'][1]['id']);
+
+        $params = [
+            'category' => 99
+        ];
+
+        $posts = $this->postRepository->getByMultipleApiFilters($params);
+
+        static::assertEquals(0, $posts['resultCount']);
+        static::assertEquals(0, $posts['totalResultCount']);
+        static::assertEquals(1, $posts['page']);
+        static::assertEquals(1, $posts['totalPageCount']);
+        static::assertCount(0, $posts['posts']);
     }
 }

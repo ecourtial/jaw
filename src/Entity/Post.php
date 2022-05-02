@@ -65,7 +65,7 @@ class Post implements DatedResourceInterface
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private ?\DateTime $publishedAt = null;
+    protected ?\DateTime $publishedAt = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User")
@@ -169,6 +169,14 @@ class Post implements DatedResourceInterface
         } else {
             $this->publishedAt = null;
         }
+
+        return $this;
+    }
+
+    // Used for migration from old blog systems.
+    public function forcePublishedAtDate(\DateTime $date): self
+    {
+        $this->publishedAt = $date;
 
         return $this;
     }

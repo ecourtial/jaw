@@ -20,6 +20,7 @@ class UserController extends AbstractController
     #[Route('/{id<\d+>}', methods: ['GET'], name: 'api_user_get')]
     public function getConfig(User $user = null): JsonResponse
     {
+        // @phpstan-ignore-next-line
         if (false === \in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
             return new JsonResponse(['message' => 'Route only accessible to admin users.'], 403);
         }
@@ -30,7 +31,9 @@ class UserController extends AbstractController
 
         $response = [
             'id' => $user->getId(),
+            // @phpstan-ignore-next-line
             'createdAt' => $user->getCreatedAt()->format(\DateTimeInterface::ATOM),
+            // @phpstan-ignore-next-line
             'updatedAt' => $user->getUpdatedAt()->format(\DateTimeInterface::ATOM),
             'username' => $user->getUsername(),
             'fullName' => $user->getFullName(),

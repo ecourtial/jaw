@@ -19,13 +19,13 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
         'category' => ['source' => 'alias', 'columnName' => 'category_id',],
         'title' => ['source' => 'column',],
         'slug' => ['source' => 'column',],
-        'publishedAt' => ['source' => 'column', 'columnName' => 'published_at',],
+        'publishedAt' => ['source' => 'alias', 'columnName' => 'published_at',],
         'language' => ['source' => 'column', ],
         'online' => ['source' => 'column', ],
         'topPost' => ['source' => 'column', ],
         'obsolete' => ['source' => 'column', ],
-        'createdAt' => ['source' => 'column', 'columnName' => 'created_at',],
-        'updatedAt' => ['source' => 'column', 'columnName' => 'updated_at',],
+        'createdAt' => ['source' => 'alias', 'columnName' => 'created_at',],
+        'updatedAt' => ['source' => 'alias', 'columnName' => 'updated_at',],
 
     ];
 
@@ -52,11 +52,12 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
     /**
      * For internal (Admin) search only.
      *
-     * @return \App\Search\SearchResult[]
+     * @return array<string, mixed>
      */
     public function search(string $keywords, int $limit = 30, int $page = 1): array
     {
         // Unfortunately, the Paginator does not work with two FROM, so we have to do it manually.
+        // @phpstan-ignore-next-line
         $totalResultCount =  $this->getEntityManager()->getConnection()->executeQuery(
             'SELECT COUNT(*) as count FROM posts'
             . ' WHERE title LIKE :request'
@@ -116,6 +117,7 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
     }
 
     // Filter on fields that are UNIQUE in the entity
+    /** @return array<string, mixed> */
     public function getByUniqueApiFilter(string $filter, string|int $param): array
     {
         if ($filter === 'slug' || $filter === 'id') {
@@ -131,6 +133,7 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
     }
 
     // Unlike the 'getByUniqueApiFilter'method, unknown filters are ignored.
+    /** @return array<string, mixed> */
     public function getByMultipleApiFilters(array $params): array
     {
         // Creation of the second par of the query (the conditions)
@@ -143,6 +146,7 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
                 if (self::AVAILABLE_COLUMN_FILTERS[$filter]['source'] === 'column') {
                     $query .= "AND $filter = :$filter ";
                 } elseif (self::AVAILABLE_COLUMN_FILTERS[$filter]['source'] === 'alias') {
+                    // @phpstan-ignore-next-line
                     $query .= 'AND ' . self::AVAILABLE_COLUMN_FILTERS[$filter]['columnName'] . " = :$filter ";
                 } else {
                     continue;
@@ -170,6 +174,7 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
         }
 
         $countQuery = 'SELECT COUNT(*) as count FROM posts ' . $query;
+        // @phpstan-ignore-next-line
         $totalResultCount = $this->getEntityManager()->getConnection()->executeQuery($countQuery, $queryParams)->fetchAssociative()['count'];
         $totalPageCount = (int)ceil($totalResultCount/$limit);
 
@@ -186,11 +191,13 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
             $query .= "OFFSET $offset ";
         }
 
+        $totalPageCount = ($totalResultCount === 0) ? 1 : $totalPageCount;
+
         // Result
         $result = $this->getEntityManager()->getConnection()->executeQuery($this->getMainSelectQuery() . $query, $queryParams);
         $posts = [];
 
-        while($post = $result->fetchAssociative()) {
+        while ($post = $result->fetchAssociative()) {
             $posts[] = $this->formatPostForResponse($post);
         }
 
@@ -209,6 +216,10 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
             . 'obsolete, category_id, author_id, content FROM posts ';
     }
 
+    /**
+     * @param array<string, mixed> $result
+     * @return array<string, mixed>
+     */
     private function formatPostForResponse(array $result): array
     {
         // Date to the proper format
@@ -233,6 +244,7 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
         return $result;
     }
 
+    /** @param array<string, mixed> $params */
     private function addOrderForFiltering(string &$query, $params): void
     {
         if (true === \array_key_exists('orderByField', $params)
@@ -245,6 +257,7 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
                     && true === \in_array($order, ['ASC', 'DESC'])
                 ) {
                     if (self::AVAILABLE_COLUMN_FILTERS[$column]['source'] === 'alias') {
+                        // @phpstan-ignore-next-line
                         $column = self::AVAILABLE_COLUMN_FILTERS[$column]['columnName'];
                     }
 

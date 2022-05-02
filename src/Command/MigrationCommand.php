@@ -1,6 +1,6 @@
 <?php
 
-/** THIS IS AN EXAMPLE OF A CUSTOM MIGRATION FROM AN OLD BLOG TO JAW */
+/** THIS IS AN RAW EXAMPLE OF A CUSTOM MIGRATION FROM AN OLD BLOG TO JAW */
 
 namespace App\Command;
 
@@ -70,21 +70,6 @@ class MigrationCommand extends Command
             'œ' => 'Å',
             '€' => 'â',
             '°' => 'Â°',
-            // 'À' => 'Ã',
-            // 'Â' => 'Ã',
-            // 'É' => 'Ã',
-            // 'È' => 'Ã',
-            // 'Ê' => 'Ã',
-            // 'Ë' => 'Ã',
-            // 'Î' => 'Ã',
-            // 'Ï' => 'Ã',
-            // 'Ô' => 'Ã',
-            // 'Ö' => 'Ã',
-            // 'Ù' => 'Ã',
-            // 'Û' => 'Ã',
-            // 'Ü' => 'Ã',
-            // 'Ç' => 'Ã',
-            // 'Œ' => 'Å'
         ]);
     }
 
@@ -150,7 +135,7 @@ class MigrationCommand extends Command
                 ->setSummary($this->cleanAccents($entry['DESCRIPTION']))
                 ->setTitle($this->cleanAccents($entry['TITLE']))
                 ->setContent($this->cleanAccents($entry['CONTENT']))
-                ->setPublishedAt(new \DateTime($entry['DATE']))
+                ->forcePublishedAtDate(new \DateTime($entry['DATE']))
                 ->setTopPost($entry['HOME'])
                 ->setOnline($entry['Online'])
                 ->setObsolete($entry['Obsolete'])

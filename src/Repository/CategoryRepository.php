@@ -56,6 +56,7 @@ class CategoryRepository extends ServiceEntityRepository implements ApiSimpleFil
         throw new CategoryNotEmptyException();
     }
 
+    /** @return string[] */
     public function getByUniqueApiFilter(string $filter, string|int $param): array
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
@@ -80,6 +81,7 @@ class CategoryRepository extends ServiceEntityRepository implements ApiSimpleFil
         $result['createdAt'] = $result['createdAt']->format(\DateTimeInterface::ATOM);
         $result['updatedAt'] = $result['updatedAt']->format(\DateTimeInterface::ATOM);
 
+        // @phpstan-ignore-next-line
         $result['postCount'] = $this->getEntityManager()->getConnection()->executeQuery(
             'SELECT COUNT(*) as count FROM posts WHERE category_id = :categId',
             ['categId' => $result['id']]

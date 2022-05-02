@@ -19,6 +19,7 @@ interface UrlInterface
 
     public const CONFIGURATION_ENDPOINT_URL = 'http://localhost/api/v1/configuration';
     public const GET_POST_ENDPOINT_URL = 'http://localhost/api/v1/post?';
+    public const GET_SEARCH_POST_ENDPOINT_URL = 'http://localhost/api/v1/post/search?';
     public const GET_CATEGORY_ENDPOINT_URL = 'http://localhost/api/v1/category?';
     public const GET_USER_ENDPOINT_URL = 'http://localhost/api/v1/user';
 }

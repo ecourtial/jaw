@@ -30,6 +30,7 @@ class ProfileController extends AbstractJawController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->entityManager->beginTransaction();
             try {
+                // @phpstan-ignore-next-line
                 $userRepository->save($user);
                 $this->entityManager->commit();
 

@@ -34,6 +34,9 @@ trait ApiPathTrait
         $this->checkErrorWhenTooManyFiltersForPost($client);
         $this->checkErrorWhenUnsupportedFiltersForPost($client);
         $this->checkCanAccessToGetPost($client);
+        $this->checkCantSearchPostsIfNotAuthenticated($client);
+        $this->checkSearchPostsWithNoResult($client);
+        $this->checkSearchPostsWithResult($client);
 
         // Users
         $this->checkCannotAccessUser($client);

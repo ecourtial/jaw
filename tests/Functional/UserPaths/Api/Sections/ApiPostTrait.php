@@ -4,6 +4,7 @@ namespace App\Tests\Functional\UserPaths\Api\Sections;
 
 use App\Entity\Post;
 use App\Entity\User;
+use App\Repository\PostRepository;
 use App\Security\ApiKeyAuthenticator;
 use App\Tests\Functional\TestingTools\RequestTools;
 use App\Tests\Functional\TestingTools\UrlInterface;
@@ -117,6 +118,70 @@ trait ApiPostTrait
         static::assertEquals($formattedPost, \json_decode($client->getResponse()->getContent(), true));
     }
 
+    public function checkCantSearchPostsIfNotAuthenticated(KernelBrowser $client): void
+    {
+        $client->request(
+            'GET',
+            UrlInterface::GET_SEARCH_POST_ENDPOINT_URL . 'id=99',
+            [],
+            [],
+            [
+                RequestTools::formatCustomHeaderName(ApiKeyAuthenticator::API_TOKEN_HEADER_NAME) => 'nope'
+            ]
+        );
+
+        static::assertEquals(401, $client->getResponse()->getStatusCode());
+    }
+
+    public function checkSearchPostsWithNoResult(KernelBrowser $client): void
+    {
+        $client->request(
+            'GET',
+            UrlInterface::GET_SEARCH_POST_ENDPOINT_URL . 'id=99',
+            [],
+            [],
+            [
+                RequestTools::formatCustomHeaderName(ApiKeyAuthenticator::API_TOKEN_HEADER_NAME) => $this->getAdminUserToken()
+            ]
+        );
+
+        $result = \json_decode($client->getResponse()->getContent(), true);
+        $expectedResult = [
+            "resultCount" => 0,
+            "totalResultCount" => 0,
+            "page"=> 1,
+            "totalPageCount" => 1,
+            "posts" => []
+        ];
+        static::assertEquals($expectedResult, $result);
+    }
+
+    public function checkSearchPostsWithResult(KernelBrowser $client): void
+    {
+        $client->request(
+            'GET',
+            UrlInterface::GET_SEARCH_POST_ENDPOINT_URL . 'category=2',
+            [],
+            [],
+            [
+                RequestTools::formatCustomHeaderName(ApiKeyAuthenticator::API_TOKEN_HEADER_NAME) => $this->getAdminUserToken()
+            ]
+        );
+
+        $result = \json_decode($client->getResponse()->getContent(), true);
+        $expectedResult = [
+            "resultCount" => 2,
+            "totalResultCount" => 2,
+            "page"=> 1,
+            "totalPageCount" => 1,
+            "posts" => [
+                $this->formatPostForExpectedApiResult($this->getPostRepository()->find(2)),
+                $this->formatPostForExpectedApiResult($this->getPostRepository()->find(3)),
+            ]
+        ];
+        static::assertEquals($expectedResult, $result);
+    }
+
     private function formatPostForExpectedApiResult(Post $post): array
     {
         $result = [
@@ -171,5 +236,13 @@ trait ApiPostTrait
             ->getRepository(User::class);
 
         return $userRepository->find($userId);
+    }
+
+    private function getPostRepository(): PostRepository
+    {
+        return static::getContainer()
+            ->get('doctrine')
+            ->getManager()
+            ->getRepository(Post::class);
     }
 }

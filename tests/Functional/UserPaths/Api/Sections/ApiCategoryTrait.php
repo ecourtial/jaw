@@ -147,7 +147,7 @@ trait ApiCategoryTrait
             "totalResultCount" => 0,
             "page"=> 1,
             "totalPageCount" => 1,
-            "categories" => []
+            "results" => []
         ];
         static::assertEquals($expectedResult, $result);
     }
@@ -170,7 +170,7 @@ trait ApiCategoryTrait
             "totalResultCount" => 1,
             "page"=> 1,
             "totalPageCount" => 1,
-            "categories" => [
+            "results" => [
                 $this->formatCategoryForExpectedApiResult($this->getCategoryRepository()->find(2)),
             ]
         ];

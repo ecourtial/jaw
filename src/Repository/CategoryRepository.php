@@ -6,13 +6,15 @@ use App\Entity\Category;
 use App\Entity\Webhook;
 use App\Event\ResourceEvent;
 use App\Exception\Category\CategoryNotEmptyException;
+use App\Repository\Traits\ApiFiltersTools;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class CategoryRepository extends ServiceEntityRepository implements ApiSimpleFilterResultInterface, ApiMultipleFiltersResultInterface
 {
+    use ApiFiltersTools;
+
     private const AVAILABLE_COLUMN_FILTERS = [
         'id' => ['source' => 'column',],
         'title' => ['source' => 'column',],
@@ -28,7 +30,11 @@ class CategoryRepository extends ServiceEntityRepository implements ApiSimpleFil
         parent::__construct($registry, Category::class);
     }
 
-    /** @return \App\Entity\Category[] */
+    /**
+     * Use for back-end only.
+     *
+     * @return \App\Entity\Category[]
+     */
     public function listAll(): array
     {
         $qb = $this->_em->createQueryBuilder();
@@ -66,88 +72,11 @@ class CategoryRepository extends ServiceEntityRepository implements ApiSimpleFil
         throw new CategoryNotEmptyException();
     }
 
-    /** @return string[] */
-    public function getByUniqueApiFilter(string $filter, string|int $param): array
-    {
-        if ($filter === 'slug' || $filter === 'id') {
-            $result = $this->getByMultipleApiFilters([$filter => $param]);
-            if (0 === $result['resultCount']) {
-                throw new NoResultException();
-            }
-
-            return $result['categories'][0];
-        } else {
-            throw new \LogicException('Unsupported filter: ' . $filter);
-        }
-    }
-
     public function getByMultipleApiFilters(array $params): array
     {
-        $queryParams = [];
-        // Creation of the second par of the query (the conditions)
-        $query = '';
+        [$query, $queryParams] = $this->initQueryWithMultipleFilters($params);
 
-        // First, basic filters on value
-        foreach ($params as $filter => $value) {
-            if (true === \array_key_exists($filter, self::AVAILABLE_COLUMN_FILTERS)) {
-                if (self::AVAILABLE_COLUMN_FILTERS[$filter]['source'] === 'column'
-                    || self::AVAILABLE_COLUMN_FILTERS[$filter]['source'] === 'computed'
-                ) {
-                    $query .= "AND $filter = :$filter ";
-                } elseif (self::AVAILABLE_COLUMN_FILTERS[$filter]['source'] === 'alias') {
-                    // @phpstan-ignore-next-line
-                    $query .= 'AND ' . self::AVAILABLE_COLUMN_FILTERS[$filter]['columnName'] . " = :$filter ";
-                } else {
-                    continue;
-                }
-
-                $queryParams[$filter] = $value;
-            }
-        }
-
-        // Counting result
-        $limit = 10;
-        $page = 1;
-
-        if (\array_key_exists('limit', $params)) {
-            $limit = (int)$params['limit'];
-        }
-
-        $countQuery = 'SELECT COUNT(*) as count FROM categories WHERE id IS NOT NULL ' . $query;
-        // @phpstan-ignore-next-line
-        $totalResultCount = $this->getEntityManager()->getConnection()->executeQuery($countQuery, $queryParams)->fetchAssociative()['count'];
-        $totalPageCount = (int)ceil($totalResultCount/$limit);
-
-        // Now: ordering
-        $this->addOrderForFiltering($query, $params);
-
-        // Pagination
-        $query .= "LIMIT $limit ";
-
-        if (\array_key_exists('page', $params)) {
-            $page = (int)$params['page'];
-            $page = ($page < 1) ? 1 : $page;
-            $offset = ($page * $limit) - $limit;
-            $query .= "OFFSET $offset ";
-        }
-
-        $totalPageCount = ($totalResultCount === 0) ? 1 : $totalPageCount;
-
-        // Result
-        $result = $this->getEntityManager()->getConnection()->executeQuery($this->getMainSelectQuery() . $query, $queryParams);
-        $categories = [];
-
-        while ($category = $result->fetchAssociative()) {
-            $categories[] = $this->formatCategoryForResponse($category);
-        }
-
-        return [
-            'resultCount' => \count($categories),
-            'totalResultCount' => $totalResultCount,
-            'page' => $page,
-            'totalPageCount' => $totalPageCount,
-            'categories' => $categories,
-        ];
+        return $this->executeQueryWithMultipleFilters('categories', $params, $query, $queryParams);
     }
 
     private function getMainSelectQuery(): string
@@ -161,7 +90,7 @@ class CategoryRepository extends ServiceEntityRepository implements ApiSimpleFil
             . 'WHERE c.id = p.categId ';
     }
 
-    private function formatCategoryForResponse(array $result): array
+    private function formatForApiResponse(array $result): array
     {
         $result['createdAt'] = (new \DateTime($result['created_at']))->format(\DateTimeInterface::ATOM);
         $result['updatedAt'] = (new \DateTime($result['created_at']))->format(\DateTimeInterface::ATOM);
@@ -170,28 +99,5 @@ class CategoryRepository extends ServiceEntityRepository implements ApiSimpleFil
         unset($result['updated_at']);
 
         return $result;
-    }
-
-    /** @param array<string, mixed> $params */
-    private function addOrderForFiltering(string &$query, $params): void
-    {
-        if (true === \array_key_exists('orderByField', $params)
-            && true === \is_array($params['orderByField'])
-        ) {
-            foreach ($params['orderByField'] as $column => $order) {
-                $order = strtoupper($order);
-
-                if (true === \array_key_exists($column, self::AVAILABLE_COLUMN_FILTERS)
-                    && true === \in_array($order, ['ASC', 'DESC'])
-                ) {
-                    if (self::AVAILABLE_COLUMN_FILTERS[$column]['source'] === 'alias') {
-                        // @phpstan-ignore-next-line
-                        $column = self::AVAILABLE_COLUMN_FILTERS[$column]['columnName'];
-                    }
-
-                    $query .= "ORDER BY $column $order ";
-                }
-            }
-        }
     }
 }

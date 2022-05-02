@@ -151,7 +151,7 @@ trait ApiPostTrait
             "totalResultCount" => 0,
             "page"=> 1,
             "totalPageCount" => 1,
-            "posts" => []
+            "results" => []
         ];
         static::assertEquals($expectedResult, $result);
     }
@@ -174,7 +174,7 @@ trait ApiPostTrait
             "totalResultCount" => 2,
             "page"=> 1,
             "totalPageCount" => 1,
-            "posts" => [
+            "results" => [
                 $this->formatPostForExpectedApiResult($this->getPostRepository()->find(2)),
                 $this->formatPostForExpectedApiResult($this->getPostRepository()->find(3)),
             ]

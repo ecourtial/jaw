@@ -118,8 +118,8 @@ class CategoryRepositoryTest extends KernelTestCase
         static::assertEquals(2, $categories['totalResultCount']);
         static::assertEquals(2, $categories['page']);
         static::assertEquals(2, $categories['totalPageCount']);
-        static::assertCount(1, $categories['categories']);
-        static::assertEquals(2, $categories['categories'][0]['id']);
+        static::assertCount(1, $categories['results']);
+        static::assertEquals(2, $categories['results'][0]['id']);
 
         $params = [
             'content' => 1, // Must be ignored
@@ -134,9 +134,9 @@ class CategoryRepositoryTest extends KernelTestCase
         static::assertEquals(2, $categories['totalResultCount']);
         static::assertEquals(1, $categories['page']);
         static::assertEquals(1, $categories['totalPageCount']);
-        static::assertCount(2, $categories['categories']);
-        static::assertEquals(1, $categories['categories'][0]['id']);
-        static::assertEquals(2, $categories['categories'][1]['id']);
+        static::assertCount(2, $categories['results']);
+        static::assertEquals(1, $categories['results'][0]['id']);
+        static::assertEquals(2, $categories['results'][1]['id']);
 
         $params = [
             'orderByField' => [
@@ -150,9 +150,9 @@ class CategoryRepositoryTest extends KernelTestCase
         static::assertEquals(2, $categories['totalResultCount']);
         static::assertEquals(1, $categories['page']);
         static::assertEquals(1, $categories['totalPageCount']);
-        static::assertCount(2, $categories['categories']);
-        static::assertEquals(2, $categories['categories'][0]['id']);
-        static::assertEquals(1, $categories['categories'][1]['id']);
+        static::assertCount(2, $categories['results']);
+        static::assertEquals(2, $categories['results'][0]['id']);
+        static::assertEquals(1, $categories['results'][1]['id']);
 
         $params = [
             'slug' => 'foo'
@@ -164,6 +164,6 @@ class CategoryRepositoryTest extends KernelTestCase
         static::assertEquals(0, $categories['totalResultCount']);
         static::assertEquals(1, $categories['page']);
         static::assertEquals(1, $categories['totalPageCount']);
-        static::assertCount(0, $categories['categories']);
+        static::assertCount(0, $categories['results']);
     }
 }

@@ -6,13 +6,15 @@ use App\Entity\Category;
 use App\Entity\Post;
 use App\Entity\Webhook;
 use App\Event\ResourceEvent;
+use App\Repository\Traits\ApiFiltersTools;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterResultInterface, ApiMultipleFiltersResultInterface
 {
+    use ApiFiltersTools;
+
     private const AVAILABLE_COLUMN_FILTERS = [
         'id' => ['source' => 'column',],
         'author' => ['source' => 'alias', 'columnName' => 'author_id', ],
@@ -100,11 +102,11 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
             'totalResultCount' => $totalResultCount,
             'page' => $page,
             'totalPageCount' => $totalPageCount,
-            'posts' => [],
+            'results' => [],
         ];
 
         foreach ($result as $entry) {
-            $processedResult['posts'][] = [
+            $processedResult['results'][] = [
                 'id' => $entry['id'],
                 'title' => $entry['title'],
                 'createdAt' => $entry['createdAt'],
@@ -116,111 +118,27 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
         return $processedResult;
     }
 
-    // Filter on fields that are UNIQUE in the entity
-    /** @return array<string, mixed> */
-    public function getByUniqueApiFilter(string $filter, string|int $param): array
-    {
-        if ($filter === 'slug' || $filter === 'id') {
-            $result = $this->getByMultipleApiFilters([$filter => $param]);
-            if (0 === $result['resultCount']) {
-                throw new NoResultException();
-            }
-
-            return $result['posts'][0];
-        } else {
-            throw new \LogicException('Unsupported filter: ' . $filter);
-        }
-    }
-
     // Unlike the 'getByUniqueApiFilter'method, unknown filters are ignored.
     /** @return array<string, mixed> */
     public function getByMultipleApiFilters(array $params): array
     {
-        // Creation of the second part of the query (the conditions)
-        $query = 'WHERE id IS NOT NULL ';
-        $queryParams = [];
+        [$query, $queryParams] = $this->initQueryWithMultipleFilters($params);
+        $this->addKeywordsFilters($query, $queryParams, $params);
 
-        // First, basic filters on value
-        foreach ($params as $filter => $value) {
-            if (true === \array_key_exists($filter, self::AVAILABLE_COLUMN_FILTERS)) {
-                if (self::AVAILABLE_COLUMN_FILTERS[$filter]['source'] === 'column') {
-                    $query .= "AND $filter = :$filter ";
-                } elseif (self::AVAILABLE_COLUMN_FILTERS[$filter]['source'] === 'alias') {
-                    // @phpstan-ignore-next-line
-                    $query .= 'AND ' . self::AVAILABLE_COLUMN_FILTERS[$filter]['columnName'] . " = :$filter ";
-                } else {
-                    continue;
-                }
-
-                $queryParams[$filter] = $value;
-            }
-        }
-
-        // Filter on keywords
-        if (\array_key_exists('keywords', $params)) {
-            $query .= "AND (title LIKE :request ";
-            $query .= "OR summary LIKE :request ";
-            $query .= "OR title LIKE :request) ";
-
-            $queryParams['request'] = '%' . $params['keywords'] . '%';
-        }
-
-        // Counting result
-        $limit = 10;
-        $page = 1;
-
-        if (\array_key_exists('limit', $params)) {
-            $limit = (int)$params['limit'];
-        }
-
-        $countQuery = 'SELECT COUNT(*) as count FROM posts ' . $query;
-        // @phpstan-ignore-next-line
-        $totalResultCount = $this->getEntityManager()->getConnection()->executeQuery($countQuery, $queryParams)->fetchAssociative()['count'];
-        $totalPageCount = (int)ceil($totalResultCount/$limit);
-
-        // Now: ordering
-        $this->addOrderForFiltering($query, $params);
-
-        // Pagination
-        $query .= "LIMIT $limit ";
-
-        if (\array_key_exists('page', $params)) {
-            $page = (int)$params['page'];
-            $page = ($page < 1) ? 1 : $page;
-            $offset = ($page * $limit) - $limit;
-            $query .= "OFFSET $offset ";
-        }
-
-        $totalPageCount = ($totalResultCount === 0) ? 1 : $totalPageCount;
-
-        // Result
-        $result = $this->getEntityManager()->getConnection()->executeQuery($this->getMainSelectQuery() . $query, $queryParams);
-        $posts = [];
-
-        while ($post = $result->fetchAssociative()) {
-            $posts[] = $this->formatPostForResponse($post);
-        }
-
-        return [
-            'resultCount' => \count($posts),
-            'totalResultCount' => $totalResultCount,
-            'page' => $page,
-            'totalPageCount' => $totalPageCount,
-            'posts' => $posts,
-        ];
+        return $this->executeQueryWithMultipleFilters('posts', $params, $query, $queryParams);
     }
 
     private function getMainSelectQuery(): string
     {
         return 'SELECT id, title, summary, created_at, updated_at, published_at, slug, online, top_post, language, '
-            . 'obsolete, category_id, author_id, content FROM posts ';
+            . 'obsolete, category_id, author_id, content FROM posts WHERE id IS NOT NULL ';
     }
 
     /**
      * @param array<string, mixed> $result
      * @return array<string, mixed>
      */
-    private function formatPostForResponse(array $result): array
+    private function formatForApiResponse(array $result): array
     {
         // Date to the proper format
         $result['created_at'] = (new \DateTime($result['created_at']))->format(\DateTimeInterface::ATOM);
@@ -244,26 +162,15 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
         return $result;
     }
 
-    /** @param array<string, mixed> $params */
-    private function addOrderForFiltering(string &$query, $params): void
+    private function addKeywordsFilters(string &$query, array &$queryParams, array $params): void
     {
-        if (true === \array_key_exists('orderByField', $params)
-            && true === \is_array($params['orderByField'])
-        ) {
-            foreach ($params['orderByField'] as $column => $order) {
-                $order = strtoupper($order);
+        // Filter on keywords
+        if (\array_key_exists('keywords', $params)) {
+            $query .= "AND (title LIKE :request ";
+            $query .= "OR summary LIKE :request ";
+            $query .= "OR title LIKE :request) ";
 
-                if (true === \array_key_exists($column, self::AVAILABLE_COLUMN_FILTERS)
-                    && true === \in_array($order, ['ASC', 'DESC'])
-                ) {
-                    if (self::AVAILABLE_COLUMN_FILTERS[$column]['source'] === 'alias') {
-                        // @phpstan-ignore-next-line
-                        $column = self::AVAILABLE_COLUMN_FILTERS[$column]['columnName'];
-                    }
-
-                    $query .= "ORDER BY $column $order ";
-                }
-            }
+            $queryParams['request'] = '%' . $params['keywords'] . '%';
         }
     }
 }

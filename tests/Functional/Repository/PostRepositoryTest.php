@@ -95,9 +95,9 @@ class PostRepositoryTest extends KernelTestCase
         static::assertEquals(2, $posts['totalResultCount']);
         static::assertEquals(1, $posts['page']);
         static::assertEquals(1, $posts['totalPageCount']);
-        static::assertCount(2, $posts['posts']);
-        static::assertEquals(1, $posts['posts'][0]['id']);
-        static::assertEquals(3, $posts['posts'][1]['id']);
+        static::assertCount(2, $posts['results']);
+        static::assertEquals(1, $posts['results'][0]['id']);
+        static::assertEquals(3, $posts['results'][1]['id']);
 
         $posts = $this->postRepository->search('keyword', 1, 2);
 
@@ -105,8 +105,8 @@ class PostRepositoryTest extends KernelTestCase
         static::assertEquals(2, $posts['totalResultCount']);
         static::assertEquals(2, $posts['page']);
         static::assertEquals(2, $posts['totalPageCount']);
-        static::assertCount(1, $posts['posts']);
-        static::assertEquals(3, $posts['posts'][0]['id']);
+        static::assertCount(1, $posts['results']);
+        static::assertEquals(3, $posts['results'][0]['id']);
     }
 
     public function testGetByUniqueApiFilter(): void
@@ -139,8 +139,8 @@ class PostRepositoryTest extends KernelTestCase
         static::assertEquals(2, $posts['totalResultCount']);
         static::assertEquals(2, $posts['page']);
         static::assertEquals(2, $posts['totalPageCount']);
-        static::assertCount(1, $posts['posts']);
-        static::assertEquals(1, $posts['posts'][0]['id']);
+        static::assertCount(1, $posts['results']);
+        static::assertEquals(1, $posts['results'][0]['id']);
 
         $params = [
             'keywords' => 'keyword',
@@ -157,8 +157,8 @@ class PostRepositoryTest extends KernelTestCase
         static::assertEquals(1, $posts['totalResultCount']);
         static::assertEquals(1, $posts['page']);
         static::assertEquals(1, $posts['totalPageCount']);
-        static::assertCount(1, $posts['posts']);
-        static::assertEquals(3, $posts['posts'][0]['id']);
+        static::assertCount(1, $posts['results']);
+        static::assertEquals(3, $posts['results'][0]['id']);
 
         $params = [
             'keywords' => 'keyword',
@@ -174,9 +174,9 @@ class PostRepositoryTest extends KernelTestCase
         static::assertEquals(2, $posts['totalResultCount']);
         static::assertEquals(1, $posts['page']);
         static::assertEquals(1, $posts['totalPageCount']);
-        static::assertCount(2, $posts['posts']);
-        static::assertEquals(3, $posts['posts'][0]['id']);
-        static::assertEquals(1, $posts['posts'][1]['id']);
+        static::assertCount(2, $posts['results']);
+        static::assertEquals(3, $posts['results'][0]['id']);
+        static::assertEquals(1, $posts['results'][1]['id']);
 
         $params = [
             'category' => 99
@@ -188,6 +188,6 @@ class PostRepositoryTest extends KernelTestCase
         static::assertEquals(0, $posts['totalResultCount']);
         static::assertEquals(1, $posts['page']);
         static::assertEquals(1, $posts['totalPageCount']);
-        static::assertCount(0, $posts['posts']);
+        static::assertCount(0, $posts['results']);
     }
 }

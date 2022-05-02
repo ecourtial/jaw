@@ -8,7 +8,7 @@
     {% if result|length != 0 %}
         <p><strong>Posts:</strong></p>
         <ul>
-            {% for key, searchResult in result.posts %}
+            {% for key, searchResult in result.results %}
                 <li id="post_{{ searchResult['id'] }}">{{ searchResult.title }} ({{ 'category.label'|trans }}:
                     <i><a id="details_categ_{{ searchResult['categoryId'] }}" href="{{ path('category_get', {id: searchResult['categoryId']}) }}">{{searchResult['categoryTitle']}}</a></i>)
                     - <a id="edit_post_{{ searchResult['id'] }}" href="{{ path('post_edit', {id: searchResult['id']}) }}">{{ 'post.edit'|trans }}</a></li>

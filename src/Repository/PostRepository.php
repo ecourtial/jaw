@@ -162,6 +162,10 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
         return $result;
     }
 
+    /**
+     * @param array<string, mixed> $queryParams
+     * @param array<string, mixed> $params
+     */
     private function addKeywordsFilters(string &$query, array &$queryParams, array $params): void
     {
         // Filter on keywords

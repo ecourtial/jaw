@@ -6,8 +6,11 @@ use Doctrine\ORM\NoResultException;
 
 trait ApiFiltersTools
 {
-    // Filter on fields that are UNIQUE in the entity
-    /** @return array<string, mixed> */
+    /**
+     * Filter on fields that are UNIQUE in the entity
+     *
+     * @return string[]
+     */
     public function getByUniqueApiFilter(string $filter, string|int $param): array
     {
         if ($filter === 'slug' || $filter === 'id') {
@@ -24,11 +27,13 @@ trait ApiFiltersTools
 
     /**
      * Creates the middle part of the query to perform a multi-filters search.
+     *
+     * @param array<string, mixed> $params
      */
     private function initQueryWithMultipleFilters(array $params): array
     {
         $queryParams = [];
-        // Creation of the second par of the query (the conditions)
+        // Creation of the second part of the query (the conditions)
         $query = '';
 
         // Basic filters on value
@@ -55,6 +60,9 @@ trait ApiFiltersTools
     /**
      * Processes the query to perform a multi-filters search. It uses $query, the part created in
      * initQueryWithMultipleFilters(), adds ordering and also manage the pagination.
+     *
+     * @param array<string, mixed> $params
+     * @param array<string, mixed> $queryParams
      */
     private function executeQueryWithMultipleFilters(string $tableName, array $params, string $query, array $queryParams): array
     {

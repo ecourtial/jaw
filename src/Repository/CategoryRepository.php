@@ -72,6 +72,7 @@ class CategoryRepository extends ServiceEntityRepository implements ApiSimpleFil
         throw new CategoryNotEmptyException();
     }
 
+    /** @return array<string, mixed> */
     public function getByMultipleApiFilters(array $params): array
     {
         [$query, $queryParams] = $this->initQueryWithMultipleFilters($params);
@@ -90,6 +91,10 @@ class CategoryRepository extends ServiceEntityRepository implements ApiSimpleFil
             . 'WHERE c.id = p.categId ';
     }
 
+    /**
+     * @param array<string, mixed> $result
+     * @return array<string, mixed>
+     */
     private function formatForApiResponse(array $result): array
     {
         $result['createdAt'] = (new \DateTime($result['created_at']))->format(\DateTimeInterface::ATOM);

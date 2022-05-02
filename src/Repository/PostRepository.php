@@ -9,24 +9,24 @@ use App\Event\ResourceEvent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\ORM\Tools\Pagination\Paginator;
-use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterResultInterface, ApiMultipleFiltersResultInterface
 {
     private const AVAILABLE_COLUMN_FILTERS = [
         'id' => ['source' => 'column',],
+        'author' => ['source' => 'alias', 'columnName' => 'author_id', ],
+        'category' => ['source' => 'alias', 'columnName' => 'category_id',],
         'title' => ['source' => 'column',],
-        'createdAt' => ['source' => 'column', 'columnName' => 'created_at',],
-        'updatedAt' => ['source' => 'column', 'columnName' => 'updated_at',],
+        'slug' => ['source' => 'column',],
         'publishedAt' => ['source' => 'column', 'columnName' => 'published_at',],
+        'language' => ['source' => 'column', ],
         'online' => ['source' => 'column', ],
         'topPost' => ['source' => 'column', ],
-        'language' => ['source' => 'column', ],
         'obsolete' => ['source' => 'column', ],
-        'category' => ['source' => 'alias', 'columnName' => 'category_id',],
-        'author' => ['source' => 'alias', 'columnName' => 'author_id', ],
+        'createdAt' => ['source' => 'column', 'columnName' => 'created_at',],
+        'updatedAt' => ['source' => 'column', 'columnName' => 'updated_at',],
+
     ];
 
     public function __construct(ManagerRegistry $registry, private readonly EventDispatcherInterface $eventDispatcher)
@@ -118,21 +118,16 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
     // Filter on fields that are UNIQUE in the entity
     public function getByUniqueApiFilter(string $filter, string|int $param): array
     {
-        $query = $this->getMainSelectQuery();
-
         if ($filter === 'slug' || $filter === 'id') {
-            $query .= " WHERE $filter = :param LIMIT 1";
+            $result = $this->getByMultipleApiFilters([$filter => $param]);
+            if (0 === $result['resultCount']) {
+                throw new NoResultException();
+            }
+
+            return $result['posts'][0];
         } else {
             throw new \LogicException('Unsupported filter: ' . $filter);
         }
-
-        $result = $this->getEntityManager()->getConnection()->executeQuery($query, ['param' => $param])->fetchAssociative();
-
-        if (false === $result) {
-            throw new NoResultException();
-        }
-
-        return $this->formatPostForResponse($result);
     }
 
     // Unlike the 'getByUniqueApiFilter'method, unknown filters are ignored.

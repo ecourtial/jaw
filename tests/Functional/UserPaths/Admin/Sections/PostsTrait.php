@@ -121,6 +121,9 @@ trait PostsTrait
 
         static::assertEquals(200, $client->getResponse()->getStatusCode());
 
+        // Reload the post
+        $this->newPost = self::getContainer()->get('App\Repository\PostRepository')->find($this->getIdFromEditPage($crawler));
+
         $client->followRedirects(false);
     }
 

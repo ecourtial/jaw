@@ -6,8 +6,8 @@ use App\Entity\Category;
 use App\Entity\Post;
 use App\Entity\Webhook;
 use App\Event\ResourceEvent;
-use App\Search\SearchResult;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\ORM\QueryBuilder;
@@ -16,16 +16,17 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterResultInterface, ApiMultipleFiltersResultInterface
 {
     private const AVAILABLE_COLUMN_FILTERS = [
+        'id' => ['source' => 'column',],
         'title' => ['source' => 'column',],
-        'createdAt' => ['source' => 'column', ],
-        'updatedAt' => ['source' => 'column', ],
-        'publishedAt' => ['source' => 'column', ],
+        'createdAt' => ['source' => 'column', 'columnName' => 'created_at',],
+        'updatedAt' => ['source' => 'column', 'columnName' => 'updated_at',],
+        'publishedAt' => ['source' => 'column', 'columnName' => 'published_at',],
         'online' => ['source' => 'column', ],
         'topPost' => ['source' => 'column', ],
         'language' => ['source' => 'column', ],
         'obsolete' => ['source' => 'column', ],
-        'category' => ['source' => 'alias', 'columnName' => 'categoryId',],
-        'author' => ['source' => 'alias', 'columnName' => 'authorId', ],
+        'category' => ['source' => 'alias', 'columnName' => 'category_id',],
+        'author' => ['source' => 'alias', 'columnName' => 'author_id', ],
     ];
 
     public function __construct(ManagerRegistry $registry, private readonly EventDispatcherInterface $eventDispatcher)
@@ -53,11 +54,22 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
      *
      * @return \App\Search\SearchResult[]
      */
-    public function search(string $keywords, int $limit): array
+    public function search(string $keywords, int $limit = 30, int $page = 1): array
     {
+        // Unfortunately, the Paginator does not work with two FROM, so we have to do it manually.
+        $totalResultCount =  $this->getEntityManager()->getConnection()->executeQuery(
+            'SELECT COUNT(*) as count FROM posts'
+            . ' WHERE title LIKE :request'
+            . ' OR summary LIKE :request'
+            . ' OR content LIKE :request',
+            ['request' => "%$keywords%"]
+        )
+        ->fetchAssociative()['count'];
+
+        // Get Results
         $qb = $this->getEntityManager()->createQueryBuilder();
 
-        $qb->select('p.id, p.title, p.slug, p.createdAt, p.updatedAt, p.publishedAt, c.id as categId, c.title as categTitle, c.slug as categSlug');
+        $qb->select('p.id, p.title, p.slug, p.createdAt, c.id as categoryId, c.title as categoryTitle');
 
         $qb->from(Post::class, 'p');
         $qb->from(Category::class, 'c');
@@ -67,7 +79,13 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
         $qb->orWhere('p.content' . ' LIKE :request');
         $qb->andWhere('p.category = c.id');
         $qb->orderBy('p.createdAt', 'DESC');
+
+        $page = ($page < 1) ? 1 : $page;
+        $offset = ($page * $limit) - $limit;
+        $totalPageCount = (int)ceil($totalResultCount/$limit);
         $qb->setMaxResults($limit);
+        $qb->setFirstResult($offset);
+
         $qb->setParameter('request', "%$keywords%");
 
         $result = $qb->getQuery()->getResult();
@@ -76,20 +94,22 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
             $result = [];
         }
 
-        $processedResult = [];
+        $processedResult = [
+            'resultCount' => \count($result),
+            'totalResultCount' => $totalResultCount,
+            'page' => $page,
+            'totalPageCount' => $totalPageCount,
+            'posts' => [],
+        ];
 
         foreach ($result as $entry) {
-            $processedResult[] = new SearchResult(
-                $entry['id'],
-                $entry['title'],
-                $entry['slug'],
-                $entry['createdAt'],
-                $entry['updatedAt'],
-                $entry['publishedAt'],
-                $entry['categId'],
-                $entry['categTitle'],
-                $entry['categSlug'],
-            );
+            $processedResult['posts'][] = [
+                'id' => $entry['id'],
+                'title' => $entry['title'],
+                'createdAt' => $entry['createdAt'],
+                'categoryId' => $entry['categoryId'],
+                'categoryTitle' => $entry['categoryTitle'],
+            ];
         }
 
         return $processedResult;
@@ -98,56 +118,55 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
     // Filter on fields that are UNIQUE in the entity
     public function getByUniqueApiFilter(string $filter, string|int $param): array
     {
-        $qb = $this->getMainSelect();
+        $query = $this->getMainSelectQuery();
 
         if ($filter === 'slug' || $filter === 'id') {
-            $qb->where('p.' . $filter . ' = :param');
-            $qb->setParameter('param', $param);
+            $query .= " WHERE $filter = :param LIMIT 1";
         } else {
             throw new \LogicException('Unsupported filter: ' . $filter);
         }
 
-        $result = $qb->getQuery()->getSingleResult();
+        $result = $this->getEntityManager()->getConnection()->executeQuery($query, ['param' => $param])->fetchAssociative();
 
-        return $this->formatDate($result);
+        if (false === $result) {
+            throw new NoResultException();
+        }
+
+        return $this->formatPostForResponse($result);
     }
 
     // Unlike the 'getByUniqueApiFilter'method, unknown filters are ignored.
     public function getByMultipleApiFilters(array $params): array
     {
-        $qb = $this->getMainSelect();
-
-        // Just to init the where clauses (useless clause otherwise)
-        $qb->where('p.id IS NOT NULL');
+        // Creation of the second par of the query (the conditions)
+        $query = 'WHERE id IS NOT NULL ';
+        $queryParams = [];
 
         // First, basic filters on value
         foreach ($params as $filter => $value) {
             if (true === \array_key_exists($filter, self::AVAILABLE_COLUMN_FILTERS)) {
                 if (self::AVAILABLE_COLUMN_FILTERS[$filter]['source'] === 'column') {
-                    $qb->andWhere('p.' . $filter . ' = :' . $filter);
+                    $query .= "AND $filter = :$filter ";
                 } elseif (self::AVAILABLE_COLUMN_FILTERS[$filter]['source'] === 'alias') {
-                    $qb->andHaving(self::AVAILABLE_COLUMN_FILTERS[$filter]['columnName'] . ' = :' . $filter);
+                    $query .= 'AND ' . self::AVAILABLE_COLUMN_FILTERS[$filter]['columnName'] . " = :$filter ";
                 } else {
                     continue;
                 }
 
-                $qb->setParameter($filter, $value);
+                $queryParams[$filter] = $value;
             }
         }
 
         // Filter on keywords
         if (\array_key_exists('keywords', $params)) {
-            $qb->andWhere('p.title' . ' LIKE :request');
-            $qb->orWhere('p.summary' . ' LIKE :request');
-            $qb->orWhere('p.content' . ' LIKE :request');
+            $query .= "AND (title LIKE :request ";
+            $query .= "OR summary LIKE :request ";
+            $query .= "OR title LIKE :request) ";
 
-            $qb->setParameter('request', "%{$params['keywords']}%");
+            $queryParams['request'] = '%' . $params['keywords'] . '%';
         }
 
-        // Now: ordering
-        $this->addOrderForFiltering($qb, $params);
-
-        // Pagination
+        // Counting result
         $limit = 10;
         $page = 1;
 
@@ -155,63 +174,71 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
             $limit = (int)$params['limit'];
         }
 
+        $countQuery = 'SELECT COUNT(*) as count FROM posts ' . $query;
+        $totalResultCount = $this->getEntityManager()->getConnection()->executeQuery($countQuery, $queryParams)->fetchAssociative()['count'];
+        $totalPageCount = (int)ceil($totalResultCount/$limit);
+
+        // Now: ordering
+        $this->addOrderForFiltering($query, $params);
+
+        // Pagination
+        $query .= "LIMIT $limit ";
+
         if (\array_key_exists('page', $params)) {
             $page = (int)$params['page'];
             $page = ($page < 1) ? 1 : $page;
             $offset = ($page * $limit) - $limit;
-            $qb->setFirstResult($offset);
+            $query .= "OFFSET $offset ";
         }
-
-        $qb->setMaxResults($limit);
 
         // Result
-        $paginator = new Paginator($qb->getQuery(), true);
-        $paginator->setUseOutputWalkers(false);
-        $totalCount = \count($paginator);
-        $totalPageCount = ceil($totalCount/$limit);
+        $result = $this->getEntityManager()->getConnection()->executeQuery($this->getMainSelectQuery() . $query, $queryParams);
+        $posts = [];
 
-        $result =$paginator->getQuery()->getResult();
-
-        if (null === $result) {
-            $result = [];
-        }
-
-        foreach ($result as $index => $entry) {
-            $result[$index] = $this->formatDate($entry);
+        while($post = $result->fetchAssociative()) {
+            $posts[] = $this->formatPostForResponse($post);
         }
 
         return [
-            'resultCount' => \count($result),
-            'totalResultCount' => $totalCount,
+            'resultCount' => \count($posts),
+            'totalResultCount' => $totalResultCount,
             'page' => $page,
             'totalPageCount' => $totalPageCount,
-            'posts' => $result,
+            'posts' => $posts,
         ];
     }
 
-    private function getMainSelect(): QueryBuilder
+    private function getMainSelectQuery(): string
     {
-        $qb = $this->getEntityManager()->createQueryBuilder();
-
-        $qb->select(
-            'p.id, p.title, p.summary, p.createdAt, p.updatedAt, p.publishedAt, p.slug, p.online, p.topPost, '
-            . 'p.language, p.obsolete, IDENTITY(p.category) as categoryId, IDENTITY(p.author) as authorId, p.content'
-        );
-        $qb->from(Post::class, 'p');
-
-        return $qb;
+        return 'SELECT id, title, summary, created_at, updated_at, published_at, slug, online, top_post, language, '
+            . 'obsolete, category_id, author_id, content FROM posts ';
     }
 
-    private function formatDate(array $result): array
+    private function formatPostForResponse(array $result): array
     {
-        $result['createdAt'] = $result['createdAt']->format(\DateTimeInterface::ATOM);
-        $result['updatedAt'] = $result['updatedAt']->format(\DateTimeInterface::ATOM);
-        $result['publishedAt'] =  $result['publishedAt'] === null ? null : $result['publishedAt']->format(\DateTimeInterface::ATOM);
+        // Date to the proper format
+        $result['created_at'] = (new \DateTime($result['created_at']))->format(\DateTimeInterface::ATOM);
+        $result['updated_at'] = (new \DateTime($result['updated_at']))->format(\DateTimeInterface::ATOM);
+        $result['published_at'] =  $result['published_at'] === null ? null : (new \DateTime($result['published_at']))->format(\DateTimeInterface::ATOM);
+
+        // Respect API conventions with lower camelCase
+        $result['createdAt'] = $result['created_at'];
+        unset($result['created_at']);
+        $result['updatedAt'] = $result['updated_at'];
+        unset($result['updated_at']);
+        $result['publishedAt'] = $result['published_at'];
+        unset($result['published_at']);
+        $result['topPost'] = $result['top_post'];
+        unset($result['top_post']);
+        $result['categoryId'] = $result['category_id'];
+        unset($result['category_id']);
+        $result['authorId'] = $result['author_id'];
+        unset($result['author_id']);
 
         return $result;
     }
 
-    private function addOrderForFiltering(QueryBuilder $qb, $params): void
+    private function addOrderForFiltering(string &$query, $params): void
     {
         if (true === \array_key_exists('orderByField', $params)
             && true === \is_array($params['orderByField'])
@@ -222,7 +249,11 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
                 if (true === \array_key_exists($column, self::AVAILABLE_COLUMN_FILTERS)
                     && true === \in_array($order, ['ASC', 'DESC'])
                 ) {
-                    $qb->orderBy('p.' . $column , $order);
+                    if (self::AVAILABLE_COLUMN_FILTERS[$column]['source'] === 'alias') {
+                        $column = self::AVAILABLE_COLUMN_FILTERS[$column]['columnName'];
+                    }
+
+                    $query .= "ORDER BY $column $order ";
                 }
             }
         }

@@ -123,17 +123,17 @@ trait ApiPostTrait
             'id' => $post->getId(),
             'title' => $post->getTitle(),
             'summary' => $post->getSummary(),
-            'createdAt' => $post->getCreatedAt(),
-            'updatedAt' => $post->getUpdatedAt(),
             'slug' => $post->getSlug(),
             'online' => $post->isOnline(),
-            'topPost' => $post->isTopPost(),
             'language' => $post->getLanguage(),
             'obsolete' => $post->isObsolete(),
+            'content' => $post->getContent(),
+            'createdAt' => $post->getCreatedAt(),
+            'updatedAt' => $post->getUpdatedAt(),
+            'publishedAt' => $post->getPublishedAt(),
+            'topPost' => $post->isTopPost(),
             'categoryId' => $post->getCategory()->getId(),
             'authorId' => $post->getAuthor()->getId(),
-            'content' => $post->getContent(),
-            'publishedAt' => $post->getPublishedAt(),
         ];
 
         $result['createdAt'] = $result['createdAt']->format(\DateTimeInterface::ATOM);

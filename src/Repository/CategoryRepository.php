@@ -70,21 +70,15 @@ class CategoryRepository extends ServiceEntityRepository implements ApiSimpleFil
     public function getByUniqueApiFilter(string $filter, string|int $param): array
     {
         if ($filter === 'slug' || $filter === 'id') {
-            $queryFilter = ' AND c.' . $filter . ' = :param';
+            $result = $this->getByMultipleApiFilters([$filter => $param]);
+            if (0 === $result['resultCount']) {
+                throw new NoResultException();
+            }
+
+            return $result['categories'][0];
         } else {
             throw new \LogicException('Unsupported filter: ' . $filter);
         }
-
-        $result = $this
-            ->getEntityManager()
-            ->getConnection()
-            ->executeQuery($this->getMainSelectQuery() . $queryFilter, ['param' => $param])->fetchAssociative();
-
-        if (!$result) {
-            throw new NoResultException();
-        }
-
-        return $this->formatCategoryForResponse($result);
     }
 
     public function getByMultipleApiFilters(array $params): array

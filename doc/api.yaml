@@ -114,11 +114,45 @@ components:
           description: 'The API token of the user.'
           example: token124356
           type: string
+    Category:
+      properties:
+        id:
+          description: 'The id of the category.'
+          example: 3.
+          type: integer
+        title:
+          description: 'The title of the category.'
+          example: The Title
+          type: string
+        summary:
+          description: 'The summary of the category.'
+          example: The summary
+          type: string
+        slug:
+          description: 'The slug of the category.'
+          example: the-slug
+          type: string
+        postCount:
+          description: 'How many posts the category have.'
+          example: 3.
+          type: integer
+        createdAt:
+          description: 'Date of the creation of the category.'
+          example: 2022-04-28T14:03:09+00:00
+          type: string
+          format: date
+        updatedAt:
+          description: 'Date of the last update of the category.'
+          example: 2022-04-28T14:03:09+00:00
+          type: string
+          format: date
 paths:
   /configuration:
     get:
       description: 'Get the configuration of the blog.'
       responses:
+        '403':
+          description: The user is not authenticated.
         '200':
           description: Response will always return a 200 unless server error.
           content:
@@ -134,10 +168,9 @@ paths:
                 updatedAt: '2022-04-28T14:03:09+00:00'
                 copyrightMessage: Do not copy my stuff.
                 copyrightExtraMessage: Or I will unleash my poodle.
-                githubUserName: ecourtial
+                githubUserName: somePseudo
                 linkedinUserName: null
                 googleAnalyticsId: null
-      summary: 'Get the configuration'
       tags:
         - Configuration
   /user/{userId}:
@@ -147,13 +180,13 @@ paths:
         - $ref: '#/components/parameters/userId'
       responses:
         '403':
-          description: The token does not belong to an administrator
+          description: The token does not belong to an administrator.
           content:
             application/json:
               example:
                 message: Route only accessible to admin users.
         '404':
-          description: User does not exists
+          description: User does not exist.
           content:
             application/json:
               example:
@@ -172,6 +205,127 @@ paths:
                   fullName: John Doe
                   email: foo@bar.com
                   token: thisIsMyToken
-      summary: 'Get a user by its id'
       tags:
         - User
+  /category:
+    get:
+      description: 'Get the category by id or slug.'
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+          description: The id of the category.
+        - in: query
+          name: slug
+          schema:
+            type: string
+          description: The slug of the category.
+      responses:
+        '400':
+          description: Invalid filter given.
+          content:
+            application/json:
+              example:
+                message: "No supported filter was given. Available filters are: id, slug."
+        '403':
+          description: The user is not authenticated.
+        '404':
+          description: The category does not exists.
+          content:
+            application/json:
+              example:
+                message: No result found.
+        '200':
+          description: The category exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+              example:
+                id : 3,
+                title: My favorite category
+                summary: Only good content!
+                slug: my-favorite-category
+                postCount: 8
+                createdAt: '2022-04-28T14:03:09+00:00'
+                updatedAt: '2022-04-28T14:03:09+00:00'
+
+      tags:
+        - Category
+  /category/search:
+    get:
+      description: 'Search category using filters.'
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+          description: The id of the category.
+        - in: query
+          name: slug
+          schema:
+            type: string
+          description: The slug of the category.
+        - in: query
+          name: title
+          schema:
+            type: string
+          description: The title of the category.
+        - in: query
+          name: summary
+          schema:
+            type: string
+          description: The summary of the category.
+        - in: query
+          name: postCount
+          schema:
+            type: string
+          description: 'How many posts the category have.'
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: The results page offset.
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          description: The first offset of the results.
+        - in: query
+          name: keywords
+          schema:
+            type: string
+          description: The keywords to look for in the category title, summary and content.
+        - in: query
+          name: orderByField
+          schema:
+            type: array
+            items:
+              type: string
+          description: "Allows to order results according to some criteria (fields) by sorting them (ASC or DESC). Example: ?orderByField[title]=DESC"
+      responses:
+        '403':
+          description: The user is not authenticated.
+        '200':
+          description: The category exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                resultCount: 1
+                totalResultCount: 2
+                page: 1
+                totalPageCount: 2
+                results:
+                  id : 3,
+                  title: My favorite category
+                  summary: Only good content!
+                  slug: my-favorite-category
+                  postCount: 8
+                  createdAt: '2022-04-28T14:03:09+00:00'
+                  updatedAt: '2022-04-28T14:03:09+00:00'
+
+      tags:
+        - Category

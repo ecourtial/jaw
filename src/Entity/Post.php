@@ -165,7 +165,9 @@ class Post implements DatedResourceInterface
     public function setPublishedAt(): self
     {
         if ($this->isOnline()) {
-            $this->publishedAt = new \DateTime();
+            if (null === $this->publishedAt) { // Because we can force it, for instance when migrating from an old blog.
+                $this->publishedAt = new \DateTime();
+            }
         } else {
             $this->publishedAt = null;
         }
@@ -174,7 +176,7 @@ class Post implements DatedResourceInterface
     }
 
     // Used for migration from old blog systems.
-    public function forcePublishedAtDate(\DateTime $date): self
+    public function forcePublishedAtDate(?\DateTime $date): self
     {
         $this->publishedAt = $date;
 

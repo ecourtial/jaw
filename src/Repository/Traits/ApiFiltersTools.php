@@ -29,6 +29,8 @@ trait ApiFiltersTools
      * Creates the middle part of the query to perform a multi-filters search.
      *
      * @param array<string, mixed> $params
+     *
+     * @return array<int, string|mixed>
      */
     private function initQueryWithMultipleFilters(array $params): array
     {
@@ -63,6 +65,8 @@ trait ApiFiltersTools
      *
      * @param array<string, mixed> $params
      * @param array<string, mixed> $queryParams
+     *
+     * @return array<string, mixed>
      */
     private function executeQueryWithMultipleFilters(string $tableName, array $params, string $query, array $queryParams): array
     {

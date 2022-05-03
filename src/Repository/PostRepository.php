@@ -28,7 +28,6 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
         'obsolete' => ['source' => 'column', ],
         'createdAt' => ['source' => 'alias', 'columnName' => 'created_at',],
         'updatedAt' => ['source' => 'alias', 'columnName' => 'updated_at',],
-
     ];
 
     public function __construct(ManagerRegistry $registry, private readonly EventDispatcherInterface $eventDispatcher)

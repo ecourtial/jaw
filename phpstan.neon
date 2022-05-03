@@ -3,3 +3,5 @@ parameters:
     paths:
         - src/
     checkGenericClassInNonGenericObjectType: false
+    ignoreErrors:
+        - "#Strict comparison using === between 'alias' and 'computed' will always evaluate to false.#"

@@ -56,7 +56,9 @@ class AdminUserPathTest extends WebTestCase
             'Or I will unleash my poodle.',
             'LinkedinPseudo',
             'GithubPseudo',
-            '1234Abcdef'
+            '1234Abcdef',
+            '',
+            true,
         );
 
         $newBlogTitle = 'NewBlogTitle';
@@ -66,6 +68,7 @@ class AdminUserPathTest extends WebTestCase
         $newLinkedinUsername = 'newLinkedinUsername';
         $newGithubUsername = 'newGithubUsername';
         $newGoogleAnalyticsId = 'newGoogleAnalyticsId';
+        $newCallbackUrl = 'https://foo.bar';
 
         $this->gotoConfigurationScreenAndUpdateData(
             $client,
@@ -76,7 +79,9 @@ class AdminUserPathTest extends WebTestCase
             $newBlogCopyrightExtraMessage,
             $newLinkedinUsername,
             $newGithubUsername,
-            $newGoogleAnalyticsId
+            $newGoogleAnalyticsId,
+            $newCallbackUrl,
+            0,
         );
 
         $this->gotoConfigurationScreenAndCheckData(
@@ -87,7 +92,9 @@ class AdminUserPathTest extends WebTestCase
             $newBlogCopyrightExtraMessage,
             $newLinkedinUsername,
             $newGithubUsername,
-            $newGoogleAnalyticsId
+            $newGoogleAnalyticsId,
+            $newCallbackUrl,
+            false,
         );
 
         // Categories

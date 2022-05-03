@@ -146,6 +146,67 @@ components:
           example: 2022-04-28T14:03:09+00:00
           type: string
           format: date
+    Post:
+      properties:
+        id:
+          description: 'The id of the post.'
+          example: 3.
+          type: integer
+        title:
+          description: 'The title of the post.'
+          example: The Title
+          type: string
+        summary:
+          description: 'The summary of the post.'
+          example: The summary
+          type: string
+        slug:
+          description: 'The slug of the post.'
+          example: the-slug
+          type: string
+        online:
+          description: 'Is the post set to online?'
+          example: true
+          type: boolean
+        language:
+          description: 'The language of the post.'
+          example: en
+          type: string
+        obsolete:
+          description: 'Is the post set as obsolete?'
+          example: true
+          type: boolean
+        content:
+          description: 'The content of the post.'
+          example: This is an amazing post I wrote.
+          type: string
+        createdAt:
+          description: 'Date of the creation of the post.'
+          example: 2022-04-28T14:03:09+00:00
+          type: string
+          format: date
+        updatedAt:
+          description: 'Date of the last update of the post.'
+          example: 2022-04-28T14:03:09+00:00
+          type: string
+          format: date
+        publishedAt:
+          description: 'Date of the last time when the post was set to Online.'
+          example: 2022-04-28T14:03:09+00:00
+          type: string
+          format: date
+        topPost:
+          description: 'Is the post set as top post?'
+          example: true
+          type: boolean
+        categoryId:
+          description: 'The id of the category the post belongs to.'
+          example: 3.
+          type: integer
+        authorId:
+          description: 'The id of the user who wrote this post.'
+          example: 5.
+          type: integer
 paths:
   /configuration:
     get:
@@ -255,7 +316,7 @@ paths:
         - Category
   /category/search:
     get:
-      description: 'Search category using filters.'
+      description: 'Search categories using filters.'
       parameters:
         - in: query
           name: id
@@ -296,7 +357,7 @@ paths:
           name: keywords
           schema:
             type: string
-          description: The keywords to look for in the category title, summary and content.
+          description: The keywords to look for in the category title and summary.
         - in: query
           name: orderByField
           schema:
@@ -308,11 +369,11 @@ paths:
         '403':
           description: The user is not authenticated.
         '200':
-          description: The category exists.
+          description: Results.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/Category'
               example:
                 resultCount: 1
                 totalResultCount: 2
@@ -329,3 +390,173 @@ paths:
 
       tags:
         - Category
+  /post:
+    get:
+      description: 'Get the post by id or slug.'
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+          description: The id of the post.
+        - in: query
+          name: slug
+          schema:
+            type: string
+          description: The slug of the post.
+      responses:
+        '400':
+          description: Invalid filter given.
+          content:
+            application/json:
+              example:
+                message: "No supported filter was given. Available filters are: id, slug."
+        '403':
+          description: The user is not authenticated.
+        '404':
+          description: The post does not exists.
+          content:
+            application/json:
+              example:
+                message: No result found.
+        '200':
+          description: The post exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+              example:
+                id: 1,
+                title: My first post,
+                summary: The summary 1 keyword,
+                slug: my-first-post,
+                online: true,
+                language: en,
+                obsolete: false,
+                content: Then content 1,
+                createdAt: 2022-05-03T10:05:53+00:00,
+                updatedAt: 2022-05-03T10:05:53+00:00,
+                publishedAt: 2022-05-03T10:05:53+00:00,
+                topPost: false,
+                categoryId: 1,
+                authorId: 2
+      tags:
+        - Post
+  /post/search:
+    get:
+      description: 'Search posts using filters.'
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+          description: The id of the post.
+        - in: query
+          name: author
+          schema:
+            type: integer
+          description: The id of the user who wrote the post.
+        - in: query
+          name: category
+          schema:
+            type: integer
+          description: The id of the category the post belongs to.
+        - in: query
+          name: title
+          schema:
+            type: string
+          description: The title of the post.
+        - in: query
+          name: slug
+          schema:
+            type: string
+          description: The slug of the post.
+        - in: query
+          name: publishedAt
+          schema:
+            type: string
+          description: The date of the last time when the post was set to published.
+        - in: query
+          name: language
+          schema:
+            type: string
+          description: The language of the post.
+        - in: query
+          name: online
+          schema:
+            type: boolean
+          description: Is the post set to online?
+        - in: query
+          name: topPost
+          schema:
+            type: boolean
+          description: Is the post set to top post?
+        - in: query
+          name: obsolete
+          schema:
+            type: boolean
+          description: Is the post set to obsolete?
+        - in: query
+          name: createdAt
+          schema:
+            type: string
+          description: The date of when the post was created.
+        - in: query
+          name: updatedAt
+          schema:
+            type: string
+          description: The date of when the last time when post was updated.
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: The results page offset.
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          description: The first offset of the results.
+        - in: query
+          name: keywords
+          schema:
+            type: string
+          description: The keywords to look for in the post title, summary and content.
+        - in: query
+          name: orderByField
+          schema:
+            type: array
+            items:
+              type: string
+          description: "Allows to order results according to some criteria (fields) by sorting them (ASC or DESC). Example: ?orderByField[title]=DESC"
+      responses:
+        '403':
+          description: The user is not authenticated.
+        '200':
+          description: Results.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+              example:
+                resultCount: 1
+                totalResultCount: 2
+                page: 1
+                totalPageCount: 2
+                results:
+                  id: 1,
+                  title: My first post,
+                  summary: The summary 1 keyword,
+                  slug: my-first-post,
+                  online: true,
+                  language: en,
+                  obsolete: false,
+                  content: Then content 1,
+                  createdAt: 2022-05-03T10:05:53+00:00,
+                  updatedAt: 2022-05-03T10:05:53+00:00,
+                  publishedAt: 2022-05-03T10:05:53+00:00,
+                  topPost: false,
+                  categoryId: 1,
+                  authorId: 2
+
+      tags:
+        - Post

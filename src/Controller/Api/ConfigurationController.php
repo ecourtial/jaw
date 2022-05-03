@@ -26,9 +26,7 @@ class ConfigurationController extends AbstractController
             'title' => $configuration->getBlogTitle(),
             'description' => $configuration->getBlogDescription(),
             'callbackUrl' => $configuration->getCallbackUrl(),
-            // @phpstan-ignore-next-line
             'createdAt' => $configuration->getCreatedAt()->format(\DateTimeInterface::ATOM),
-            // @phpstan-ignore-next-line
             'updatedAt' => $configuration->getUpdatedAt()->format(\DateTimeInterface::ATOM),
             'copyrightMessage' => $configuration->getCopyrightMessage(),
             'copyrightExtraMessage' => $configuration->getCopyrightExtraMessage(),

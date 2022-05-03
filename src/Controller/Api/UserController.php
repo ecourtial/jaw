@@ -31,9 +31,7 @@ class UserController extends AbstractController
 
         $response = [
             'id' => $user->getId(),
-            // @phpstan-ignore-next-line
             'createdAt' => $user->getCreatedAt()->format(\DateTimeInterface::ATOM),
-            // @phpstan-ignore-next-line
             'updatedAt' => $user->getUpdatedAt()->format(\DateTimeInterface::ATOM),
             'username' => $user->getUsername(),
             'fullName' => $user->getFullName(),

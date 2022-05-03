@@ -9,14 +9,14 @@ trait DatedResourceTrait
     /**
      * @ORM\Column(type="datetime", nullable=false)
      */
-    private ?\DateTime $createdAt = null;
+    private \DateTime $createdAt;
 
     /**
      * @ORM\Column(type="datetime", nullable=false)
      */
-    private ?\DateTime $updatedAt = null;
+    private \DateTime $updatedAt;
 
-    public function getCreatedAt(): ?\DateTime
+    public function getCreatedAt(): \DateTime
     {
         return $this->createdAt;
     }
@@ -29,7 +29,7 @@ trait DatedResourceTrait
         $this->createdAt = new \DateTime();
     }
 
-    public function getUpdatedAt(): ?\DateTime
+    public function getUpdatedAt(): \DateTime
     {
         return $this->updatedAt;
     }

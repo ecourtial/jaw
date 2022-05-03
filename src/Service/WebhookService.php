@@ -10,7 +10,6 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class WebhookService
 {
-    private ?string $callbackUrl;
     private int $totalAttemptCount = 0;
     private int $successCount = 0;
 
@@ -24,15 +23,15 @@ class WebhookService
 
     public function process(): \Generator
     {
-        $this->callbackUrl = $this->configurationRepository->get()->getCallbackUrl();
+        $callbackUrl = $this->configurationRepository->get()->getCallbackUrl();
 
-        if (null === $this->callbackUrl || trim($this->callbackUrl) === '') {
+        if (null === $callbackUrl || trim($callbackUrl) === '') {
             throw new \LogicException('The callback URL has not been defined. Aborting.');
         }
 
         while ($webhook = $this->webhookRepository->getFirstUnprocessed()) {
             try {
-                $this->processWebhook($webhook);
+                $this->processWebhook($callbackUrl, $webhook);
                 $webhook->setProcessedDate(new \DateTime());
                 $result = ['status' => 'success', 'message' => "Webhook with id #{$webhook->getId()} processed with success."];
                 $this->successCount++;
@@ -68,14 +67,13 @@ class WebhookService
         yield ['status' => 'success', 'message' => $this->totalAttemptCount . ' attempts have been made, ' . $this->successCount . ' with success.'];
     }
 
-    private function processWebhook(Webhook $webhook): void
+    private function processWebhook(string $callbackUrl, Webhook $webhook): void
     {
         sleep($this->getThrottleDuration($webhook->getAttemptCount()));
 
         $response = $this->httpClient->request(
             'POST',
-            // @phpstan-ignore-next-line
-            $this->callbackUrl,
+            $callbackUrl,
             [
                 'headers' => [
                     'Accept' => 'application/json',

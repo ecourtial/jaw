@@ -97,8 +97,7 @@ class PostController extends AbstractJawController
     #[Route('/{id<\d+>}/delete', methods: ['POST'], name: 'post_delete')]
     public function delete(Post $post, PostRepository $postRepository): Response
     {
-        // @phpstan-ignore-next-line
-        if (true === $this->isCsrfTokenValid('delete', $this->request->request->get('token'))) {
+        if (true === $this->isCsrfTokenValid('delete', (string)$this->request->request->get('token'))) {
             $this->entityManager->beginTransaction();
             try {
                 $postRepository->delete($post);

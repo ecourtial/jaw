@@ -109,8 +109,7 @@ class CategoryController extends AbstractJawController
     #[Route('/{id<\d+>}/delete', methods: ['POST'], name: 'category_delete')]
     public function delete(Category $category, CategoryRepository $categoryRepository): Response
     {
-        // @phpstan-ignore-next-line
-        if (true === $this->isCsrfTokenValid('delete', $this->request->request->get('token'))) {
+        if (true === $this->isCsrfTokenValid('delete', (string)$this->request->request->get('token'))) {
             $this->entityManager->beginTransaction();
             try {
                 $categoryRepository->delete($category);

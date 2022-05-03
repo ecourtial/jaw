@@ -33,11 +33,14 @@ class UserLoginSubscriber implements EventSubscriberInterface
         return [CheckPassportEvent::class => 'handleCaptcha'];
     }
 
-    public function handleCaptcha(): void
+    public function handleCaptcha(CheckPassportEvent $event): void
     {
-        $this->captchaChecker->handleCaptcha(
-            $this->request->get('g-recaptcha-response', ''),
-            $this->request->getClientIp()
-        );
+        // The Captcha is only applied when you log in to the admin, not the API
+        if (str_starts_with($this->request->getRequestUri(), '/login')) {
+            $this->captchaChecker->handleCaptcha(
+                $this->request->get('g-recaptcha-response', ''),
+                $this->request->getClientIp()
+            );
+        }
     }
 }

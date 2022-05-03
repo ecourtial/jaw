@@ -20,8 +20,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity(fields={"slug"}, message="post.slug_must_be_unique")
  * @ORM\HasLifecycleCallbacks()
  */
-class Post implements ResourceInterface
+class Post implements DatedResourceInterface
 {
+    use DatedResourceTrait;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -61,9 +63,9 @@ class Post implements ResourceInterface
     private ?string $content = null;
 
     /**
-     * @ORM\Column(type="datetime", nullable=false)
+     * @ORM\Column(type="datetime", nullable=true)
      */
-    private \DateTime $publishedAt;
+    protected ?\DateTime $publishedAt = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User")
@@ -97,21 +99,6 @@ class Post implements ResourceInterface
      */
     #[Assert\NotBlank]
     private ?string $language = null;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=false)
-     */
-    private ?\DateTime $createdAt = null;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=false)
-     */
-    private ?\DateTime $updatedAt = null;
-
-    public function __construct()
-    {
-        $this->publishedAt = new \DateTime();
-    }
 
     public function getResourceType(): string
     {
@@ -166,14 +153,32 @@ class Post implements ResourceInterface
         return $this;
     }
 
-    public function getPublishedAt(): \DateTime
+    public function getPublishedAt(): ?\DateTime
     {
         return $this->publishedAt;
     }
 
-    public function setPublishedAt(\DateTime $publishedAt): self
+    /**
+     * @ORM\PreUpdate()
+     * @ORM\PrePersist()
+     */
+    public function setPublishedAt(): self
     {
-        $this->publishedAt = $publishedAt;
+        if ($this->isOnline()) {
+            if (null === $this->publishedAt) { // Because we can force it, for instance when migrating from an old blog.
+                $this->publishedAt = new \DateTime();
+            }
+        } else {
+            $this->publishedAt = null;
+        }
+
+        return $this;
+    }
+
+    // Used for migration from old blog systems.
+    public function forcePublishedAtDate(?\DateTime $date): self
+    {
+        $this->publishedAt = $date;
 
         return $this;
     }
@@ -260,33 +265,5 @@ class Post implements ResourceInterface
         $this->obsolete = $isObsolete;
 
         return $this;
-    }
-
-
-    public function getCreatedAt(): ?\DateTime
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * @ORM\PrePersist()
-     */
-    public function setCreatedAt(): void
-    {
-        $this->createdAt = new \DateTime();
-    }
-
-    public function getUpdatedAt(): ?\DateTime
-    {
-        return $this->updatedAt;
-    }
-
-    /**
-     * @ORM\PreUpdate()
-     * @ORM\PrePersist()
-     */
-    public function setUpdatedAt(): void
-    {
-        $this->updatedAt = new \DateTime();
     }
 }

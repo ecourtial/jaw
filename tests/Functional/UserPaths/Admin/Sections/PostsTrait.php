@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\UserPaths\Subsets\Sections;
+namespace App\Tests\Functional\UserPaths\Admin\Sections;
 
 use App\Entity\Category;
 use App\Entity\Post;
@@ -15,7 +15,7 @@ use App\Tests\Functional\TestingTools\UrlInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\DomCrawler\Crawler;
 
-Trait PostsTrait
+trait PostsTrait
 {
     private ?Post $newPost;
 
@@ -120,6 +120,9 @@ Trait PostsTrait
         $client->submit($form);
 
         static::assertEquals(200, $client->getResponse()->getStatusCode());
+
+        // Reload the post
+        $this->newPost = self::getContainer()->get('App\Repository\PostRepository')->find($this->getIdFromEditPage($crawler));
 
         $client->followRedirects(false);
     }

@@ -6,13 +6,30 @@ use App\Entity\Category;
 use App\Entity\Post;
 use App\Entity\Webhook;
 use App\Event\ResourceEvent;
-use App\Search\SearchResult;
+use App\Repository\Traits\ApiFiltersTools;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class PostRepository extends ServiceEntityRepository
+class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterResultInterface, ApiMultipleFiltersResultInterface
 {
+    use ApiFiltersTools;
+
+    private const AVAILABLE_COLUMN_FILTERS = [
+        'id' => ['source' => 'column',],
+        'author' => ['source' => 'alias', 'columnName' => 'author_id', ],
+        'category' => ['source' => 'alias', 'columnName' => 'category_id',],
+        'title' => ['source' => 'column',],
+        'slug' => ['source' => 'column',],
+        'publishedAt' => ['source' => 'alias', 'columnName' => 'published_at',],
+        'language' => ['source' => 'column', ],
+        'online' => ['source' => 'column', ],
+        'topPost' => ['source' => 'column', ],
+        'obsolete' => ['source' => 'column', ],
+        'createdAt' => ['source' => 'alias', 'columnName' => 'created_at',],
+        'updatedAt' => ['source' => 'alias', 'columnName' => 'updated_at',],
+    ];
+
     public function __construct(ManagerRegistry $registry, private readonly EventDispatcherInterface $eventDispatcher)
     {
         parent::__construct($registry, Post::class);
@@ -33,22 +50,43 @@ class PostRepository extends ServiceEntityRepository
         $this->getEntityManager()->flush();
     }
 
-    /** @return \App\Search\SearchResult[] */
-    public function search(string $keywords, int $limit): array
+    /**
+     * For internal (Admin) search only.
+     *
+     * @return array<string, mixed>
+     */
+    public function search(string $keywords, int $limit = 30, int $page = 1): array
     {
-        $qb = $this->_em->createQueryBuilder();
+        // Unfortunately, the Paginator does not work with two FROM, so we have to do it manually.
+        $totalResultCount =  $this->getEntityManager()->getConnection()->executeQuery(
+            'SELECT COUNT(*) as count FROM posts'
+            . ' WHERE title LIKE :request'
+            . ' OR summary LIKE :request'
+            . ' OR content LIKE :request',
+            ['request' => "%$keywords%"]
+        )
+        ->fetchAssociative()['count'];
 
-        $qb->select('m.id, m.title, m.slug, m.publishedAt, c.id as categId, c.title as categTitle, c.slug as categSlug');
+        // Get Results
+        $qb = $this->getEntityManager()->createQueryBuilder();
 
-        $qb->from(Post::class, 'm');
+        $qb->select('p.id, p.title, p.slug, p.createdAt, c.id as categoryId, c.title as categoryTitle');
+
+        $qb->from(Post::class, 'p');
         $qb->from(Category::class, 'c');
 
-        $qb->where('m.title' . ' LIKE :request');
-        $qb->orWhere('m.summary' . ' LIKE :request');
-        $qb->orWhere('m.content' . ' LIKE :request');
-        $qb->andWhere('m.category = c.id');
-        $qb->orderBy('m.publishedAt', 'DESC');
+        $qb->where('p.title' . ' LIKE :request');
+        $qb->orWhere('p.summary' . ' LIKE :request');
+        $qb->orWhere('p.content' . ' LIKE :request');
+        $qb->andWhere('p.category = c.id');
+        $qb->orderBy('p.createdAt', 'DESC');
+
+        $page = ($page < 1) ? 1 : $page;
+        $offset = ($page * $limit) - $limit;
+        $totalPageCount = (int)ceil($totalResultCount/$limit);
         $qb->setMaxResults($limit);
+        $qb->setFirstResult($offset);
+
         $qb->setParameter('request', "%$keywords%");
 
         $result = $qb->getQuery()->getResult();
@@ -57,20 +95,84 @@ class PostRepository extends ServiceEntityRepository
             $result = [];
         }
 
-        $processedResult = [];
+        $processedResult = [
+            'resultCount' => \count($result),
+            'totalResultCount' => $totalResultCount,
+            'page' => $page,
+            'totalPageCount' => $totalPageCount,
+            'results' => [],
+        ];
 
         foreach ($result as $entry) {
-            $processedResult[] = new SearchResult(
-                $entry['id'],
-                $entry['title'],
-                $entry['slug'],
-                $entry['publishedAt'],
-                $entry['categId'],
-                $entry['categTitle'],
-                $entry['categSlug'],
-            );
+            $processedResult['results'][] = [
+                'id' => $entry['id'],
+                'title' => $entry['title'],
+                'createdAt' => $entry['createdAt'],
+                'categoryId' => $entry['categoryId'],
+                'categoryTitle' => $entry['categoryTitle'],
+            ];
         }
 
         return $processedResult;
+    }
+
+    // Unlike the 'getByUniqueApiFilter'method, unknown filters are ignored.
+    /** @return array<string, mixed> */
+    public function getByMultipleApiFilters(array $params): array
+    {
+        [$query, $queryParams] = $this->initQueryWithMultipleFilters($params);
+        $this->addKeywordsFilters($query, $queryParams, $params);
+
+        return $this->executeQueryWithMultipleFilters('posts', $params, $query, $queryParams);
+    }
+
+    private function getMainSelectQuery(): string
+    {
+        return 'SELECT id, title, summary, created_at, updated_at, published_at, slug, online, top_post, language, '
+            . 'obsolete, category_id, author_id, content FROM posts WHERE id IS NOT NULL ';
+    }
+
+    /**
+     * @param array<string, mixed> $result
+     * @return array<string, mixed>
+     */
+    private function formatForApiResponse(array $result): array
+    {
+        // Date to the proper format
+        $result['created_at'] = (new \DateTime($result['created_at']))->format(\DateTimeInterface::ATOM);
+        $result['updated_at'] = (new \DateTime($result['updated_at']))->format(\DateTimeInterface::ATOM);
+        $result['published_at'] =  $result['published_at'] === null ? null : (new \DateTime($result['published_at']))->format(\DateTimeInterface::ATOM);
+
+        // Respect API conventions with lower camelCase
+        $result['createdAt'] = $result['created_at'];
+        unset($result['created_at']);
+        $result['updatedAt'] = $result['updated_at'];
+        unset($result['updated_at']);
+        $result['publishedAt'] = $result['published_at'];
+        unset($result['published_at']);
+        $result['topPost'] = $result['top_post'];
+        unset($result['top_post']);
+        $result['categoryId'] = $result['category_id'];
+        unset($result['category_id']);
+        $result['authorId'] = $result['author_id'];
+        unset($result['author_id']);
+
+        return $result;
+    }
+
+    /**
+     * @param array<string, mixed> $queryParams
+     * @param array<string, mixed> $params
+     */
+    private function addKeywordsFilters(string &$query, array &$queryParams, array $params): void
+    {
+        // Filter on keywords
+        if (\array_key_exists('keywords', $params)) {
+            $query .= "AND (title LIKE :request ";
+            $query .= "OR summary LIKE :request ";
+            $query .= "OR title LIKE :request) ";
+
+            $queryParams['request'] = '%' . $params['keywords'] . '%';
+        }
     }
 }

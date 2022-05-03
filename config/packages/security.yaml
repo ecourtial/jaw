@@ -14,13 +14,19 @@ security:
         # To load users from somewhere else: https://symfony.com/doc/current/security/user_provider.html#creating-a-custom-user-provider
         database_users:
             entity: { class: App\Entity\User, property: username }
-
+        api_users:
+            entity: { class: App\Entity\User, property: token }
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
-            # this firewall does not have a 'pattern' option because it applies to all URLs
+        api:
+            lazy: true
+            provider: api_users
+            pattern: ^/api
+            custom_authenticators:
+                - App\Security\ApiKeyAuthenticator
+        admin:
             lazy: true
             provider: database_users
 
@@ -61,6 +67,7 @@ security:
         # this is a catch-all for the admin area
         # additional security lives in the controllers
         - { path: '^/admin', roles: ROLE_USER }
+        - { path: '^/api', roles: ROLE_USER }
 
     role_hierarchy:
         ROLE_ADMIN: ROLE_USER

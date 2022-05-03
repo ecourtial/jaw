@@ -19,8 +19,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity(fields={"slug"}, message="category.slug_must_be_unique")
  * @ORM\HasLifecycleCallbacks()
  */
-class Category implements ResourceInterface
+class Category implements DatedResourceInterface
 {
+    use DatedResourceTrait;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -57,19 +59,9 @@ class Category implements ResourceInterface
      *      orphanRemoval=true,
      *      cascade={"persist"}
      * )
-     * @ORM\OrderBy({"publishedAt": "DESC"})
+     * @ORM\OrderBy({"createdAt": "DESC"})
      */
     private Collection $posts;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=false)
-     */
-    private ?\DateTime $createdAt = null;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=false)
-     */
-    private ?\DateTime $updatedAt = null;
 
     public function __construct()
     {
@@ -149,32 +141,5 @@ class Category implements ResourceInterface
         $this->summary = $summary;
 
         return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTime
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * @ORM\PrePersist()
-     */
-    public function setCreatedAt(): void
-    {
-        $this->createdAt = new \DateTime();
-    }
-
-    public function getUpdatedAt(): ?\DateTime
-    {
-        return $this->updatedAt;
-    }
-
-    /**
-     * @ORM\PreUpdate()
-     * @ORM\PrePersist()
-     */
-    public function setUpdatedAt(): void
-    {
-        $this->updatedAt  = new \DateTime();
     }
 }

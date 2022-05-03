@@ -6,18 +6,35 @@ use App\Entity\Category;
 use App\Entity\Webhook;
 use App\Event\ResourceEvent;
 use App\Exception\Category\CategoryNotEmptyException;
+use App\Repository\Traits\ApiFiltersTools;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class CategoryRepository extends ServiceEntityRepository
+class CategoryRepository extends ServiceEntityRepository implements ApiSimpleFilterResultInterface, ApiMultipleFiltersResultInterface
 {
+    use ApiFiltersTools;
+
+    private const AVAILABLE_COLUMN_FILTERS = [
+        'id' => ['source' => 'column',],
+        'title' => ['source' => 'column',],
+        'summary' => ['source' => 'column',],
+        'createdAt' => ['source' => 'alias', 'columnName' => 'created_at',],
+        'updatedAt' => ['source' => 'alias', 'columnName' => 'updated_at',],
+        'slug' => ['source' => 'column',],
+        'postCount' => ['source' => 'computed'],
+    ];
+
     public function __construct(ManagerRegistry $registry, private readonly EventDispatcherInterface $eventDispatcher)
     {
         parent::__construct($registry, Category::class);
     }
 
-    /** @return \App\Entity\Category[] */
+    /**
+     * Use for back-end only.
+     *
+     * @return \App\Entity\Category[]
+     */
     public function listAll(): array
     {
         $qb = $this->_em->createQueryBuilder();
@@ -53,5 +70,39 @@ class CategoryRepository extends ServiceEntityRepository
         }
 
         throw new CategoryNotEmptyException();
+    }
+
+    /** @return array<string, mixed> */
+    public function getByMultipleApiFilters(array $params): array
+    {
+        [$query, $queryParams] = $this->initQueryWithMultipleFilters($params);
+
+        return $this->executeQueryWithMultipleFilters('categories', $params, $query, $queryParams);
+    }
+
+    private function getMainSelectQuery(): string
+    {
+        return 'SELECT c.id, c.title, c.summary, c.created_at, c.updated_at, c.slug, p.postCount AS postCount '
+            . 'FROM categories AS c, '
+            . '(SELECT COUNT(*) AS postCount, categories.id as categId '
+            . '   FROM posts, categories '
+            . '   WHERE posts.category_id = categories.id '
+            . '   GROUP BY categories.id) AS p '
+            . 'WHERE c.id = p.categId ';
+    }
+
+    /**
+     * @param array<string, mixed> $result
+     * @return array<string, mixed>
+     */
+    private function formatForApiResponse(array $result): array
+    {
+        $result['createdAt'] = (new \DateTime($result['created_at']))->format(\DateTimeInterface::ATOM);
+        $result['updatedAt'] = (new \DateTime($result['created_at']))->format(\DateTimeInterface::ATOM);
+
+        unset($result['created_at']);
+        unset($result['updated_at']);
+
+        return $result;
     }
 }

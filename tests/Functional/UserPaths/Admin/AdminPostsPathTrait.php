@@ -7,12 +7,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\UserPaths\Subsets;
+namespace App\Tests\Functional\UserPaths\Admin;
 
-use App\Tests\Functional\UserPaths\Subsets\Sections\PostsTrait;
+use App\Tests\Functional\UserPaths\Admin\Sections\PostsTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
-Trait PostsPathTrait
+trait AdminPostsPathTrait
 {
     use PostsTrait;
 

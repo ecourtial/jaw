@@ -2,7 +2,7 @@
 
 namespace App\Event;
 
-use App\Entity\ResourceInterface;
+use App\Entity\DatedResourceInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
@@ -12,11 +12,11 @@ class ResourceEvent extends Event
 {
     public const NAME = 'resource.updated';
 
-    public function __construct(private readonly ResourceInterface $resource, private readonly string $actionType)
+    public function __construct(private readonly DatedResourceInterface $resource, private readonly string $actionType)
     {
     }
 
-    public function getResource(): ResourceInterface
+    public function getResource(): DatedResourceInterface
     {
         return $this->resource;
     }

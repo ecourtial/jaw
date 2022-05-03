@@ -1,6 +1,6 @@
 # Webhooks
 
-Webhooks entries are stored in the _webhooks_ table each time a resource (configuration, category or post) is edited (creation, deletion, modification)
+Webhooks entries are stored in the _webhooks_ table each time a resource (user, configuration, category or post) is edited (creation, deletion, modification)
 .
 
 A new webhook is inserted in this table only if there is no existing unprocessed occurrence.
@@ -30,10 +30,10 @@ The payload of each webhook is done in REST, with the JSON format.
 
 The content of the payload is as follows:
 
-| Key | Contains                                                  |
-|----|-----------------------------------------------------------|
-| resourceType   | The resource type (_configuration_, _category_ of _post_) |
-| resourceId   | The resource id, for instance: 4                          |
-| actionType   | The action type (_created_, _edited_, _deleted_)          |
-| currentAttemptCount   | The current attempt count                                 |
-| lastAttemptDate   | The last attempt date                                     |
+| Key | Contains                                                          |
+|----|-------------------------------------------------------------------|
+| resourceType   | The resource type (_user_, _configuration_, _category_ or _post_) |
+| resourceId   | The resource id, for instance: 4                                  |
+| actionType   | The action type (_created_, _edited_, _deleted_)                  |
+| currentAttemptCount   | The current attempt count                                         |
+| lastAttemptDate   | The last attempt date                                             |

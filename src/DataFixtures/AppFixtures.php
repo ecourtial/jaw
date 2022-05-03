@@ -53,7 +53,7 @@ class AppFixtures extends Fixture
                 ->addPost(
                     (new Post())
                     ->setTitle('My first post')
-                    ->setSlug('my_first_post')
+                    ->setSlug('my-first-post')
                     ->setSummary('The summary 1 keyword')
                     ->setContent('Then content 1')
                     ->setAuthor($regularUser)
@@ -69,7 +69,7 @@ class AppFixtures extends Fixture
                 ->addPost(
                     (new Post())
                         ->setTitle('My second post')
-                        ->setSlug('my_second_post')
+                        ->setSlug('my-second-post')
                         ->setSummary('The summary 2')
                         ->setContent('Then content 2')
                         ->setAuthor($regularUser)
@@ -80,7 +80,7 @@ class AppFixtures extends Fixture
                 ->addPost(
                     (new Post())
                         ->setTitle('My third post keyword')
-                        ->setSlug('my_third_post')
+                        ->setSlug('my-third-post')
                         ->setSummary('The summary 3')
                         ->setContent('Then content 3')
                         ->setAuthor($regularUser)

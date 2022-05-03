@@ -54,7 +54,6 @@ class PostRepositoryTest extends KernelTestCase
             ->setSummary('The Summary')
             ->setSlug('the-slug')
             ->setObsolete(false)
-            ->setPublishedAt(new \DateTime())
             ->setOnline(true)
             ->setTopPost(true)
             ->setContent('The content')
@@ -65,7 +64,12 @@ class PostRepositoryTest extends KernelTestCase
         $this->postRepository->save($post);
 
         static::assertTrue(is_int($post->getId()));
-        static::assertCount(1, $this->webhookRepository->findBy(['resourceId' => $post->getId(), 'action' => Webhook::RESOURCE_ACTION_CREATION]));
+        static::assertNotNull(is_int($post->getPublishedAt()));
+        static::assertCount(1, $this->webhookRepository->findBy([
+            'resourceId' => $post->getId(),
+            'action' => Webhook::RESOURCE_ACTION_CREATION,
+            'resourceType' => $post->getResourceType()
+        ]));
 
         // Delete
 
@@ -85,9 +89,105 @@ class PostRepositoryTest extends KernelTestCase
 
     public function testSearch(): void
     {
-        $posts = $this->postRepository->search('keyword', 10);
-        static::assertCount(2, $posts);
-        static::assertEquals(1, $posts[0]->id);
-        static::assertEquals(3, $posts[1]->id);
+        $posts = $this->postRepository->search('keyword', 2, 1);
+
+        static::assertEquals(2, $posts['resultCount']);
+        static::assertEquals(2, $posts['totalResultCount']);
+        static::assertEquals(1, $posts['page']);
+        static::assertEquals(1, $posts['totalPageCount']);
+        static::assertCount(2, $posts['results']);
+        static::assertEquals(1, $posts['results'][0]['id']);
+        static::assertEquals(3, $posts['results'][1]['id']);
+
+        $posts = $this->postRepository->search('keyword', 1, 2);
+
+        static::assertEquals(1, $posts['resultCount']);
+        static::assertEquals(2, $posts['totalResultCount']);
+        static::assertEquals(2, $posts['page']);
+        static::assertEquals(2, $posts['totalPageCount']);
+        static::assertCount(1, $posts['results']);
+        static::assertEquals(3, $posts['results'][0]['id']);
+    }
+
+    public function testGetByUniqueApiFilter(): void
+    {
+        $post = $this->postRepository->getByUniqueApiFilter('slug', 'my-second-post');
+        static::assertEquals('my-second-post', $post['slug']);
+
+        $post = $this->postRepository->getByUniqueApiFilter('id', 1);
+        static::assertEquals('my-first-post', $post['slug']);
+
+        static::expectExceptionMessage('Unsupported filter: foo');
+        $this->postRepository->getByUniqueApiFilter('foo', 1);
+    }
+
+    public function testGetByMultipleApiFilters(): void
+    {
+        $params = [
+            'keywords' => 'keyword',
+            'content' => 1, // Must be ignored
+            'page' => 2,
+            'limit' => 1,
+            'orderByField' => [
+                'title' => 'DESC'
+            ]
+        ];
+
+        $posts = $this->postRepository->getByMultipleApiFilters($params);
+
+        static::assertEquals(1, $posts['resultCount']);
+        static::assertEquals(2, $posts['totalResultCount']);
+        static::assertEquals(2, $posts['page']);
+        static::assertEquals(2, $posts['totalPageCount']);
+        static::assertCount(1, $posts['results']);
+        static::assertEquals(1, $posts['results'][0]['id']);
+
+        $params = [
+            'keywords' => 'keyword',
+            'content' => 1, // Must be ignored
+            'category' => 2,
+            'orderByField' => [
+                'title' => 'DESC'
+            ]
+        ];
+
+        $posts = $this->postRepository->getByMultipleApiFilters($params);
+
+        static::assertEquals(1, $posts['resultCount']);
+        static::assertEquals(1, $posts['totalResultCount']);
+        static::assertEquals(1, $posts['page']);
+        static::assertEquals(1, $posts['totalPageCount']);
+        static::assertCount(1, $posts['results']);
+        static::assertEquals(3, $posts['results'][0]['id']);
+
+        $params = [
+            'keywords' => 'keyword',
+            'content' => 1, // Must be ignored
+            'orderByField' => [
+                'title' => 'DESC'
+            ]
+        ];
+
+        $posts = $this->postRepository->getByMultipleApiFilters($params);
+
+        static::assertEquals(2, $posts['resultCount']);
+        static::assertEquals(2, $posts['totalResultCount']);
+        static::assertEquals(1, $posts['page']);
+        static::assertEquals(1, $posts['totalPageCount']);
+        static::assertCount(2, $posts['results']);
+        static::assertEquals(3, $posts['results'][0]['id']);
+        static::assertEquals(1, $posts['results'][1]['id']);
+
+        $params = [
+            'category' => 99
+        ];
+
+        $posts = $this->postRepository->getByMultipleApiFilters($params);
+
+        static::assertEquals(0, $posts['resultCount']);
+        static::assertEquals(0, $posts['totalResultCount']);
+        static::assertEquals(1, $posts['page']);
+        static::assertEquals(1, $posts['totalPageCount']);
+        static::assertCount(0, $posts['results']);
     }
 }

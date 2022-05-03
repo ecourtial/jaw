@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Controller\AbstractJawController;
 use App\Entity\Post;
 use App\Form\PostType;
 use App\Repository\PostRepository;
@@ -18,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/admin/post')]
-class PostController extends AbstractAdminController
+class PostController extends AbstractJawController
 {
     #[Route('/add', methods: ['GET', 'POST'], name: 'post_add')]
     public function create(PostRepository $postRepository): Response
@@ -96,8 +97,7 @@ class PostController extends AbstractAdminController
     #[Route('/{id<\d+>}/delete', methods: ['POST'], name: 'post_delete')]
     public function delete(Post $post, PostRepository $postRepository): Response
     {
-        // @phpstan-ignore-next-line
-        if (true === $this->isCsrfTokenValid('delete', $this->request->request->get('token'))) {
+        if (true === $this->isCsrfTokenValid('delete', (string)$this->request->request->get('token'))) {
             $this->entityManager->beginTransaction();
             try {
                 $postRepository->delete($post);

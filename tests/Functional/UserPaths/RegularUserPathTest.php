@@ -2,22 +2,34 @@
 
 namespace App\Tests\Functional\UserPaths;
 
-use App\Tests\Functional\UserPaths\Subsets\CategoriesPathTrait;
-use App\Tests\Functional\UserPaths\Subsets\PostsPathTrait;
-use App\Tests\Functional\UserPaths\Subsets\SearchPathTrait;
-use App\Tests\Functional\UserPaths\Subsets\UserPathCaseTrait;
+use App\Tests\Functional\UserPaths\Admin\AdminCategoriesPathTrait;
+use App\Tests\Functional\UserPaths\Admin\AdminPostsPathTrait;
+use App\Tests\Functional\UserPaths\Admin\AdminSearchPathTrait;
+use App\Tests\Functional\UserPaths\Admin\AdminUserPathCaseTrait;
+use App\Tests\Functional\UserPaths\Api\ApiPathTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class RegularUserPathTest extends WebTestCase
 {
-    use UserPathCaseTrait;
-    use CategoriesPathTrait;
-    use PostsPathTrait;
-    use SearchPathTrait;
+    use AdminUserPathCaseTrait;
+    use AdminCategoriesPathTrait;
+    use AdminPostsPathTrait;
+    use AdminSearchPathTrait;
+    use ApiPathTrait;
 
     public function testRegularUserPath(): void
     {
         $client = static::createClient();
+
+        /*************************************/
+        /**************** API ****************/
+        /*************************************/
+
+        $this->checkApiRoutes($client);
+
+        /*************************************/
+        /************ SITE ADMIN *************/
+        /*************************************/
 
         // Security basics
         $this->checkStandardSecurity(

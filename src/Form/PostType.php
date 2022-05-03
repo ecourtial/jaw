@@ -126,11 +126,10 @@ class PostType extends AbstractType
                     $post->setSlug($this->slugger->slug($postTitle)->lower());
                 }
 
-                $post->setPublishedAt(new \DateTime());
-
+                /** @var \App\Entity\User $user */
+                $user = $this->security->getUser();
                 $post->setAuthor(
-                    // @phpstan-ignore-next-line
-                    $this->userRepository->findByUsername($this->security->getUser()->getUserIdentifier())[0]
+                    $this->userRepository->findByUsername($user->getUserIdentifier())
                 );
             })
         ;

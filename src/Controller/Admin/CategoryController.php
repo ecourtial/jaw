@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Controller\AbstractJawController;
 use App\Entity\Category;
-use App\Entity\Webhook;
 use App\Exception\Category\CategoryNotEmptyException;
 use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/admin/category')]
-class CategoryController extends AbstractAdminController
+class CategoryController extends AbstractJawController
 {
     #[Route('', name: 'category_list')]
     public function getList(CategoryRepository $categoryRepository): Response
@@ -109,8 +109,7 @@ class CategoryController extends AbstractAdminController
     #[Route('/{id<\d+>}/delete', methods: ['POST'], name: 'category_delete')]
     public function delete(Category $category, CategoryRepository $categoryRepository): Response
     {
-        // @phpstan-ignore-next-line
-        if (true === $this->isCsrfTokenValid('delete', $this->request->request->get('token'))) {
+        if (true === $this->isCsrfTokenValid('delete', (string)$this->request->request->get('token'))) {
             $this->entityManager->beginTransaction();
             try {
                 $categoryRepository->delete($category);

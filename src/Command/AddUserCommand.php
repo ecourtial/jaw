@@ -54,10 +54,9 @@ class AddUserCommand extends Command
     private SymfonyStyle $io;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
         private UserPasswordHasherInterface $passwordHasher,
         private UserValidator $validator,
-        private UserRepository $users
+        private UserRepository $userRepository
     ) {
         parent::__construct();
     }
@@ -114,8 +113,7 @@ class AddUserCommand extends Command
         $user->setPassword($hashedPassword);
         $user->setToken(sha1(\random_bytes(10)));
 
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $this->userRepository->save($user);
 
         $this->io->success(sprintf('%s was successfully created: %s (%s)', $isAdmin ? 'Administrator user' : 'User', $user->getUsername(), $user->getEmail()));
 
@@ -125,7 +123,7 @@ class AddUserCommand extends Command
     private function validateUserData(string $username, string $plainPassword, string $email, string $fullName): void
     {
         // first check if a user with the same username already exists.
-        $existingUser = $this->users->findOneBy(['username' => $username]);
+        $existingUser = $this->userRepository->findOneBy(['username' => $username]);
 
         if (null !== $existingUser) {
             throw new RuntimeException(sprintf('There is already a user registered with the "%s" username.', $username));
@@ -138,7 +136,7 @@ class AddUserCommand extends Command
         $this->validator->validateFullName($fullName);
 
         // check if a user with the same email already exists.
-        $existingEmail = $this->users->findOneBy(['email' => $email]);
+        $existingEmail = $this->userRepository->findOneBy(['email' => $email]);
 
         if (null !== $existingEmail) {
             throw new RuntimeException(sprintf('There is already a user registered with the "%s" email.', $email));

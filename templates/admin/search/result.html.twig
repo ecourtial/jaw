@@ -1,17 +1,17 @@
 {% extends 'admin/base.html.twig' %}
 
 {% block screenTitle %}
-    <h1>{{ screenTitle }} ({{result|length}})</h1>
+    <h1>{{ screenTitle }} ({{result['resultCount']}})</h1>
 {% endblock %}
 
 {% block body %}
     {% if result|length != 0 %}
         <p><strong>Posts:</strong></p>
         <ul>
-            {% for searchResult in result %}
-                <li id="post_{{ searchResult.id }}">{{ searchResult.title }} ({{ 'category.label'|trans }}:
-                    <i><a id="details_categ_{{ searchResult.categoryId }}" href="{{ path('category_get', {id: searchResult.categoryId}) }}">{{searchResult.categoryTitle}}</a></i>)
-                    - <a id="edit_post_{{ searchResult.id }}" href="{{ path('post_edit', {id: searchResult.id}) }}">{{ 'post.edit'|trans }}</a></li>
+            {% for key, searchResult in result.results %}
+                <li id="post_{{ searchResult['id'] }}">{{ searchResult.title }} ({{ 'category.label'|trans }}:
+                    <i><a id="details_categ_{{ searchResult['categoryId'] }}" href="{{ path('category_get', {id: searchResult['categoryId']}) }}">{{searchResult['categoryTitle']}}</a></i>)
+                    - <a id="edit_post_{{ searchResult['id'] }}" href="{{ path('post_edit', {id: searchResult['id']}) }}">{{ 'post.edit'|trans }}</a></li>
             {% endfor %}
         </ul>
     {% endif %}

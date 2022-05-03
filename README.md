@@ -31,6 +31,7 @@ Admin fixture:
 John
 somePassword123456
 
+API : 'X-AUTH-TOKEN'
 
 JohntheRegular
 somePassword123456aa

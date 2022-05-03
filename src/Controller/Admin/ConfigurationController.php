@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Controller\AbstractJawController;
 use App\Form\ConfigurationType;
 use App\Repository\ConfigurationRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,7 +17,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ConfigurationController extends AbstractAdminController
+class ConfigurationController extends AbstractJawController
 {
     #[Route('/admin/configuration', methods: ['GET', 'POST'], name: 'configuration')]
     #[IsGranted('ROLE_ADMIN')]

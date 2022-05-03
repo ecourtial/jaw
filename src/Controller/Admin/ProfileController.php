@@ -9,25 +9,37 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Controller\AbstractJawController;
 use App\Form\UserType;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LogLevel;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ProfileController extends AbstractAdminController
+class ProfileController extends AbstractJawController
 {
     #[Route('/admin/profile', methods: ['GET', 'POST'], name: 'profile')]
-    public function __invoke(EntityManagerInterface $entityManager): Response
+    public function __invoke(UserRepository $userRepository): Response
     {
+        /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            $this->entityManager->beginTransaction();
+            try {
+                $userRepository->save($user);
+                $this->entityManager->commit();
 
-            $this->addFlash('success', 'user.updated_successfully');
+                $this->addFlash('success', 'user.updated_successfully');
+            } catch (\Throwable $exception) {
+                $this->entityManager->rollback();
+                $this->logger->log(LogLevel::ERROR, 'Impossible to update the user.', ['exception' => $exception]);
+                $this->addFlash('alert', 'generic_error_message');
+            }
 
             return $this->redirectToRoute('profile');
         }

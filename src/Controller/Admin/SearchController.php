@@ -9,14 +9,15 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Search\SearchEngine;
+use App\Controller\AbstractJawController;
+use App\Repository\PostRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class SearchController extends AbstractAdminController
+class SearchController extends AbstractJawController
 {
     #[Route('/admin/search', methods: ['POST'], name: 'search')]
-    public function __invoke(SearchEngine $searchEngine): Response
+    public function __invoke(PostRepository $postRepository): Response
     {
         $query = trim($this->request->get('query', ''));
 
@@ -28,7 +29,7 @@ class SearchController extends AbstractAdminController
             'admin/search/result.html.twig',
             $this->translator->trans('search.result_title'),
             $this->translator->trans('search.result_title'),
-            ['result' => $searchEngine->search($query)]
+            ['result' => $postRepository->search($query)]
         );
     }
 }

@@ -35,7 +35,7 @@ class UserController extends AbstractController
             'id' => $user->getId(),
             'createdAt' => $user->getCreatedAt()->format(\DateTimeInterface::ATOM),
             'updatedAt' => $user->getUpdatedAt()->format(\DateTimeInterface::ATOM),
-            'username' => $user->getUsername(),
+            'userName' => $user->getUsername(),
             'fullName' => $user->getFullName(),
             'email' => $user->getEmail(),
             'token' => $user->getToken(),

@@ -23,7 +23,13 @@ class WebhookService
 
     public function process(): \Generator
     {
-        $callbackUrl = $this->configurationRepository->get()->getCallbackUrl();
+        $configuration = $this->configurationRepository->get();
+
+        if ($configuration->getWebhooksEnabled() === false) {
+            throw new \LogicException('Webhooks are disabled. Aborting.');
+        }
+
+        $callbackUrl = $configuration->getCallbackUrl();
 
         if (null === $callbackUrl || trim($callbackUrl) === '') {
             throw new \LogicException('The callback URL has not been defined. Aborting.');

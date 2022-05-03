@@ -1,14 +1,5 @@
 <?php
 
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace App\Form;
 
 use App\Entity\Category;
@@ -30,9 +21,9 @@ class PostType extends AbstractType
 {
     // Form types are services, so you can inject other services in them if needed
     public function __construct(
-        private SluggerInterface $slugger,
-        private Security $security,
-        private UserRepository $userRepository
+        private readonly SluggerInterface $slugger,
+        private readonly Security $security,
+        private readonly UserRepository $userRepository
     ) {
     }
 

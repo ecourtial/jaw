@@ -49,6 +49,7 @@ trait ApiConfigurationTrait
             'title' => $configuration->getBlogTitle(),
             'description' => $configuration->getBlogDescription(),
             'callbackUrl' => $configuration->getCallbackUrl(),
+            'webhooksEnabled' => $configuration->getWebhooksEnabled(),
             'createdAt' => $configuration->getCreatedAt()->format(\DateTimeInterface::ATOM),
             'updatedAt' => $configuration->getUpdatedAt()->format(\DateTimeInterface::ATOM),
             'copyrightMessage' => $configuration->getCopyrightMessage(),

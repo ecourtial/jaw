@@ -31,6 +31,8 @@ trait ConfigurationScreenTrait
         string $expectedLinkedinUserName,
         string $expectedGithubUserName,
         string $expectedGoogleAnalyticsId,
+        string $expectedCallbackUrl,
+        bool $expectedWebhooksFeatureStatus,
     ): void {
         $crawler = $client->request('GET', UrlInterface::CONFIGURATION_SCREEN_URL);
         $this->assertPageTitleContains('MyBlog Admin - Edit configuration - JAW v1.0');
@@ -45,6 +47,8 @@ trait ConfigurationScreenTrait
         static::assertEquals($expectedLinkedinUserName, $values['configuration[linkedinUsername]']);
         static::assertEquals($expectedGithubUserName, $values['configuration[githubUsername]']);
         static::assertEquals($expectedGoogleAnalyticsId, $values['configuration[googleAnalyticsId]']);
+        static::assertEquals($expectedCallbackUrl, $values['configuration[callbackUrl]']);
+        static::assertEquals($expectedWebhooksFeatureStatus, (bool)$values['configuration[webhooksEnabled]']);
     }
 
     protected function gotoConfigurationScreenAndUpdateData(
@@ -57,6 +61,8 @@ trait ConfigurationScreenTrait
         string $newLinkedinUserName,
         string $newGithubUserName,
         string $newGoogleAnalyticsId,
+        string $newCallbackUrl,
+        int $newWebhooksFeatureStatus,
     ): void {
         $client->followRedirects();
 
@@ -72,6 +78,8 @@ trait ConfigurationScreenTrait
             'configuration[githubUsername]' => $newGithubUserName,
             'configuration[googleAnalyticsId]' => $newGoogleAnalyticsId,
             'configuration[currentPassword]' => $userPassword,
+            'configuration[callbackUrl]' => $newCallbackUrl,
+            'configuration[webhooksEnabled]' => $newWebhooksFeatureStatus,
         ]);
 
         $client->submit($form);

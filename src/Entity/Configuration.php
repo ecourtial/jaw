@@ -71,6 +71,11 @@ class Configuration implements DatedResourceInterface
     private ?string $googleAnalyticsId;
 
     /**
+     * @ORM\Column(type="boolean", nullable=false, options={"default": false})
+     */
+    private bool $webhooksEnabled = false;
+
+    /**
      * @var string
      *
      * @ORM\Column(type="text", nullable=true)
@@ -188,6 +193,18 @@ class Configuration implements DatedResourceInterface
     public function setCallbackUrl(?string $callbackUrl): self
     {
         $this->callbackUrl = $callbackUrl;
+
+        return $this;
+    }
+
+    public function getWebhooksEnabled(): bool
+    {
+        return $this->webhooksEnabled;
+    }
+
+    public function setWebhooksEnabled(bool $status): self
+    {
+        $this->webhooksEnabled = $status;
 
         return $this;
     }

@@ -1,0 +1,562 @@
+openapi: 3.0.3
+info:
+  title: The JAW API
+  description: The JAW API reference file.
+  version: 1.0.0
+servers:
+  - url: '/api/v1'
+components:
+  parameters:
+    userId:
+      description: 'The user identifier number'
+      in: path
+      name: userId
+      required: true
+      schema:
+        type: integer
+  securitySchemes:
+    apiKey:
+      description: |
+        All the endpoints require to be authenticated as a user of the Blog administration.
+        For that you will need to provide a `Authorization` header with a valid **user API token**:
+        ```
+        X-AUTH-TOKEN: user_api_key_here
+        ```
+      in: header
+      name: X-AUTH-TOKEN
+      type: apiKey
+  schemas:
+    Configuration:
+      properties:
+          title:
+            description: 'The title of the blog.'
+            example: My awesome blog.
+            type: string
+          description:
+            description: 'The summary of the blog.'
+            example: MyBlog
+            type: string
+          callbackUrl:
+            description: 'The callback URL for the webhooks, if defined'
+            type: string
+            format: uri
+          webhooksEnabled:
+            description: 'Are the webhooks enabled or not'
+            type: boolean
+          createdAt:
+            description: 'Date of the creation of the configuration.'
+            example: 2022-04-28T14:03:09+00:00
+            type: string
+            format: date
+          updatedAt:
+            description: 'Date of the last update of the configuration.'
+            example: 2022-04-28T14:03:09+00:00
+            type: string
+            format: date
+          copyrightMessage:
+            description: 'The copyright message of the blog (can be use for anything else).'
+            example: Some message
+            type: string
+          copyrightExtraMessage:
+            description: 'The copyright extra message of the blog (can be use for anything else).'
+            example:
+              - null
+              - Some extra message
+            type: string
+          githubUserName:
+            description: 'The github username, if defined.'
+            example:
+              - null
+              - Some username
+            type: string
+          linkedinUserName:
+            description: 'The linkedin username, if defined.'
+            example:
+              - null
+              - Some username
+            type: string
+          googleAnalyticsId:
+            description: 'The google analytics, if defined.'
+            example:
+              - null
+              - Some id
+            type: string
+    User:
+      properties:
+        id:
+          description: 'The id of the user.'
+          example: 3.
+          type: integer
+        createdAt:
+          description: 'Date of the creation of the user.'
+          example: 2022-04-28T14:03:09+00:00
+          type: string
+          format: date
+        updatedAt:
+          description: 'Date of the last update of the user.'
+          example: 2022-04-28T14:03:09+00:00
+          type: string
+          format: date
+        username:
+          description: 'The username.'
+          example: SomePseudo
+          type: string
+        fullName:
+          description: 'The full name of the user.'
+          example: Foo Bar
+          type: string
+        email:
+          description: 'The email of the user'
+          example: foo@bar.com
+          type: string
+          format: email
+        token:
+          description: 'The API token of the user.'
+          example: token124356
+          type: string
+    Category:
+      properties:
+        id:
+          description: 'The id of the category.'
+          example: 3.
+          type: integer
+        title:
+          description: 'The title of the category.'
+          example: The Title
+          type: string
+        summary:
+          description: 'The summary of the category.'
+          example: The summary
+          type: string
+        slug:
+          description: 'The slug of the category.'
+          example: the-slug
+          type: string
+        postCount:
+          description: 'How many posts the category have.'
+          example: 3.
+          type: integer
+        createdAt:
+          description: 'Date of the creation of the category.'
+          example: 2022-04-28T14:03:09+00:00
+          type: string
+          format: date
+        updatedAt:
+          description: 'Date of the last update of the category.'
+          example: 2022-04-28T14:03:09+00:00
+          type: string
+          format: date
+    Post:
+      properties:
+        id:
+          description: 'The id of the post.'
+          example: 3.
+          type: integer
+        title:
+          description: 'The title of the post.'
+          example: The Title
+          type: string
+        summary:
+          description: 'The summary of the post.'
+          example: The summary
+          type: string
+        slug:
+          description: 'The slug of the post.'
+          example: the-slug
+          type: string
+        online:
+          description: 'Is the post set to online?'
+          example: true
+          type: boolean
+        language:
+          description: 'The language of the post.'
+          example: en
+          type: string
+        obsolete:
+          description: 'Is the post set as obsolete?'
+          example: true
+          type: boolean
+        content:
+          description: 'The content of the post.'
+          example: This is an amazing post I wrote.
+          type: string
+        createdAt:
+          description: 'Date of the creation of the post.'
+          example: 2022-04-28T14:03:09+00:00
+          type: string
+          format: date
+        updatedAt:
+          description: 'Date of the last update of the post.'
+          example: 2022-04-28T14:03:09+00:00
+          type: string
+          format: date
+        publishedAt:
+          description: 'Date of the last time when the post was set to Online.'
+          example: 2022-04-28T14:03:09+00:00
+          type: string
+          format: date
+        topPost:
+          description: 'Is the post set as top post?'
+          example: true
+          type: boolean
+        categoryId:
+          description: 'The id of the category the post belongs to.'
+          example: 3.
+          type: integer
+        authorId:
+          description: 'The id of the user who wrote this post.'
+          example: 5.
+          type: integer
+paths:
+  /configuration:
+    get:
+      description: 'Get the configuration of the blog.'
+      responses:
+        '403':
+          description: The user is not authenticated.
+        '200':
+          description: Response will always return a 200 unless server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Configuration'
+              example:
+                title: My blog
+                description: This my blog
+                callbackUrl: null
+                webhooksEnabled: false
+                createdAt: '2022-04-28T14:03:09+00:00'
+                updatedAt: '2022-04-28T14:03:09+00:00'
+                copyrightMessage: Do not copy my stuff.
+                copyrightExtraMessage: Or I will unleash my poodle.
+                githubUserName: somePseudo
+                linkedinUserName: null
+                googleAnalyticsId: null
+      tags:
+        - Configuration
+  /user/{userId}:
+    get:
+      description: 'Get the user. Need an admin API Token.'
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        '403':
+          description: The token does not belong to an administrator.
+          content:
+            application/json:
+              example:
+                message: Route only accessible to admin users.
+        '404':
+          description: User does not exist.
+          content:
+            application/json:
+              example:
+                message: User not found.
+        '200':
+          description: The user exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                  id : 3,
+                  createdAt: '2022-04-28T14:03:09+00:00'
+                  updatedAt: '2022-04-28T14:03:09+00:00'
+                  userName: SuperJohn
+                  fullName: John Doe
+                  email: foo@bar.com
+                  token: thisIsMyToken
+      tags:
+        - User
+  /category:
+    get:
+      description: 'Get the category by id or slug.'
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+          description: The id of the category.
+        - in: query
+          name: slug
+          schema:
+            type: string
+          description: The slug of the category.
+      responses:
+        '400':
+          description: Invalid filter given.
+          content:
+            application/json:
+              example:
+                message: "No supported filter was given. Available filters are: id, slug."
+        '403':
+          description: The user is not authenticated.
+        '404':
+          description: The category does not exists.
+          content:
+            application/json:
+              example:
+                message: No result found.
+        '200':
+          description: The category exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+              example:
+                id : 3,
+                title: My favorite category
+                summary: Only good content!
+                slug: my-favorite-category
+                postCount: 8
+                createdAt: '2022-04-28T14:03:09+00:00'
+                updatedAt: '2022-04-28T14:03:09+00:00'
+
+      tags:
+        - Category
+  /category/search:
+    get:
+      description: 'Search categories using filters.'
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+          description: The id of the category.
+        - in: query
+          name: slug
+          schema:
+            type: string
+          description: The slug of the category.
+        - in: query
+          name: title
+          schema:
+            type: string
+          description: The title of the category.
+        - in: query
+          name: summary
+          schema:
+            type: string
+          description: The summary of the category.
+        - in: query
+          name: postCount
+          schema:
+            type: string
+          description: 'How many posts the category have.'
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: The results page offset.
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          description: The first offset of the results.
+        - in: query
+          name: keywords
+          schema:
+            type: string
+          description: The keywords to look for in the category title and summary.
+        - in: query
+          name: orderByField
+          schema:
+            type: array
+            items:
+              type: string
+          description: "Allows to order results according to some criteria (fields) by sorting them (ASC or DESC). Example: ?orderByField[title]=DESC"
+      responses:
+        '403':
+          description: The user is not authenticated.
+        '200':
+          description: Results.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+              example:
+                resultCount: 1
+                totalResultCount: 2
+                page: 1
+                totalPageCount: 2
+                results:
+                  id : 3,
+                  title: My favorite category
+                  summary: Only good content!
+                  slug: my-favorite-category
+                  postCount: 8
+                  createdAt: '2022-04-28T14:03:09+00:00'
+                  updatedAt: '2022-04-28T14:03:09+00:00'
+
+      tags:
+        - Category
+  /post:
+    get:
+      description: 'Get the post by id or slug.'
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+          description: The id of the post.
+        - in: query
+          name: slug
+          schema:
+            type: string
+          description: The slug of the post.
+      responses:
+        '400':
+          description: Invalid filter given.
+          content:
+            application/json:
+              example:
+                message: "No supported filter was given. Available filters are: id, slug."
+        '403':
+          description: The user is not authenticated.
+        '404':
+          description: The post does not exists.
+          content:
+            application/json:
+              example:
+                message: No result found.
+        '200':
+          description: The post exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+              example:
+                id: 1,
+                title: My first post,
+                summary: The summary 1 keyword,
+                slug: my-first-post,
+                online: true,
+                language: en,
+                obsolete: false,
+                content: Then content 1,
+                createdAt: 2022-05-03T10:05:53+00:00,
+                updatedAt: 2022-05-03T10:05:53+00:00,
+                publishedAt: 2022-05-03T10:05:53+00:00,
+                topPost: false,
+                categoryId: 1,
+                authorId: 2
+      tags:
+        - Post
+  /post/search:
+    get:
+      description: 'Search posts using filters.'
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+          description: The id of the post.
+        - in: query
+          name: author
+          schema:
+            type: integer
+          description: The id of the user who wrote the post.
+        - in: query
+          name: category
+          schema:
+            type: integer
+          description: The id of the category the post belongs to.
+        - in: query
+          name: title
+          schema:
+            type: string
+          description: The title of the post.
+        - in: query
+          name: slug
+          schema:
+            type: string
+          description: The slug of the post.
+        - in: query
+          name: publishedAt
+          schema:
+            type: string
+          description: The date of the last time when the post was set to published.
+        - in: query
+          name: language
+          schema:
+            type: string
+          description: The language of the post.
+        - in: query
+          name: online
+          schema:
+            type: boolean
+          description: Is the post set to online?
+        - in: query
+          name: topPost
+          schema:
+            type: boolean
+          description: Is the post set to top post?
+        - in: query
+          name: obsolete
+          schema:
+            type: boolean
+          description: Is the post set to obsolete?
+        - in: query
+          name: createdAt
+          schema:
+            type: string
+          description: The date of when the post was created.
+        - in: query
+          name: updatedAt
+          schema:
+            type: string
+          description: The date of when the last time when post was updated.
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: The results page offset.
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          description: The first offset of the results.
+        - in: query
+          name: keywords
+          schema:
+            type: string
+          description: The keywords to look for in the post title, summary and content.
+        - in: query
+          name: orderByField
+          schema:
+            type: array
+            items:
+              type: string
+          description: "Allows to order results according to some criteria (fields) by sorting them (ASC or DESC). Example: ?orderByField[title]=DESC"
+      responses:
+        '403':
+          description: The user is not authenticated.
+        '200':
+          description: Results.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+              example:
+                resultCount: 1
+                totalResultCount: 2
+                page: 1
+                totalPageCount: 2
+                results:
+                  id: 1,
+                  title: My first post,
+                  summary: The summary 1 keyword,
+                  slug: my-first-post,
+                  online: true,
+                  language: en,
+                  obsolete: false,
+                  content: Then content 1,
+                  createdAt: 2022-05-03T10:05:53+00:00,
+                  updatedAt: 2022-05-03T10:05:53+00:00,
+                  publishedAt: 2022-05-03T10:05:53+00:00,
+                  topPost: false,
+                  categoryId: 1,
+                  authorId: 2
+
+      tags:
+        - Post

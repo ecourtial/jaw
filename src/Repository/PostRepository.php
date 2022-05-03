@@ -157,6 +157,12 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
         $result['authorId'] = $result['author_id'];
         unset($result['author_id']);
 
+        // Set status to bool format
+        $result['online'] = (bool)$result['online'];
+        $result['obsolete'] = (bool)$result['obsolete'];
+        $result['topPost'] = (bool)$result['topPost'];
+
+
         return $result;
     }
 

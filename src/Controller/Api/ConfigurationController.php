@@ -25,6 +25,7 @@ class ConfigurationController extends AbstractController
         return new JsonResponse([
             'title' => $configuration->getBlogTitle(),
             'description' => $configuration->getBlogDescription(),
+            'webhooksEnabled' => $configuration->getWebhooksEnabled(),
             'callbackUrl' => $configuration->getCallbackUrl(),
             'createdAt' => $configuration->getCreatedAt()->format(\DateTimeInterface::ATOM),
             'updatedAt' => $configuration->getUpdatedAt()->format(\DateTimeInterface::ATOM),

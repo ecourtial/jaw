@@ -22,6 +22,7 @@ class ProfileController extends AbstractJawController
     #[Route('/admin/profile', methods: ['GET', 'POST'], name: 'profile')]
     public function __invoke(UserRepository $userRepository): Response
     {
+        /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
         $form = $this->createForm(UserType::class, $user);
@@ -30,7 +31,6 @@ class ProfileController extends AbstractJawController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->entityManager->beginTransaction();
             try {
-                // @phpstan-ignore-next-line
                 $userRepository->save($user);
                 $this->entityManager->commit();
 

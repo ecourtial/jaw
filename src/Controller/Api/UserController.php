@@ -20,8 +20,10 @@ class UserController extends AbstractController
     #[Route('/{id<\d+>}', methods: ['GET'], name: 'api_user_get')]
     public function getConfig(User $user = null): JsonResponse
     {
-        // @phpstan-ignore-next-line
-        if (false === \in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
+        /** @var \App\Entity\User $currentUser */
+        $currentUser = $this->getUser();
+
+        if (false === \in_array('ROLE_ADMIN', $currentUser->getRoles())) {
             return new JsonResponse(['message' => 'Route only accessible to admin users.'], 403);
         }
 

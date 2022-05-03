@@ -14,7 +14,6 @@ namespace App\Command;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Validator\UserValidator;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\RuntimeException;
@@ -54,9 +53,9 @@ class AddUserCommand extends Command
     private SymfonyStyle $io;
 
     public function __construct(
-        private UserPasswordHasherInterface $passwordHasher,
-        private UserValidator $validator,
-        private UserRepository $userRepository
+        private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly UserValidator $validator,
+        private readonly UserRepository $userRepository
     ) {
         parent::__construct();
     }

@@ -1,65 +1,47 @@
-# jaw
-Just A Word: a headless CMS
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://gitHub.com/ecourtial/jaw/graphs/commit-activity)
+[![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://gitHub.com/ecourtial/jaw)
 
-Release procedure
-: jaw.yaml
-api.yaml
+# JAW: a headless CMS
 
-Stack
+## Description
 
-Symfo 6
-Bootstrap 5
-Lister le composants Symfo (Client, Doctrine, Security, Translation)
-FosCKeditor...
-VOIR LE fichier composer.json
+Just a Word (JAW) is a free open-source headless CMS. At the beginning the idea was to make it private as a personal project: I wanted a stable, free and long-term oriented headless
+CMS, so I could easily revamp the front application of my blog without having to re-create everything.
 
-Conf :
+With JAW, you have now a CMS proving:
+- An administration interface to manage your content.
+- An API to get your content from your front-end application.
+- Protection for the API is assured by a basic user token.
+- Webhooks are provided if you want to be notified when some content is edited (for instance if you use cache).
 
-docker pour dev only
+There are still a lot of basic features to be developed, but the ambition of this project is to:
+- Keep-up with the last version of PHP.
+- Keep-up with the last version of Symfony.
+- Keep-up with most of the good practices of Symfony (the less deprecations notices as possible).
 
-APP_NAME
-Passer en revue toutes les var d'env.
+## Stack :light_rail:
 
+- PHP 8.1
+- Symfony 6.0
+- Bootstrap 5
 
-bin/console app:add-user YourPseudo YourPassword foor@bar.com "Marcellus Faust" --admin
+## Licence
 
+This code is provided under the MIT licence.
+Some parts of the codes come from the _Symfony Demo_ project and the licence of this project applies when mentioned.
 
-Do not hesitate to contribute (see the ticket tab to select a task)
+## Changelog
 
+See the changelog [here](CHANGELOG.md)
 
-APP_NAME != Blog title
-back != front
+## Contributing
 
-Admin fixture:
+See the _project_ section of this repository to see the Todo list.
 
-John
-somePassword123456
+## Documentation :notebook:
 
-API : 'X-AUTH-TOKEN'
-
-JohntheRegular
-somePassword123456aa
-
-Quelque soit l'env:
-
-bin/console assets:install public
-
-
-Reference au Symfony Demo (licence)
-
-Todo new version: change the app version in the conf file
-
-CHANGELOG
-
-Parler du makefile pour le dev
-
-Pour installer en prod:
-make init
-
-posssible de mettre un adminer
-
-Example command pour migration depuis ma vieille DB.
-
-Doc Webhook
-Doc API
-
+* [Webhooks](doc/WEBHOOKS.md)
+* [OpenAPI documentation](doc/api.yaml)
+* [How to set up the project in your development environment](doc/DEV.md)
+* [How to init the project in production](doc/PRODUCTION.md)
+* [Procedure when releasing a new version of JAW (for maintainers)](doc/MAINTAINERS.md)

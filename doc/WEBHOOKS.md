@@ -30,10 +30,10 @@ The payload of each webhook is done in REST, with the JSON format.
 
 The content of the payload is as follows:
 
-| Key | Contains                                                          |
-|----|-------------------------------------------------------------------|
-| resourceType   | The resource type (_user_, _configuration_, _category_ or _post_) |
-| resourceId   | The resource id, for instance: 4                                  |
-| actionType   | The action type (_created_, _edited_, _deleted_)                  |
-| currentAttemptCount   | The current attempt count                                         |
-| lastAttemptDate   | The last attempt date                                             |
+| Key                 | Contains                                                          |
+|---------------------|-------------------------------------------------------------------|
+| resourceType        | The resource type (_user_, _configuration_, _category_ or _post_) |
+| resourceId          | The resource id, for instance: 4                                  |
+| actionType          | The action type (_created_, _edited_, _deleted_)                  |
+| currentAttemptCount | The current attempt count                                         |
+| lastAttemptDate     | The last attempt date                                             |

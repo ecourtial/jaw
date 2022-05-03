@@ -29,9 +29,21 @@ class WebhookServiceTest extends TestCase
         $this->service = new WebhookService($this->configurationRepository, $this->webhookRepository, $this->logger, $this->httpClient);
     }
 
+    public function testWebhooksAreDisabled(): void
+    {
+        $configuration = (new Configuration())->setCallbackUrl('http://foo.bar')->setWebhooksEnabled(false);
+        $this->configurationRepository->method('get')->willReturn($configuration);
+
+        static::expectExceptionMessage('Webhooks are disabled. Aborting.');
+
+        foreach ($this->service->process() as $processResult) {
+
+        }
+    }
+
     public function testMissingCallback(): void
     {
-        $configuration = (new Configuration())->setCallbackUrl(' ');
+        $configuration = (new Configuration())->setCallbackUrl(' ')->setWebhooksEnabled(true);
         $this->configurationRepository->method('get')->willReturn($configuration);
 
         static::expectExceptionMessage('The callback URL has not been defined. Aborting.');
@@ -43,7 +55,7 @@ class WebhookServiceTest extends TestCase
 
     public function testOneCaseWithSuccess(): void
     {
-        $configuration = (new Configuration())->setCallbackUrl('http://foo.bar');
+        $configuration = (new Configuration())->setCallbackUrl('http://foo.bar')->setWebhooksEnabled(true);
         $this->configurationRepository->method('get')->willReturn($configuration);
 
         $webhook = (new Webhook())->setResourceType('post')->setId(2)->setAction(Webhook::RESOURCE_ACTION_EDITION);
@@ -77,7 +89,7 @@ class WebhookServiceTest extends TestCase
 
     public function testOneCaseWithError(): void
     {
-        $configuration = (new Configuration())->setCallbackUrl('http://foo.bar');
+        $configuration = (new Configuration())->setCallbackUrl('http://foo.bar')->setWebhooksEnabled(true);
         $this->configurationRepository->method('get')->willReturn($configuration);
 
         $webhook = (new Webhook())->setResourceType('post')->setId(2)->setAction(Webhook::RESOURCE_ACTION_EDITION);

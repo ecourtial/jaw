@@ -1,6 +1,10 @@
 # jaw
 Just A Word: a headless CMS
 
+Release procedure
+: jaw.yaml
+api.yaml
+
 Stack
 
 Symfo 6

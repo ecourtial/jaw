@@ -102,6 +102,7 @@ class AppFixtures extends Fixture
         $configuration->setLinkedinUsername('LinkedinPseudo');
         $configuration->setGithubUsername('GithubPseudo');
         $configuration->setGoogleAnalyticsId('1234Abcdef');
+        $configuration->setWebhooksEnabled(true);
 
         return $configuration;
     }

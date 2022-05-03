@@ -1,0 +1,177 @@
+openapi: 3.0.3
+info:
+  title: The JAW API
+  description: The JAW API reference file.
+  version: 1.0.0
+servers:
+  - url: '/api/v1'
+components:
+  parameters:
+    userId:
+      description: 'The user identifier number'
+      in: path
+      name: userId
+      required: true
+      schema:
+        type: integer
+  securitySchemes:
+    apiKey:
+      description: |
+        All the endpoints require to be authenticated as a user of the Blog administration.
+        For that you will need to provide a `Authorization` header with a valid **user API token**:
+        ```
+        X-AUTH-TOKEN: user_api_key_here
+        ```
+      in: header
+      name: X-AUTH-TOKEN
+      type: apiKey
+  schemas:
+    Configuration:
+      properties:
+          title:
+            description: 'The title of the blog.'
+            example: My awesome blog.
+            type: string
+          description:
+            description: 'The summary of the blog.'
+            example: MyBlog
+            type: string
+          callbackUrl:
+            description: 'The callback URL for the webhooks, if defined'
+            type: string
+            format: uri
+          webhooksEnabled:
+            description: 'Are the webhooks enabled or not'
+            type: boolean
+          createdAt:
+            description: 'Date of the creation of the configuration.'
+            example: 2022-04-28T14:03:09+00:00
+            type: string
+            format: date
+          updatedAt:
+            description: 'Date of the last update of the configuration.'
+            example: 2022-04-28T14:03:09+00:00
+            type: string
+            format: date
+          copyrightMessage:
+            description: 'The copyright message of the blog (can be use for anything else).'
+            example: Some message
+            type: string
+          copyrightExtraMessage:
+            description: 'The copyright extra message of the blog (can be use for anything else).'
+            example:
+              - null
+              - Some extra message
+            type: string
+          githubUserName:
+            description: 'The github username, if defined.'
+            example:
+              - null
+              - Some username
+            type: string
+          linkedinUserName:
+            description: 'The linkedin username, if defined.'
+            example:
+              - null
+              - Some username
+            type: string
+          googleAnalyticsId:
+            description: 'The google analytics, if defined.'
+            example:
+              - null
+              - Some id
+            type: string
+    User:
+      properties:
+        id:
+          description: 'The id of the user.'
+          example: 3.
+          type: integer
+        createdAt:
+          description: 'Date of the creation of the user.'
+          example: 2022-04-28T14:03:09+00:00
+          type: string
+          format: date
+        updatedAt:
+          description: 'Date of the last update of the user.'
+          example: 2022-04-28T14:03:09+00:00
+          type: string
+          format: date
+        username:
+          description: 'The username.'
+          example: SomePseudo
+          type: string
+        fullName:
+          description: 'The full name of the user.'
+          example: Foo Bar
+          type: string
+        email:
+          description: 'The email of the user'
+          example: foo@bar.com
+          type: string
+          format: email
+        token:
+          description: 'The API token of the user.'
+          example: token124356
+          type: string
+paths:
+  /configuration:
+    get:
+      description: 'Get the configuration of the blog.'
+      responses:
+        '200':
+          description: Response will always return a 200 unless server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Configuration'
+              example:
+                title: My blog
+                description: This my blog
+                callbackUrl: null
+                webhooksEnabled: false
+                createdAt: '2022-04-28T14:03:09+00:00'
+                updatedAt: '2022-04-28T14:03:09+00:00'
+                copyrightMessage: Do not copy my stuff.
+                copyrightExtraMessage: Or I will unleash my poodle.
+                githubUserName: ecourtial
+                linkedinUserName: null
+                googleAnalyticsId: null
+      summary: 'Get the configuration'
+      tags:
+        - Configuration
+  /user/{userId}:
+    get:
+      description: 'Get the user. Need an admin API Token.'
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        '403':
+          description: The token does not belong to an administrator
+          content:
+            application/json:
+              example:
+                message: Route only accessible to admin users.
+        '404':
+          description: User does not exists
+          content:
+            application/json:
+              example:
+                message: User not found.
+        '200':
+          description: The user exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                  id : 3,
+                  createdAt: '2022-04-28T14:03:09+00:00'
+                  updatedAt: '2022-04-28T14:03:09+00:00'
+                  userName: SuperJohn
+                  fullName: John Doe
+                  email: foo@bar.com
+                  token: thisIsMyToken
+      summary: 'Get a user by its id'
+      tags:
+        - User

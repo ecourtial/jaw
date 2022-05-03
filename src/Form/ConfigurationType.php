@@ -10,6 +10,7 @@ namespace App\Form;
 
 use App\Entity\Configuration;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -56,6 +57,18 @@ class ConfigurationType extends AbstractType
                 'required' => false,
                 'attr' => ['class' => 'form-control']
             ])
+            ->add(
+                'webhooksEnabled',
+                ChoiceType::class,
+                [
+                    'label' => 'configuration.enable_webhooks',
+                    'attr' => ['class' => 'form-control'],
+                    'choices' => [
+                        'yes' => true,
+                        'no' => false
+                    ]
+                ]
+            )
             ->add('callbackUrl', TextType::class, [
                 'label' => 'configuration.callback_url',
                 'required' => false,

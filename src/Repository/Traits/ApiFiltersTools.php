@@ -46,7 +46,6 @@ trait ApiFiltersTools
                 ) {
                     $query .= "AND $filter = :$filter ";
                 } elseif (self::AVAILABLE_COLUMN_FILTERS[$filter]['source'] === 'alias') {
-                    // @phpstan-ignore-next-line
                     $query .= 'AND ' . self::AVAILABLE_COLUMN_FILTERS[$filter]['columnName'] . " = :$filter ";
                 } else {
                     continue;
@@ -73,7 +72,6 @@ trait ApiFiltersTools
         // Counting result
         $countQuery = 'SELECT COUNT(*) as count FROM ' . $tableName . ' WHERE id IS NOT NULL ' . $query;
 
-        // @phpstan-ignore-next-line
         $totalResultCount = $this
             ->getEntityManager()
             ->getConnection()
@@ -137,7 +135,6 @@ trait ApiFiltersTools
                     && true === \in_array($order, ['ASC', 'DESC'])
                 ) {
                     if (self::AVAILABLE_COLUMN_FILTERS[$column]['source'] === 'alias') {
-                        // @phpstan-ignore-next-line
                         $column = self::AVAILABLE_COLUMN_FILTERS[$column]['columnName'];
                     }
 

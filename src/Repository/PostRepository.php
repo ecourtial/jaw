@@ -58,7 +58,6 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
     public function search(string $keywords, int $limit = 30, int $page = 1): array
     {
         // Unfortunately, the Paginator does not work with two FROM, so we have to do it manually.
-        // @phpstan-ignore-next-line
         $totalResultCount =  $this->getEntityManager()->getConnection()->executeQuery(
             'SELECT COUNT(*) as count FROM posts'
             . ' WHERE title LIKE :request'

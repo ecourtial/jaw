@@ -349,6 +349,11 @@ paths:
             type: integer
           description: The results page offset.
         - in: query
+          name: onlinePosts
+          schema:
+            type: integer
+          description: If set to 1, the categories posts count only represents online posts.
+        - in: query
           name: offset
           schema:
             type: integer

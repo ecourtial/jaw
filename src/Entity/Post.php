@@ -35,7 +35,7 @@ class Post implements DatedResourceInterface
      * @ORM\Column(type="string", nullable=false)
      */
     #[Assert\NotBlank]
-    private ?string $title = null;
+    private string $title;
 
     /**
      * @ORM\Column(type="string", nullable=false)
@@ -117,12 +117,12 @@ class Post implements DatedResourceInterface
         return $this;
     }
 
-    public function getTitle(): ?string
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    public function setTitle(?string $title): self
+    public function setTitle(string $title): self
     {
         $this->title = $title;
 

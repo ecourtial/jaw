@@ -43,13 +43,13 @@ class Configuration implements DatedResourceInterface
     /**
      * @ORM\Column(type="string", nullable=false)
      */
-    #[Assert\NotBlank, Assert\Length(min: 10, max: 50)]
+    #[Assert\NotBlank, Assert\Length(min: 10, max: 200)]
     private ?string $copyrightMessage;
 
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-    #[Assert\Length(min: 10, max: 50)]
+    #[Assert\Length(min: 10, max: 200)]
     private ?string $copyrightExtraMessage;
 
     /**

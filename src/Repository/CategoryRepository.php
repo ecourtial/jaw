@@ -80,13 +80,22 @@ class CategoryRepository extends ServiceEntityRepository implements ApiSimpleFil
         return $this->executeQueryWithMultipleFilters('categories', $params, $query, $queryParams);
     }
 
-    private function getMainSelectQuery(): string
+    /** @param array<string, mixed> $params */
+    private function getMainSelectQuery(array $params): string
     {
+        $onlinePostFilter = '';
+        if (\array_key_exists('onlinePosts', $params)
+            && '1' === $params['onlinePosts']
+        ) {
+            $onlinePostFilter .= ' AND posts.online = 1';
+        }
+
         return 'SELECT c.id, c.title, c.summary, c.created_at, c.updated_at, c.slug, p.postCount AS postCount '
             . 'FROM categories AS c, '
             . '(SELECT COUNT(*) AS postCount, categories.id as categId '
             . '   FROM posts, categories '
             . '   WHERE posts.category_id = categories.id '
+            . $onlinePostFilter
             . '   GROUP BY categories.id) AS p '
             . 'WHERE c.id = p.categId ';
     }

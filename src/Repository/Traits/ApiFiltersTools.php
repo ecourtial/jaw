@@ -105,7 +105,7 @@ trait ApiFiltersTools
         $result = $this
             ->getEntityManager()
             ->getConnection()
-            ->executeQuery($this->getMainSelectQuery() . $query, $queryParams);
+            ->executeQuery($this->getMainSelectQuery($params) . $query, $queryParams);
 
         $entries = [];
 

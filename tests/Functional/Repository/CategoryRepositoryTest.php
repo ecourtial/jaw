@@ -165,5 +165,20 @@ class CategoryRepositoryTest extends KernelTestCase
         static::assertEquals(1, $categories['page']);
         static::assertEquals(1, $categories['totalPageCount']);
         static::assertCount(0, $categories['results']);
+
+        $params = [
+            'slug' => 'another-category',
+            'onlinePosts' => '1',
+        ];
+
+        $categories = $this->categoryRepository->getByMultipleApiFilters($params);
+
+        static::assertEquals(1, $categories['resultCount']);
+        static::assertEquals(1, $categories['totalResultCount']);
+        static::assertEquals(1, $categories['page']);
+        static::assertEquals(1, $categories['totalPageCount']);
+        static::assertCount(1, $categories['results']);
+        static::assertEquals(2, $categories['results'][0]['id']);
+        static::assertEquals(1, $categories['results'][0]['postCount']);
     }
 }

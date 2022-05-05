@@ -24,7 +24,7 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
         'publishedAt' => ['source' => 'alias', 'columnName' => 'published_at',],
         'language' => ['source' => 'column', ],
         'online' => ['source' => 'column', ],
-        'topPost' => ['source' => 'column', ],
+        'topPost' => ['source' => 'alias', 'columnName' => 'top_post',],
         'obsolete' => ['source' => 'column', ],
         'createdAt' => ['source' => 'alias', 'columnName' => 'created_at',],
         'updatedAt' => ['source' => 'alias', 'columnName' => 'updated_at',],
@@ -126,7 +126,8 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
         return $this->executeQueryWithMultipleFilters('posts', $params, $query, $queryParams);
     }
 
-    private function getMainSelectQuery(): string
+    /** @param array<string, mixed> $params */
+    private function getMainSelectQuery(array $params): string
     {
         return 'SELECT id, title, summary, created_at, updated_at, published_at, slug, online, top_post, language, '
             . 'obsolete, category_id, author_id, content FROM posts WHERE id IS NOT NULL ';

@@ -18,7 +18,7 @@ With JAW, you have now a CMS proving:
 There are still a lot of basic features to be developed, but the ambition of this project is to:
 - Keep-up with the last version of PHP.
 - Keep-up with the last version of Symfony.
-- Keep-up with most of the good practices of Symfony (the less deprecations notices as possible).
+- Trying (yes, trying) to keep-up with most of the good practices of Symfony (i.e the less deprecations notices as possible).
 
 ## Stack :light_rail:
 

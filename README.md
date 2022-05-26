@@ -1,3 +1,4 @@
+[![CircleCI](https://circleci.com/gh/ecourtial/jaw/tree/master.svg?style=svg)](https://circleci.com/gh/ecourtial/jaw/tree/master)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://gitHub.com/ecourtial/jaw/graphs/commit-activity)
 [![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://gitHub.com/ecourtial/jaw)
 

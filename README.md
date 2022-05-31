@@ -2,11 +2,11 @@
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://gitHub.com/ecourtial/jaw/graphs/commit-activity)
 [![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://gitHub.com/ecourtial/jaw)
 
-# JAW: a headless Blog CMS
+# JAW: a headless blog CMS
 
 ## Description
 
-Just a Word (JAW) is a free open-source headless Blog CMS. At the beginning the idea was to make it private as a personal project: I wanted a stable, free and long-term oriented headless
+Just a Word (JAW) is a free open-source headless blog CMS. At the beginning the idea was to make it private as a personal project: I wanted a stable, free and long-term oriented headless
 CMS, so I could easily revamp the front application of my blog without having to re-create everything.
 
 With JAW, you have now a CMS proving:

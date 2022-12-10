@@ -23,7 +23,7 @@ trait UserLoginTrait
 
         $client->followRedirects();
         $crawler = $client->request('GET', UrlInterface::ADMIN_URL);
-        $this->assertPageTitleContains('MyBlog Admin - Login - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Login - JAW v1.1.0');
 
         $form = $crawler->selectButton('loginSubmitButton')->form([
             '_username' => $username,
@@ -35,7 +35,7 @@ trait UserLoginTrait
         $client->submit($form);
 
         static::assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertPageTitleContains('MyBlog Admin - Home - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Home - JAW v1.1.0');
         static::assertTrue($client->getContainer()->get(CaptchaChecker::class)->hasBeenCalled());
 
         $client->followRedirects(false);
@@ -49,7 +49,7 @@ trait UserLoginTrait
 
         $client->followRedirects();
         $crawler = $client->request('GET', UrlInterface::ADMIN_URL);
-        $this->assertPageTitleContains('MyBlog Admin - Login - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Login - JAW v1.1.0');
 
         $form = $crawler->selectButton('loginSubmitButton')->form([
             '_username' => $username,
@@ -59,7 +59,7 @@ trait UserLoginTrait
         $client->submit($form);
 
         static::assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertPageTitleContains('MyBlog Admin - Login - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Login - JAW v1.1.0');
 
         $client->followRedirects(false);
     }
@@ -72,7 +72,7 @@ trait UserLoginTrait
 
         $client->followRedirects();
         $crawler = $client->request('GET', UrlInterface::ADMIN_URL);
-        $this->assertPageTitleContains('MyBlog Admin - Login - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Login - JAW v1.1.0');
 
         $form = $crawler->selectButton('loginSubmitButton')->form([
             '_username' => $username,
@@ -86,7 +86,7 @@ trait UserLoginTrait
         $client->submit($form);
 
         static::assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertPageTitleContains('MyBlog Admin - Login - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Login - JAW v1.1.0');
         static::assertTrue($client->getContainer()->get(CaptchaChecker::class)->hasBeenCalled());
 
         $client->followRedirects(false);
@@ -99,7 +99,7 @@ trait UserLoginTrait
         $link = $crawler->selectLink('Logout')->link();
         $client->click($link);
 
-        $this->assertPageTitleContains('MyBlog Admin - Login - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Login - JAW v1.1.0');
         static::assertEquals(200, $client->getResponse()->getStatusCode());
 
         $client->followRedirects(false);

@@ -40,7 +40,7 @@ trait PostsTrait
         $link = $crawler->selectLink('Create post')->link();
         $crawler = $client->click($link);
 
-        $this->assertPageTitleContains('MyBlog Admin - Create a post - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Create a post - JAW v1.1.0');
         static::assertEquals('Create a post', $crawler->filter('h1')->text());
 
         $form = $crawler->selectButton('savePostSubmitButton')->form([
@@ -59,7 +59,7 @@ trait PostsTrait
         static::assertEquals(200, $client->getResponse()->getStatusCode());
 
         // Note that if we go back to the create form it MAY mean that the form is not valid.
-        $this->assertPageTitleContains('MyBlog Admin - Edit the post: ' . $this->newPost->getTitle() . ' - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Edit the post: ' . $this->newPost->getTitle() . ' - JAW v1.1.0');
         static::assertEquals('Edit the post: ' . $this->newPost->getTitle(), $crawler->filter('h1')->text());
 
         // Load the post to get the fully hydrated object
@@ -77,7 +77,7 @@ trait PostsTrait
         $link = $crawler->filter('#edit_post_' . $this->newPost->getId())->link();
         $crawler = $client->click($link);
 
-        $this->assertPageTitleContains('MyBlog Admin - Edit the post: ' . $this->newPost->getTitle() . ' - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Edit the post: ' . $this->newPost->getTitle() . ' - JAW v1.1.0');
         static::assertEquals('Edit the post: ' . $this->newPost->getTitle(), $crawler->filter('h1')->text());
         static::assertEquals($this->newPost->getId(), $this->getIdFromEditPage($crawler));
         static::assertEquals('Creation date: ' . $this->newPost->getCreatedAt()->format('Y-m-d H:i:s'), $crawler->filter('#creationDate')->text());

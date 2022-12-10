@@ -19,7 +19,7 @@ trait ConfigurationScreenTrait
         $crawler = $client->request('GET', UrlInterface::ADMIN_URL);
         $link = $crawler->selectLink('Configuration')->link();
         $client->click($link);
-        $this->assertPageTitleContains('MyBlog Admin - Edit configuration - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Edit configuration - JAW v1.1.0');
     }
 
     protected function gotoConfigurationScreenAndCheckData(
@@ -35,7 +35,7 @@ trait ConfigurationScreenTrait
         bool $expectedWebhooksFeatureStatus,
     ): void {
         $crawler = $client->request('GET', UrlInterface::CONFIGURATION_SCREEN_URL);
-        $this->assertPageTitleContains('MyBlog Admin - Edit configuration - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Edit configuration - JAW v1.1.0');
 
         $form = $crawler->selectButton('updateConfigurationSubmitButton')->form();
         $values = $form->getValues();
@@ -67,7 +67,7 @@ trait ConfigurationScreenTrait
         $client->followRedirects();
 
         $crawler = $client->request('GET', UrlInterface::CONFIGURATION_SCREEN_URL);
-        $this->assertPageTitleContains('MyBlog Admin - Edit configuration - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Edit configuration - JAW v1.1.0');
 
         $form = $crawler->selectButton('updateConfigurationSubmitButton')->form([
             'configuration[blogTitle]' => $newBlogTitle,
@@ -85,7 +85,7 @@ trait ConfigurationScreenTrait
         $client->submit($form);
 
         static::assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertPageTitleContains('MyBlog Admin - Edit configuration - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Edit configuration - JAW v1.1.0');
 
         $client->followRedirects(false);
     }

@@ -116,7 +116,7 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
         return $processedResult;
     }
 
-    // Unlike the 'getByUniqueApiFilter'method, unknown filters are ignored.
+    // Unlike the 'getByUniqueApiFilter' method, unknown filters are ignored.
     /** @return array<string, mixed> */
     public function getByMultipleApiFilters(array $params): array
     {
@@ -177,7 +177,8 @@ class PostRepository extends ServiceEntityRepository implements ApiSimpleFilterR
         if (\array_key_exists('keywords', $params)) {
             $query .= "AND (title LIKE :request ";
             $query .= "OR summary LIKE :request ";
-            $query .= "OR title LIKE :request) ";
+            $query .= "OR title LIKE :request ";
+            $query .= "OR content LIKE :request) ";
 
             $queryParams['request'] = '%' . $params['keywords'] . '%';
         }

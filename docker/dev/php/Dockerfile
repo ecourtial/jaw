@@ -17,6 +17,7 @@ RUN set -xe; \
         nano \
         zlib1g-dev \
         libzip-dev \
+        libicu-dev \
     ;
 
 WORKDIR /var/www/html
@@ -32,6 +33,7 @@ RUN set -xe; \
         opcache \
         pdo_mysql \
         zip \
+        intl \
     ;
 
 RUN cd /usr/local/etc/php/conf.d/ && \

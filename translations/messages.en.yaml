@@ -38,6 +38,7 @@ user.label.new_password: New password
 user.label.new_password_confirm: Confirm new password
 user.label.submit: Submit
 user.updated_successfully: Your profile has been successfully updated.
+user.label.form.remember_me: Keep me logged in
 
 # User update password form
 user.password_title: Change my password

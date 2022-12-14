@@ -6,6 +6,7 @@
 * Fix bug: the API search endpoint was not looking into the content of the posts (only in the title and the summary).
 * Update Twig to remove a CVE.
 * Bump the Symfony version from 6.0 to 6.2.
+* Update the Makefile with the new _docker compose_ command.
 
 ## 1.0
 

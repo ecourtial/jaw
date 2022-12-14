@@ -1,10 +1,10 @@
 start:
 	@cd docker/dev \
-	&& docker-compose up -d
+	&& docker compose up -d
 
 stop:
 	@cd docker/dev \
-	&& docker-compose stop
+	&& docker compose stop
 
 ########################
 # Init (for production)
@@ -20,15 +20,15 @@ init:
 
 nginx:
 	@cd docker/dev \
-	&& docker-compose exec nginx bash
+	&& docker compose exec nginx bash
 
 php:
 	@cd docker/dev \
-	&& docker-compose exec php bash
+	&& docker compose exec php bash
 
 mysql:
 	@cd docker/dev \
-	&& docker-compose exec mysql bash
+	&& docker compose exec mysql bash
 
 #############
 # Tools
@@ -38,49 +38,49 @@ mysql:
 
 phpstan:
 	@cd docker/dev \
-	&& docker-compose exec php bash -c 'make phpstan_command'
+	&& docker compose exec php bash -c 'make phpstan_command'
 
 phpunit:
 	@cd docker/dev \
-	&& docker-compose exec php bash -c 'make create_test_db_command' \
-	&& docker-compose exec php bash -c 'make phpunit_command'
+	&& docker compose exec php bash -c 'make create_test_db_command' \
+	&& docker compose exec php bash -c 'make phpunit_command'
 
 phpcs:
 	@cd docker/dev \
-	&& docker-compose exec php bash -c 'make phpcs_command'
+	&& docker compose exec php bash -c 'make phpcs_command'
 
 security:
 	@cd docker/dev \
-    && docker-compose exec php bash -c '/usr/local/bin/local-php-security-checker'
+    && docker compose exec php bash -c '/usr/local/bin/local-php-security-checker'
 
 schema_validate:
 	@cd docker/dev \
-	&& docker-compose exec php bash -c 'make schema_validate_command'
+	&& docker compose exec php bash -c 'make schema_validate_command'
 
 schema_update:
 	@cd docker/dev \
-	&& docker-compose exec php bash -c 'make update_db_schema_command'
+	&& docker compose exec php bash -c 'make update_db_schema_command'
 
 db_drop:
 	@cd docker/dev \
-	&& docker-compose exec php bash -c 'make drop_db_command'
+	&& docker compose exec php bash -c 'make drop_db_command'
 
 migrate:
 	@cd docker/dev \
-	&& docker-compose exec php bash -c 'make migrate_command'
+	&& docker compose exec php bash -c 'make migrate_command'
 
 fixtures:
 	@cd docker/dev \
-	&& docker-compose exec php bash -c 'make load_fixtures_command'
+	&& docker compose exec php bash -c 'make load_fixtures_command'
 
 dump_db:
 	@cd docker/dev \
-	&& docker-compose exec mysql bash -c 'mysqldump -u root jaw -p > /var/www/html/dump.sql && `chown -R $$DOCKER_USER_UID:$$DOCKER_USER_GID /var/www/html/dump.sql`'
+	&& docker compose exec mysql bash -c 'mysqldump -u root jaw -p > /var/www/html/dump.sql && `chown -R $$DOCKER_USER_UID:$$DOCKER_USER_GID /var/www/html/dump.sql`'
 
 # To use when you want to create a new migration file. You have to run 'make migrate' just after.
 make create_migration:
 	@cd docker/dev \
-	&& docker-compose exec php bash -c 'bin/console doctrine:database:drop --force && bin/console doctrine:database:create && make migrate_command && bin/console doctrine:migration:diff'
+	&& docker compose exec php bash -c 'bin/console doctrine:database:drop --force && bin/console doctrine:database:create && make migrate_command && bin/console doctrine:migration:diff'
 
 #### Internal (inside the container)
 

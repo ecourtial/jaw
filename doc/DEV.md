@@ -51,5 +51,3 @@ bin/console app:add-user YourPseudo YourPassword foor@bar.com "Marcellus Faust" 
   * _make phpstan_
   * _make stop_ (to stop the project properly).
 * The nginx configuration file is defined to accept request to an _adminer.php_ file (not versioned).
-* The _src/Command/MigrationCommand.php_ file is the one I used to migrate from my old (11 years old DB) blog.
-Even is the code is ugly (mostly due to the old DB itself), I kept it to show how I proceeded to migrate to JAW.

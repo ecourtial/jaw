@@ -89,6 +89,17 @@ class AppFixtures extends Fixture
                         ->setOnline(false)
                         ->setObsolete(true)
                 )
+                ->addPost(
+                    (new Post())
+                        ->setTitle('My fourth post')
+                        ->setSlug('my-fourth-post')
+                        ->setSummary('The summary 4')
+                        ->setContent('Then content 4 keyword')
+                        ->setAuthor($regularUser)
+                        ->setLanguage('en')
+                        ->setTopPost(true)
+                        ->setOnline(true)
+                )
         ];
     }
 

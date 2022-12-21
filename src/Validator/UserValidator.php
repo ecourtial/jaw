@@ -12,6 +12,7 @@
 namespace App\Validator;
 
 use Symfony\Component\Console\Exception\InvalidArgumentException;
+
 use function Symfony\Component\String\u;
 
 class UserValidator

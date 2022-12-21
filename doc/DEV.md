@@ -30,9 +30,9 @@ Notes: use separates values for Google Captcha in your different environments.
 * In the _docker/dev_ folder, copy the _.env.dist_ file to _.env_ and define all the required variables in it.
 * Now, to start the project, just run _make start_.
 * Connect to the _PHP_ container: _make php_.
-* Run _composer install_.
+* Run _composer install_ (it will also install the assets).
+* Create the DB by running _make migrate_command_.
 * Run the following command to create fixtures: _make load_fixtures_command_.
-* Run the following command to install the assets: _bin/console assets:install public_.
 * You can now log in to the admin at the _/login_ URL, using one of the two created users:
   * A regular user: JohntheRegular / somePassword123456aa
   * An admin user: John / somePassword123456
@@ -51,5 +51,3 @@ bin/console app:add-user YourPseudo YourPassword foor@bar.com "Marcellus Faust" 
   * _make phpstan_
   * _make stop_ (to stop the project properly).
 * The nginx configuration file is defined to accept request to an _adminer.php_ file (not versioned).
-* The _src/Command/MigrationCommand.php_ file is the one I used to migrate from my old (11 years old DB) blog.
-Even is the code is ugly (mostly due to the old DB itself), I kept it to show how I proceeded to migrate to JAW.

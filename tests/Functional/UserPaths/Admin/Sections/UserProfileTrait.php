@@ -19,7 +19,7 @@ trait UserProfileTrait
         $crawler = $client->request('GET', UrlInterface::ADMIN_URL);
         $link = $crawler->selectLink('Edit my profile')->link();
         $client->click($link);
-        $this->assertPageTitleContains('MyBlog Admin - My profile - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - My profile - JAW v1.1.0');
     }
 
     protected function checkChangePasswordMenuItem(KernelBrowser $client): void
@@ -27,7 +27,7 @@ trait UserProfileTrait
         $crawler = $client->request('GET', UrlInterface::ADMIN_URL);
         $link = $crawler->selectLink('Change my password')->link();
         $client->click($link);
-        $this->assertPageTitleContains('MyBlog Admin - Change my password - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Change my password - JAW v1.1.0');
     }
 
     protected function getToken(KernelBrowser $client): string
@@ -44,7 +44,7 @@ trait UserProfileTrait
         string $expectedUserEmail
     ): void {
         $crawler = $client->request('GET', UrlInterface::PROFILE_SCREEN_URL);
-        $this->assertPageTitleContains('MyBlog Admin - My profile - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - My profile - JAW v1.1.0');
 
         $form = $crawler->selectButton('updateProfileSubmitButton')->form();
         $values = $form->getValues();
@@ -57,7 +57,7 @@ trait UserProfileTrait
     {
         $client->followRedirects();
         $crawler = $client->request('GET', UrlInterface::PROFILE_SCREEN_URL);
-        $this->assertPageTitleContains('MyBlog Admin - My profile - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - My profile - JAW v1.1.0');
 
         $form = $crawler->selectButton('updateProfileSubmitButton')->form([
             'user[fullName]' => $newFullName,
@@ -68,7 +68,7 @@ trait UserProfileTrait
         $client->submit($form);
 
         static::assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertPageTitleContains('MyBlog Admin - My profile - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - My profile - JAW v1.1.0');
 
         $client->followRedirects(false);
     }
@@ -77,7 +77,7 @@ trait UserProfileTrait
     {
         $client->followRedirects();
         $crawler = $client->request('GET', UrlInterface::CHANGE_PASSWORD_SCREEN_URL);
-        $this->assertPageTitleContains('MyBlog Admin - Change my password - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Change my password - JAW v1.1.0');
 
         $form = $crawler->selectButton('updatePasswordSubmitButton')->form([
             'change_password[currentPassword]' => $currentPassword,
@@ -88,7 +88,7 @@ trait UserProfileTrait
         $client->submit($form);
 
         static::assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertPageTitleContains('MyBlog Admin - Change my password - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Change my password - JAW v1.1.0');
 
         $client->followRedirects(false);
     }

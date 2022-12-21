@@ -1,4 +1,4 @@
 # DO NOT ADD ANYTHING CUSTOM HERE, THIS FILE WILL BE OVERWRITTEN ON EACH NEW VERSION OF JAW!
 
 parameters:
-  app_version: '1.0'
+  app_version: '1.1.0'

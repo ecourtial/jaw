@@ -12,28 +12,22 @@ namespace App\Controller\Admin;
 use App\Controller\AbstractJawController;
 use App\Form\ChangePasswordType;
 use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LogLevel;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
 class PasswordController extends AbstractJawController
 {
     #[Route('/admin/password', methods: ['GET', 'POST'], name: 'password_change')]
-    public function __invoke(UserRepository $userRepository, UserPasswordHasherInterface $passwordHasher): Response
+    public function __invoke(UserRepository $userRepository): Response
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser() ?? throw new AuthenticationException('User not found');
-
-        $form = $this->createForm(ChangePasswordType::class);
+        $form = $this->createForm(ChangePasswordType::class, $user);
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $newPassword = $form->get('newPassword')->getData();
-            /** @var string $newPassword */
-            $user->setPassword($passwordHasher->hashPassword($user, $newPassword));
             $this->entityManager->beginTransaction();
             try {
                 $userRepository->save($user);

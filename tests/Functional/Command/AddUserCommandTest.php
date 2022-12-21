@@ -34,7 +34,7 @@ class AddUserCommandTest extends AbstractCommandTest
      * @dataProvider isAdminDataProvider
      *
      * This test provides all the arguments required by the command, so the
-     * command runs non-interactively and it won't ask for any argument.
+     * command runs non-interactively, and it won't ask for any argument.
      */
     public function testCreateUserNonInteractive(bool $isAdmin): void
     {

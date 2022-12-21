@@ -28,6 +28,7 @@ class UserRepository extends ServiceEntityRepository
 
     public function findByUsername(string $username): User
     {
+        /** @var \App\Entity\User[]|null $result */
         $result = $this->findBy(['username' => $username]);
 
         if (!$result) {

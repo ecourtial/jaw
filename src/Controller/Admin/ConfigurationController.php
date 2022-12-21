@@ -20,11 +20,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class ConfigurationController extends AbstractJawController
 {
     #[Route('/admin/configuration', methods: ['GET', 'POST'], name: 'configuration')]
-    #[IsGranted('ROLE_ADMIN')]
     public function __invoke(
         ConfigurationRepository $configurationRepository,
         EntityManagerInterface $entityManager,
     ): Response {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $configuration = $configurationRepository->get();
 
         $form = $this->createForm(ConfigurationType::class, $configuration);

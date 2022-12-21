@@ -17,6 +17,7 @@ RUN set -xe; \
         nano \
         zlib1g-dev \
         libzip-dev \
+        libicu-dev \
     ;
 
 WORKDIR /var/www/html
@@ -32,13 +33,11 @@ RUN set -xe; \
         opcache \
         pdo_mysql \
         zip \
+        intl \
     ;
 
 RUN cd /usr/local/etc/php/conf.d/ && \
   echo 'memory_limit = 1G' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini
-
-ARG GITHUB_SECRET_TOKEN
-ENV COMPOSER_AUTH='{"github-oauth":{"github.com":"'${GITHUB_SECRET_TOKEN}'"}}'
 
 # php-fpm config
 ENV PHP_FPM_PM_LOG_LEVEL=warning \

@@ -21,8 +21,8 @@ trait SearchTrait
         $crawler = $client->submit($form);
 
         // Qty of results
-        static::assertEquals('Search result (2)', $crawler->filter('h1')->text());
-        static::assertEquals(2, count($crawler->filter("[id^=post_]")));
+        static::assertEquals('Search result (3)', $crawler->filter('h1')->text());
+        static::assertEquals(3, count($crawler->filter("[id^=post_]")));
 
         // Check each entry
         $categories = self::getContainer()->get('App\Repository\CategoryRepository')->findAll();

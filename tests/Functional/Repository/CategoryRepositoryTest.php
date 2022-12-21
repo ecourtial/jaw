@@ -179,6 +179,6 @@ class CategoryRepositoryTest extends KernelTestCase
         static::assertEquals(1, $categories['totalPageCount']);
         static::assertCount(1, $categories['results']);
         static::assertEquals(2, $categories['results'][0]['id']);
-        static::assertEquals(1, $categories['results'][0]['postCount']);
+        static::assertEquals(2, $categories['results'][0]['postCount']);
     }
 }

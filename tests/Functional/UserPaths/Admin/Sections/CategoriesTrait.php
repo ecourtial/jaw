@@ -22,14 +22,14 @@ trait CategoriesTrait
         $crawler = $client->request('GET', UrlInterface::ADMIN_URL);
         $link = $crawler->selectLink('List')->link();
         $client->click($link);
-        $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.1.0');
     }
 
     /** Check the categories listing screen */
     protected function checkCategoriesList(KernelBrowser $client): void
     {
         $crawler = $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL);
-        $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.1.0');
         static::assertEquals('Categories index', $crawler->filter('h1')->text());
 
         foreach ($this->getCategories() as $category) {
@@ -93,7 +93,7 @@ trait CategoriesTrait
         $link = $crawler->selectLink('Add')->link();
         $crawler = $client->click($link);
 
-        $this->assertPageTitleContains('MyBlog Admin - Create a category - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Create a category - JAW v1.1.0');
         static::assertEquals('Create a category', $crawler->filter('h1')->text());
 
         $form = $crawler->selectButton('saveCategorySubmitButton')->form([
@@ -105,7 +105,7 @@ trait CategoriesTrait
         $client->submit($form);
         static::assertEquals(200, $client->getResponse()->getStatusCode());
         $crawler = $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL);
-        $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.1.0');
 
         // 2- Get the id of the last created category (supposed to be ours), so we can do the previous checks again.
         $links = $crawler->selectLink('Details');
@@ -134,7 +134,7 @@ trait CategoriesTrait
         $crawler = $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL . '/' . $this->newCategory->getId() . '/edit');
 
         $title = 'Edit the category: ' . $this->newCategory->getTitle();
-        $this->assertPageTitleContains('MyBlog Admin - ' . $title . ' - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - ' . $title . ' - JAW v1.1.0');
         static::assertEquals($title, $crawler->filter('h1')->text());
 
         $this->newCategory->setTitle('New title');
@@ -150,7 +150,7 @@ trait CategoriesTrait
         $client->submit($form);
         static::assertEquals(200, $client->getResponse()->getStatusCode());
         $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL);
-        $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.1.0');
 
         $this->newCategory = self::getContainer()->get('App\Repository\CategoryRepository')->find($this->newCategory->getId());
 
@@ -165,7 +165,7 @@ trait CategoriesTrait
         $crawler = $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL . '/' . $this->newCategory->getId() . '/edit');
 
         $title = 'Edit the category: ' . $this->newCategory->getTitle();
-        $this->assertPageTitleContains('MyBlog Admin - ' . $title . ' - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - ' . $title . ' - JAW v1.1.0');
         static::assertEquals($title, $crawler->filter('h1')->text());
 
         $form = $crawler->selectButton('deleteCategorySubmitButton')->form();
@@ -173,7 +173,7 @@ trait CategoriesTrait
         $client->submit($form);
         static::assertEquals(200, $client->getResponse()->getStatusCode());
         $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL);
-        $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.1.0');
 
         $this->newCategory = null;
 
@@ -188,7 +188,7 @@ trait CategoriesTrait
         $crawler = $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL . '/' . 1 . '/edit');
 
         $title = 'Edit the category: ' . $this->getCategories()[0]->getTitle();
-        $this->assertPageTitleContains('MyBlog Admin - ' . $title . ' - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - ' . $title . ' - JAW v1.1.0');
         static::assertEquals($title, $crawler->filter('h1')->text());
 
         $form = $crawler->selectButton('deleteCategorySubmitButton')->form();
@@ -196,7 +196,7 @@ trait CategoriesTrait
         $client->submit($form);
         static::assertEquals(200, $client->getResponse()->getStatusCode());
         $client->request('GET', UrlInterface::CATEGORIES_LIST_SCREEN_URL);
-        $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.0');
+        $this->assertPageTitleContains('MyBlog Admin - Categories index - JAW v1.1.0');
 
         $client->followRedirects(false);
     }

@@ -170,13 +170,14 @@ trait ApiPostTrait
 
         $result = \json_decode($client->getResponse()->getContent(), true);
         $expectedResult = [
-            "resultCount" => 2,
-            "totalResultCount" => 2,
+            "resultCount" => 3,
+            "totalResultCount" => 3,
             "page"=> 1,
             "totalPageCount" => 1,
             "results" => [
                 $this->formatPostForExpectedApiResult($this->getPostRepository()->find(2)),
                 $this->formatPostForExpectedApiResult($this->getPostRepository()->find(3)),
+                $this->formatPostForExpectedApiResult($this->getPostRepository()->find(4)),
             ]
         ];
         static::assertEquals($expectedResult, $result);

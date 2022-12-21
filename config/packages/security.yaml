@@ -1,8 +1,4 @@
 security:
-
-    enable_authenticator_manager: true
-    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
-
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
@@ -30,6 +26,14 @@ security:
             lazy: true
             provider: database_users
 
+            remember_me:
+                secret:   '%kernel.secret%' # required
+                lifetime: 604800 # 1 week in seconds
+                # by default, the feature is enabled by checking a
+                # checkbox in the login form (see below), uncomment the
+                # following line to always enable it.
+                #always_remember_me: true
+
             # This allows the user to login by submitting a username and password
             # Reference: https://symfony.com/doc/current/security/form_login_setup.html
             form_login:
@@ -52,8 +56,7 @@ security:
                 target: admin_home
 
                 # Secure the logout against CSRF
-                csrf_parameter: logout
-                csrf_token_generator: security.csrf.token_manager
+                enable_csrf: true
 
             # needed because in tests we redefine the 'main' firewall to use
             # HTTP Basic instead of the login form, so this firewall has

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0
+* Bump the Symfony version from 6.2 to 6.4.
+* Dropped the use of the php security checker. We use _composer audit_ instead.
+
 ## 1.1.0
 
 * Improve project installation doc and configuration for the dev environment.

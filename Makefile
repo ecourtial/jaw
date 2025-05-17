@@ -51,7 +51,7 @@ phpcs:
 
 security:
 	@cd docker/dev \
-    && docker compose exec php bash -c '/usr/local/bin/local-php-security-checker'
+    && docker compose exec php bash -c 'composer audit'
 
 schema_validate:
 	@cd docker/dev \

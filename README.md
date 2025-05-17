@@ -23,7 +23,7 @@ There are still a lot of basic features to be developed, but the ambition of thi
 ## Stack :light_rail:
 
 - PHP 8.1
-- Symfony 6.2
+- Symfony 6.4
 - Bootstrap 5
 
 ## Licence
